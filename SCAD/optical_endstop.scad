@@ -1,0 +1,77 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// optical_endstop.scad
+// created: 9/30/2018
+// last update: 9/30/18
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+include <inc/screwsizes.scad>
+include <inc/cubex.scad>
+$fn=100;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+flag();
+translate([40,20,0]) rotate([90,0,0])
+	X_ms_holder();
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module flag() {
+	difference() {
+		color("cyan") cubeX([35,2,10],1);
+		flag_mount();
+	}
+	difference() {
+		color("red") cubeX([10,17,10],1);
+		flag_mount();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module flag_mount() {
+	translate([5,20,5]) rotate([90,0,0]) cylinder(h=25,d=screw3);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module X_ms_holder() {
+	difference() {
+		color("red") hull() {
+			cubeX([screw5hd+1,42,1],1);
+			translate([0,0,45]) cubeX([screw5hd+1,2,1],1);
+		}
+		translate([6,35,-5]) color("blue") cylinder(h=20,d=screw5);
+		translate([6,35,3]) color("gray") cylinder(h=20,d=screw5hd);
+		translate([-5,(screw5hd+1)/2,5]) rotate([0,90,0]) color("gold") cylinder(h=20,d=screw3+0.5);
+	}
+	difference() {
+		translate([-48,0,37]) color("blue") cubeX([60,2,10],1);
+		translate([-15,(screw5hd+1)/2,42]) rotate([90,0,0]) color("gold") cylinder(h=20,d=screw3+0.5);
+		optical_switch();
+		optical_notch();
+	}
+	difference() {
+		translate([-48,0,37]) color("plum") cubeX([10,2,30],1);
+		optical_switch();
+		optical_notch();
+	}
+	translate([0,0,-10]) color("cyan") cubeX([screw5hd+1,screw5hd+15,screw5hd+1],1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module optical_switch() {
+	translate([-44,(screw5hd+1)/2,42]) rotate([90,0,0]) color("gold") cylinder(h=20,d=screw3+0.5);
+	translate([-44,(screw5hd+1)/2,62]) rotate([90,0,0]) color("gold") cylinder(h=20,d=screw3+0.5);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module optical_notch() {
+	translate([-47,1,45]) color("pink") cube([5,5,14]);
+}
+
+
+///////////////// end of optical_enstop.scad ///////////////////////////////////////////////////////////////////
+
