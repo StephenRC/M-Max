@@ -31,14 +31,14 @@ Shift_BL_Touch = 10;	// move bl_touch up/down
 Shift_Proximity = 10;	// move proximity up/down
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-titan(2,0,3,0);	// first arg is quanity of 1 or 2, second arg is 0 no bowden, 1 for bowden (default is 1, no bowden, no sensor)
+//titan(2,0,3,0);	// first arg is quanity of 1 or 2, second arg is 0 no bowden, 1 for bowden (default is 1, no bowden, no sensor)
 				// third arg is for sensor (0-ir,1=blt,2=blt recessed,3=proximity,4=none
 				// fourth arg: 0-no titan bracket and fanduct; 1-bracket and fanduct (openscad don't like the stls)
 //blt_mount(1);
-//newtitan(3,1);	// dual hotends that are closer together than the other
+//newtitan(3,1,1);	// dual hotends that are closer together than the other
 				// 1st arg is for sensor (0-ir,1=blt,2=blt recessed,3=proximity,4=none
 				// 2nd arg: 0=no titan extruder mounts,1=titan extruder mounts
-//bowden_titan(screw5);  // Titan extruder frame mount
+bowden_titan(screw5);  // Titan extruder frame mount
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -389,13 +389,14 @@ module bowden_titan(Screw=screw4) { // platform for e3d titan
 		color("cyan") translate([0,-11,0]) cubeX([60,75,5],2); // extruder side
 		color("gray") hull() {
 			translate([25,27,-10]) cylinder(h=25,d=30,$fn=100); // remove some plastic under the motor
-			translate([35,27,-10]) cylinder(h=45,d=30,$fn=100); // remove some plastic under the motor
+			translate([30,27,-10]) cylinder(h=45,d=30,$fn=100); // remove some plastic under the motor
 		}
 		translate([15,-5,-1]) color("black") cylinder(h=20,d=Screw,$fn=100); // mounting screw hole
 		translate([53,-5,-1]) color("red") cylinder(h=20,d=Screw,$fn=100); // mounting screw hole
+		translate([53,26,-1]) color("yellow") cylinder(h=20,d=Screw,$fn=100); // mounting screw hole
 		translate([15,58,-1]) color("plum") cylinder(h=20,d=Screw,$fn=100); // mounting screw hole
 		translate([53,58,-1]) color("blue") cylinder(h=20,d=Screw,$fn=100); // mounting screw hole
-		CSbowden_titan(Screw);
+		CSbowden_titan(Screw);	// countersinks
 	}
 	translate([0,1,1]) rotate([90,0,90]) titanmotor(5+shifttitanup,Screw);
 }
@@ -405,12 +406,14 @@ module CSbowden_titan(Screw=screw4hd) {
 	if(Screw == screw5) {
 		translate([15,-5,4]) color("pink") cylinder(h=20,d=screw5hd,$fn=100);
 		translate([53,-5,4]) color("gray") cylinder(h=20,d=screw5hd,$fn=100);
+		translate([53,26,4]) color("lime") cylinder(h=20,d=screw5hd,$fn=100);
 		translate([15,58,4]) color("gold") cylinder(h=20,d=screw5hd,$fn=100);
 		translate([53,58,4]) color("brown") cylinder(h=20,d=screw5hd,$fn=100);
 	}
 	if(Screw == screw4) {
 		translate([15,-5,4]) color("pink") cylinder(h=20,d=screw4hd,$fn=100);
 		translate([53,-5,4]) color("gray") cylinder(h=20,d=screw4hd,$fn=100);
+		translate([53,26,4]) color("lime") cylinder(h=20,d=screw5hd,$fn=100);
 		translate([15,58,4]) color("gold") cylinder(h=20,d=screw4hd,$fn=100);
 		translate([53,58,4]) color("brown") cylinder(h=20,d=screw4hd,$fn=100);
 	}

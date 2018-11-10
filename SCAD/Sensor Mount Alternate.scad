@@ -15,7 +15,7 @@ $fn=100;
 
 //rotate([0,-90,0]) prox_mount(0);	// arg is shift up/down
 //rotate([0,-90,0]) ir_mount(0);	// arg is shift up/down
-rotate([0,-90,0]) blt_mount(1,13);	// 1st arg: 0-recessed, 1-not recesed
+rotate([0,-90,0]) blt_mount(0,13);	// 1st arg: 0-recessed, 1-not recesed
 									// 2nd arg: Amount to shift the bltouch mount up/down
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
