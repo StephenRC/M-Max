@@ -2,7 +2,7 @@
 // MMAX X Ends.scad - http://creativecommons.org/licenses/by-sa/3.0/
 //////////////////////////////////////////////////////////////////////////////////////////
 // created 3/1/16
-// last update 9/30/18
+// last update 12/10/18
 //////////////////////////////////////////////////////////////////////////////////////////
 // 3/1/16	- SCAD version of zClamp_4off.stl & x-bracket_1off.stl
 //			  at http://www.thingiverse.com/thing:12609
@@ -18,6 +18,7 @@
 // 9/27/18	- Made left/right versions of clamps, left the third hole to allow motor on either side
 // 9/28/18	- Finally found where the extra plastic was coming from in the MTSSR8 slot (connector flange cube)
 // 9/30/18	- Added a screw clamp to hold the MTSSR8 in the socket, hole sized for 3mm screw with a tight fit.
+// 12/10/18	- Change motor mount to slotted for belt adjustment
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Notes:
 // Clamps can be made with PLA
@@ -68,16 +69,18 @@ zrodd = 10 + clearance+AdjustCF;	// z smooth rod diameter
 zscrew = 8 + clearance+AdjustCF;	// z screw diameter
 mks_slot = 20;	// distance between slots on the rear of makerslide
 // motor mount
-mmlength = 81;
+mmlength = 85;
 mmwidth = 44;
 mmthickness = 12;
 MTSSR8d = 15.5;	// outside diameter of Misumi MTSSR8
 MTSSR8l = 21.5;	// length of MTSSR8
+BearingShellOffset=16;
 /////////////////////////////////////////////////////////////////////
 
 //split_clamp(0,1,1,1);
-full_clamp(1,0); // arg 1: 0-one clamp (left),1-two clamps,2-right clamp; arg2: 0-no motor mount,1-motor mount,
-																	// 2-to test the fit of the motor mount to clamp
+//full_clamp(1,1); // arg 1: 0-one clamp (left),1-two clamps,2-right clamp; arg2: 0-no motor mount,1-motor mount,
+motormount();
+// 2-to test the fit of the motor mount to clamp
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 module full_clamp(Clamp=0,Mount=0) {
@@ -88,7 +91,7 @@ module full_clamp(Clamp=0,Mount=0) {
 		translate([0,30,0]) rotate([90,0,0]) clamp(0,1,1,1,1);
 	}
 	if(Clamp == 2) rotate([90,0,0]) clamp(0,1,1,1,1);			// right side
-	if(Mount == 1) translate([0,40,-10]) motormount();
+	if(Mount == 1) translate([0,45,-10]) motormount();
 	if(Mount == 2) translate([0,40,-10]) testmotormount();
 }
 
@@ -117,8 +120,8 @@ module testmotormount() {	// for making a test print of the motormount section t
 
 module motormount(mks=0) { // this holds the stepper motor
 	difference() {
-		color("blue") cubeX([mmlength,mmwidth,mmthickness],2);
-		translate([mmlength-20,mmwidth/2,-1]) rotate([0,0,45]) NEMA17_x_holes(mmthickness+2,3);
+		color("cyan") cubeX([mmlength,mmwidth,mmthickness],2);
+		translate([mmlength-23,mmwidth/2,-1]) color("red") NEMA17_parallel_holes(mmthickness+2,5);
 		mmslot(mks);
 		translate([9,2,0]) rotate([0,0,90]) motormountscrewholes();
 	}
@@ -126,11 +129,11 @@ module motormount(mks=0) { // this holds the stepper motor
 
 //////////////////////////////////////////////////////////////////////
 
-module mmslot(mks=0) { // add mount to simpleVX clamp (removes the area the clamp fits into)
-	translate([znutw,-(mmwidth*4)/2+1,0]) rotate([0,0,90]) screwholes(mks);
-	translate([z_drv*2-35,mmwidth+1,mmthickness+4.5]) rotate([90,0,0]) color("pink")
+module mmslot(mks) { // add mount to simpleVX clamp (removes the area the clamp fits into)
+	//translate([znutw,-(mmwidth*4)/2+1,0]) rotate([0,0,90]) screwholes(mks);
+	translate([z_drv*2-35,mmwidth+1,mmthickness+4.5]) rotate([90,0,0]) color("gray")
 		cylinder(h=mmwidth+4,r=(shellt+X_Motor_Bearing_clearance)/2);
-	translate([-3.9,mmwidth/4-1.5,mmthickness-4.88]) color("gray") cube([znutl,znutw+2,znutdt]);
+	translate([-3.9,mmwidth/4-1.5,mmthickness-4.88]) color("plum") cube([znutl,znutw+2,znutdt]);
 }
 
 //////////////////////////////////////////////////////////////////////

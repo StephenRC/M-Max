@@ -1,20 +1,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// x-carriage - x carriage for makerslide and vertical x-axis with 8mm rods
+// x-carriage - x carriage for makerslide
 // created: 2/3/2014
-// last modified: 9/2/2018
+// last modified: 12/10/2018
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 9/2/18	- Original file modified for MMAX, extruder plate and top mounting belt removed
+// 12/10/18	- Changed to loop type bel holder on carraiage
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // uses http://www.thingiverse.com/thing:211344 for the y belt
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
+use <ybeltclamp.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Tshift=0;	// shift titan knob clearance notch
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-xcar(1);
-//belt();	// a belt mount to go on  the back plate
+//xcar(1);
 //cableholder();
+Belt_Holder();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24,8 +26,8 @@ module xcar(Both) // makerslide version
 	if(Both) {
 		carriage_rear();
 		translate([60,0,0]) rotate([0,0,180]) carriage();
-		translate([-70,10,0]) belt();
-		translate([23,0,0]) cableholder();
+		translate([-60,0,-4]) Belt_Holder();
+		//translate([23,0,0]) cableholder();
 	} else
 		carriage();
 }
@@ -107,15 +109,30 @@ module carriage_rear() { // back plate for the belt mount; non-wheel side
 			translate([-(width/2),height,-5]) cylinder(h = wall+5, r = 10,$fn=50);
 			translate([-(width/2),-height/8,-5]) cylinder(h = wall+5, r = 10,$fn=50);
 		}
-		// belt mounting holes (may need to be moved up or down)
-		translate([beltw/2,belth+beltadjust,-wall]) color("red") cylinder(h = 2*wall, r = screw3/2, $fn=50);
-		translate([-(beltw/2),belth+beltadjust,-wall]) color("blue") cylinder(h = 2*wall, r = screw3/2, $fn=50);
-		translate([beltw/2,beltadjust,-wall]) color("yellow") cylinder(h = 2*wall, r = screw3/2, $fn=50);
-		translate([-(beltw/2),beltadjust,-wall]) color("plum") cylinder(h = 2*wall, r = screw3/2, $fn=50);
+		Belt_Mount_Holes(screw3t);
 		// reduce usage of filament
 		translate([0,-height/3.5,-wall]) color("pink") cylinder(h = wall+10, r = 12,$fn=50); // a big hole near bottom
 		translate([0,3,-wall]) color("gray") cylinder(h = wall+10, r = 8,$fn=50); // a hole under the belt holder
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module Belt_Mount_Holes(Screw=screw3) { // belt mounting holes (may need to be moved up or down)
+	translate([beltw/2,belth+beltadjust,-wall]) color("red") cylinder(h = 2*wall, r = Screw/2, $fn=50);
+	translate([-(beltw/2),belth+beltadjust,-wall]) color("blue") cylinder(h = 2*wall, r = Screw/2, $fn=50);
+	translate([beltw/2,beltadjust,-wall]) color("yellow") cylinder(h = 2*wall, r = Screw/2, $fn=50);
+	translate([-(beltw/2),beltadjust,-wall]) color("plum") cylinder(h = 2*wall, r = Screw/2, $fn=50);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module Belt_Holder() {
+	difference() {
+		translate([-8,0,0]) color("plum") cubeX([40.5,34,5],2);
+		translate([12,16,0]) Belt_Mount_Holes();
+	}
+	translate([-7,9,4.5]) beltClamp();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

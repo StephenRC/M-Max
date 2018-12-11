@@ -2,21 +2,30 @@
 // Sensor Mount Alternative.scad - mount on the x-carriage ms plate
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // created 12/30/2016
-// last update 9/6/18
+// last update 11/13/18
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Use recessed blt_mount for shorter screws
+// BLTouch holes are self threading to the nuts aren't needed for testing
+// Use supplied BLTouch springs for some adjustment
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 1/3/16	- added ir version
 // 7/9/18	- removed commented code
 // 9/3/18	- Added a bltouch version, updated include to just MMAX_h.scad
 // 9/6/18	- Fixed the Shift ability
+// 11/13/18	- Adjusted supports for more clearance on the makerslide x-carriage.
+//			  BLTouch flange mounts on top of the adapter.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
 $fn=100;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//rotate([0,-90,0]) prox_mount(0);	// arg is shift up/down
-//rotate([0,-90,0]) ir_mount(0);	// arg is shift up/down
-rotate([0,-90,0]) blt_mount(0,13);	// 1st arg: 0-recessed, 1-not recesed
-									// 2nd arg: Amount to shift the bltouch mount up/down
+//rotate([0,-90,0]) 	// rotate to a printable position
+//	prox_mount(0);		// arg is shift up/down
+//rotate([0,-90,0])
+//	ir_mount(0);		// arg is shift up/down
+rotate([0,-90,0])
+	blt_mount(1,16);	// 1st arg: 0-recessed, 1-not recesed
+						// 2nd arg: Amount to shift the bltouch mount up/down
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module prox_mount(Shift) {
@@ -30,7 +39,7 @@ module prox_mount(Shift) {
 	}
 	difference() {
 		translate([0,25,-13]) color("blue") cubeX([40,26,5],2);
-		translate([3,20,-10]) rotate([0,0,0]) extmount();
+		translate([3,20,-10]) extmount();
 	}
 	support(Shift);
 	support2(Shift);
@@ -48,13 +57,13 @@ module extmount() {		// screw holes to mount extruder plate
 module support(Shift=0) {
 	if(Shift > 0) {
 		difference() {
-			translate([0,34,-26]) rotate([50,0,0]) color("cyan") cubeX([5,20,25],2);
+		translate([0,32,-26]) rotate([50,0,0]) color("cyan") cubeX([5,20,25],2);
 			translate([-1,8,-25]) color("gray") cube([7,20,30],2);
 			translate([-1,22,-35]) color("black") cube([7,25,25],2);
 		}
 	} else {
 		difference() {
-			translate([0,34,-26+Shift]) rotate([50,0,0]) color("yellowgreen") cubeX([5,20,25],2);
+			translate([0,32,-26+Shift]) rotate([50,0,0]) color("yellowgreen") cubeX([5,20,25],2);
 			translate([-1,8,-29]) color("gray") cube([7,20,30],2);
 			translate([-1,22,-45]) color("black") cube([7,30,35],2);
 		}
@@ -66,13 +75,13 @@ module support(Shift=0) {
 module support2(Shift=0) {
 	if(Shift > 0) {
 		difference() {
-			translate([25,32,-26]) rotate([46,0,0]) color("yellow") cubeX([5,20,25],2);
+			translate([25,32,-26]) rotate([50,0,0]) color("yellow") cubeX([5,20,25],2);
 			translate([24,7,-20]) color("plum") cube([7,20,30],2);
 			translate([24,22,-35]) color("silver") cube([7,25,25],2);
 		}
 	} else {
 		difference() {
-			translate([25,32,-26+Shift]) rotate([46,0,0]) color("brown") cubeX([5,20,25],2);
+			translate([25,32,-26+Shift]) rotate([50,0,0]) color("brown") cubeX([5,20,25],2);
 			translate([24,7,-20+Shift]) color("plum") cube([7,20,30],2);
 			translate([24,22,-45]) color("silver") cube([7,25,35],2);
 		}
@@ -87,7 +96,7 @@ module ir_mount(Shift) {
 	translate([15,25,-13]) color("pink") cubeX([15,5,17+Shift],2);
 	difference() {
 		translate([15,25,-13]) color("blue") cubeX([26,26+Shift,5],2);
-		translate([4,20,-10]) rotate([0,0,0]) extmount();
+		translate([4,20,-10]) extmount();
 	}
 	translate([15.5,0,0]) support(Shift);
 	support2(Shift);
@@ -111,8 +120,8 @@ module blt_mount(Type=0,Shift=0) {
 	}
 	translate([15,25,-13]) color("pink") cubeX([25,5,17+Shift],2);
 	difference() {
-		translate([15,25,-13]) color("blue") cubeX([26,26,5],2);
-		translate([4,20,-10]) rotate([0,0,0]) extmount();
+		translate([15,25,-13]) color("blue") cubeX([25,26,5],2);
+		translate([3,20,-10]) extmount();
 	}
 	translate([15,0,0]) support(Shift);
 	translate([10,0,0]) support2(Shift);
@@ -122,17 +131,17 @@ module blt_mount(Type=0,Shift=0) {
 
 module blt(Ver=0) { // BLTouch mounts
 	if(Ver == 0) {
-		translate([-bltl/2+3,bltw/2+3,bltdepth]) minkowski() { // depression for BLTouch
+		translate([-bltl/2+3,bltw/2+3,bltdepth]) minkowski() { // rounded corners for the depression for the BLTouch
 			// it needs to be deep enough for the retracted pin not to touch bed
 			color("red") cube([bltl-6,bltw-6,wall]);
 			cylinder(h=1,r=3,$fn=100);
 		}
-		translate([-bltl/2+8,bltw/2,-5]) color("blue") cube([bltd,bltd+1,wall+3]); // hole for BLTouch
+		translate([-bltl/2+8,bltw/2,-5]) color("blue") cube([bltd,bltd+1,wall+3]); // through hole that fits the BLTouch
 		translate([bltouch/2,16,-10]) color("cyan") cylinder(h=25,r=screw2/2,$fn=100);
 		translate([-bltouch/2,16,-10]) color("purple") cylinder(h=25,r=screw2/2,$fn=100);
 	}
 	if(Ver == 1) {
-		translate([-bltl/2+8,bltw/2,-5]) color("blue") cube([bltd,bltd+1,wall+3]); // hole for BLTouch
+		translate([-bltl/2+8,bltw/2,-5]) color("blue") cube([bltd,bltd+1,wall+3]); // through hole that fits the BLTouch
 		translate([bltouch/2,16,-10]) color("cyan") cylinder(h=25,r=screw2/2,$fn=100);
 		translate([-bltouch/2,16,-10]) color("purple") cylinder(h=25,r=screw2/2,$fn=100);
 	}
