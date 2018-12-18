@@ -1,6 +1,6 @@
-// wirechain.scad
+// Wire-Chain-Mount.scad
 // created: 10/11/2018
-// last pdate: 10/28/18
+// last update: 10/28/18
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 10/11/18	- Uses thingiverse https://www.thingiverse.com/thing:2354864
 //			  Anet_A8_extruder_End_Cable_Chain.stl, AnetA8_Ybed_Thin_Wall_Cable_Chain.stl,
