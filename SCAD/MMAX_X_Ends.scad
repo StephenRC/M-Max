@@ -2,7 +2,7 @@
 // MMAX X Ends.scad - http://creativecommons.org/licenses/by-sa/3.0/
 //////////////////////////////////////////////////////////////////////////////////////////
 // created 3/1/16
-// last update 12/10/18
+// last update 12/15/18
 //////////////////////////////////////////////////////////////////////////////////////////
 // 3/1/16	- SCAD version of zClamp_4off.stl & x-bracket_1off.stl
 //			  at http://www.thingiverse.com/thing:12609
@@ -19,6 +19,7 @@
 // 9/28/18	- Finally found where the extra plastic was coming from in the MTSSR8 slot (connector flange cube)
 // 9/30/18	- Added a screw clamp to hold the MTSSR8 in the socket, hole sized for 3mm screw with a tight fit.
 // 12/10/18	- Change motor mount to slotted for belt adjustment
+// 12/15/18	- Removed znut notch
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Notes:
 // Clamps can be made with PLA
@@ -78,8 +79,8 @@ BearingShellOffset=16;
 /////////////////////////////////////////////////////////////////////
 
 //split_clamp(0,1,1,1);
-//full_clamp(1,1); // arg 1: 0-one clamp (left),1-two clamps,2-right clamp; arg2: 0-no motor mount,1-motor mount,
-motormount();
+full_clamp(1,0); // arg 1: 0-one clamp (left),1-two clamps,2-right clamp; arg2: 0-no motor mount,1-motor mount,
+//motormount();
 // 2-to test the fit of the motor mount to clamp
 //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -149,12 +150,12 @@ module clamp(Bearing=0,mks=0,mits=0,Full=0,Left=0) {  // this version is now bro
 				translate([length/2-znutw/2-0.7,z_drv,0]) znutshell(mits);
 				translate([37,30,-10]) cylinder(h=10,d=screw3t);
 				translate([length/2-znutw/2-0.7,z_drv,0]) znutscrew(mits);
-				if(Full) {
-					color("brown") hull() {
-						translate([24,30,4]) rotate([20,0,0]) cube([MTSSR8l+4,15,1]);
-						translate([24,30,-5]) rotate([-20,0,0]) cube([MTSSR8l+4,15,1]);
-					}
-				}
+				//if(Full) {  // notch znut hole on side to let it snap in
+					//color("brown") hull() {
+					//	translate([24,30,4]) rotate([20,0,0]) cube([MTSSR8l+4,15,1]);
+					//	translate([24,30,-5]) rotate([-20,0,0]) cube([MTSSR8l+4,15,1]);
+					//}
+				//}
 			}
 			connector(mks,Bearing,mits);
 			flange(mks,Bearing,mits);
@@ -350,7 +351,8 @@ module znutscrew(mits) { // z-nut section
 		translate([znutw/2- znutt/2,0,0]) rotate([0,90,0]) znut(); // slot for znut
 	} else {
 		translate([-3,0,0])rotate([0,90,0]) color("gray") cylinder(h=MTSSR8l+8,r= zscrew/2);
-		translate([0.5,0,0])rotate([0,90,0]) color("cyan") cylinder(h=MTSSR8l+1.6,r= MTSSR8d/2);
+		translate([1.5,0,0])rotate([0,90,0]) color("cyan") cylinder(h=MTSSR8l+31.6,r= MTSSR8d/2);
+		// was translate([0.5,0,0])rotate([0,90,0]) color("cyan") cylinder(h=MTSSR8l+1.6,r= MTSSR8d/2);
 	}
 }
 
