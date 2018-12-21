@@ -132,7 +132,10 @@ module Belt_Holder() {
 		translate([-8,0,0]) color("plum") cubeX([40.5,34,5],2);
 		translate([12,16,0]) Belt_Mount_Holes();
 	}
-	translate([-7,9,4.5]) beltClamp();
+	difference() {
+		translate([-7,3,4.5]) beltClamp();
+		translate([12,16,7]) Belt_Mount_Holes();
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

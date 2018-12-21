@@ -23,7 +23,7 @@ $fn=100;
 
 //top();
 //bottom();
-two(0); // 0 = bottom; 1 = top
+two(1); // 0 = bottom; 1 = top
 //clamp();
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -50,6 +50,7 @@ module top() // top z support
 			color("white") import("original stl/Z ROD MOUNT BOTTOM.stl");
 			translate([35,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
 			translate([45,-26,25]) newrod(); // resize rod notch
+			translate([45,49,20]) color("red") cube([extr20,extr20,4*extr20],true);
 		}
 		difference() {
 			translate([55,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
@@ -118,12 +119,12 @@ module do_fillets(JustInner=0) { // round over the new hole
 module topbracket()  // for top horizontal brace between left & right sides
 {
 	difference() {
-		translate([45,46.5,41.75]) minkowski() {
-			cube([1.25*extr20,extr20,1.5*extr20],true);
+		translate([45,46.5,41.75]) color("pink") minkowski() {
+			cube([extr20+2,extr20,extr20],true);
 			cylinder(r=2,h=1,$fn=100);
 		}
-		translate([45,49,30]) cube([extr20,extr20,3*extr20],true);
-		translate([25,48.5,49]) rotate([0,90,0]) cylinder(h = 2*extr20, r = screw5/2, $fn = 50);
+		translate([45,49,20]) color("red") cube([extr20,extr20,4*extr20],true);
+		translate([25,48.5,43]) rotate([0,90,0]) color("black") cylinder(h = 2*extr20, r = screw5/2, $fn = 50);
 	}
 
 }
