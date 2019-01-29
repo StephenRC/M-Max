@@ -1,9 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Optical-Endstop.scad
 // created: 9/30/2018
-// last update: 12/20/18
+// last update: 12/26/18
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 12/20/18	- Thickened makerslide mount
+// 12/26/18	- made part hitting the microswitch wider
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Note: not all plastics block IR, you may need to paint the flag
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,21 +16,21 @@ layer=0.2;
 
 // Optical endstop
 //X_flag();	// defaults to 35 long, 15 high
-//translate([40,20,0]) rotate([90,0,0]) // rotate to make it printable without supports
+//translate([40,20,0]) rotate([90,0,0]) // rotate to make it printable without supports, slic3r PE doesn't need this
 //	X_ms_optical(screw5);
 
 // microswitch endstop
-//rotate([0,90,0]) // rotate to make it printable without supports
+//rotate([0,90,0]) // rotate to make it printable without supports, slic3r PE doesn't need this
 	X_ms_microswitch(screw5);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module X_flag(Length=35,Height=15) {
-	difference() {
+	difference() { // flag
 		color("cyan") cubeX([Length,10,2],1);
 		flag_mounting_hole();
 	}
-	difference() {
+	difference() { // spacer
 		color("red") cubeX([10,10,Height],1);
 		flag_mounting_hole();
 	}
@@ -49,7 +50,7 @@ module X_ms_optical(Screw=screw5hd) {
 			translate([0,21,10]) cubeX([screw5hd+1,8,1],1);
 			translate([0,0,37]) cubeX([screw5hd+1,4,1],1);
 		}
-		angled_ziptie_hole();
+		angled_ziptie_hole(); // reduce the plastic needed to print
 	}
 	ms_mount(Screw); // mount to makerslide		
 	difference() { // horizontal bar
@@ -90,7 +91,7 @@ module X_ms_microswitch(Screw=screw5) {
 		}
 		angled_ziptie_hole();
 	}
-	translate([0,0,35]) color("cyan") cubeX([screw5hd+1,1,10],1);
+	translate([0,0,35]) color("cyan") cubeX([screw5hd+8,1,10],1);
 	ms_mount(Screw); // mount to makerslide		
 	translate([46,34,-0.3]) rotate([0,0,90]) ms_notch(Screw);
 }

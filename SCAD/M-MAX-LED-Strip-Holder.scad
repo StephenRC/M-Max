@@ -12,27 +12,27 @@ include <inc/screwsizes.scad>
 $fn=100;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//strip(300);
+strip(200);
 //translate([20,0,-4]) endclamp();
 //translate([43,40,-4]) mirror() endclamp();
-snapin(200);
+//snapin(200);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module strip(Length=300) {
-	color("blue") cubeX([4,Length,20],2);
+	color("blue") cubeX([4,Length+40,20],2);
 	difference() {
-		color("red") cubeX([20,Length,4],2);
+		color("red") cubeX([20,Length+40,4],2);
 		translate([10,10,-2]) color("cyan") cylinder(h=10,d=screw5);
 		translate([10,10,2]) color("plum") cylinder(h=10,d=screw5hd);
-		translate([10,Length-10,-2]) color("pink") cylinder(h=10,d=screw5);
-		translate([10,Length-10,2]) color("gold") cylinder(h=10,d=screw5hd);
+		translate([10,Length+30,-2]) color("pink") cylinder(h=10,d=screw5);
+		translate([10,Length+30,2]) color("gold") cylinder(h=10,d=screw5hd);
 	}
 	45filler(Length);
 }
 
 module 45filler(Length) {
-		translate([0,20,10]) rotate([0,45,0]) color("white") cubeX([15,Length-40,4],2);
+		translate([0,20,10]) rotate([0,45,0]) color("white") cubeX([15,Length,4],2);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

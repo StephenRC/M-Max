@@ -21,7 +21,9 @@
 // 12/10/18	- Change motor mount to slotted for belt adjustment
 // 12/15/18	- Removed znut notch, the MTSSR8 now slides in
 // 12/21/18	- Began TR8 leadscrew version
-// 12/23/18	- TR8 version replaces the hex nut verion
+// 12/23/18	- TR8 version replaces the hex nut version
+// 12/26/18	- Slide in MTSSR8 version fits fine, the M3 screw isn't needed.   Leaving the M3 tappable screw hole in case
+//			  it's needed in the future.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Notes:
 // Clamps can be made with PLA
