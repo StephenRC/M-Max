@@ -2,9 +2,10 @@
 // M-MAX-LED-Strip-Holder.scad -  hold a led strip
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 8/23/2018
-// Last Update: 8/27/18
+// Last Update: 1/31/18
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 8/27/18	- Added a 45 degree floor for the led strip
+// 1/31/18	- stripclip() to hold the led strip, since the sticky tape isn't sticky on mine
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <inc/cubeX.scad>
 include <inc/screwsizes.scad>
@@ -12,90 +13,33 @@ include <inc/screwsizes.scad>
 $fn=100;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-strip(200);
-//translate([20,0,-4]) endclamp();
-//translate([43,40,-4]) mirror() endclamp();
-//snapin(200);
+strip(200,screw5);
+stripclip(3,90,screw3); // something to hold the led strip, since the sticky tape isn't sticky on mine
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module strip(Length=300) {
+module strip(Length=300,Screw=screw5) {
 	color("blue") cubeX([4,Length+40,20],2);
 	difference() {
 		color("red") cubeX([20,Length+40,4],2);
-		translate([10,10,-2]) color("cyan") cylinder(h=10,d=screw5);
-		translate([10,10,2]) color("plum") cylinder(h=10,d=screw5hd);
-		translate([10,Length+30,-2]) color("pink") cylinder(h=10,d=screw5);
-		translate([10,Length+30,2]) color("gold") cylinder(h=10,d=screw5hd);
+		translate([10,10,-2]) color("cyan") cylinder(h=10,d=Screw);
+		translate([10,10,3]) color("plum") cylinder(h=10,d=screw5hd);
+		translate([10,Length+30,-2]) color("pink") cylinder(h=10,d=Screw);
+		translate([10,Length+30,3]) color("gold") cylinder(h=10,d=screw5hd);
 	}
-	45filler(Length);
-}
-
-module 45filler(Length) {
-		translate([0,20,10]) rotate([0,45,0]) color("white") cubeX([15,Length,4],2);
+	translate([0,20,10]) rotate([0,45,0]) color("white") cubeX([15,Length,4],2); // 45 degree surface for led
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-module endclamp() {
-	difference() {
-		translate([4,0,4]) color("gray") cubeX([15,15,4],2);
-		translate([11,7,-2]) color("pink") cylinder(h=10,d=screw5);
-		translate([11,7,6]) color("gold") cylinder(h=10,d=screw5hd);
-		translate([12,23,9]) rotate([90,0,0]) color("silver") cylinder(h=20,d=5);
-		translate([12,26,9]) rotate([90,0,0]) color("silver") cylinder(h=10,d=10);
-	}
-	difference() {
-		translate([12,33,9]) rotate([90,0,0]) color("black") cylinder(h=20,d=15);
-		translate([4,10,-1.5]) color("gray") cube([20,24,6]);
-		translate([-1,18,8.2+2]) rotate([0,45,0]) color("yellow") cube([20,24,8]); // 8.2 Z is angled surface
-		translate([12,23,9]) rotate([90,0,0]) color("silver") cylinder(h=20,d=5);
-		translate([12,26,9]) rotate([90,0,0]) color("silver") cylinder(h=10,d=10);
-	}
-}
-
-module snapin(Length=10) {
-// slot is: 6mm wide x 2mm thick
-	difference() {
-		color("cyan") hull() {
-			translate([1.5,0,3]) cube([4,Length,1]);
-			translate([0.2,0,0]) cube([6.6,Length,1]);
+module stripclip(Qty=1,Offset=0,ZipTie=screw3t) {
+	for(a=[0:Qty-1]) {
+		difference() {
+			translate([0,30+Offset*a,0]) color("yellow") cubeX([20,5,20],2);
+			translate([8,35+Offset*a,8]) rotate([90,0,0]) color("plum") cylinder(h=10,d=11);
+			translate([5,32.5+Offset*a,8]) color("gray") cylinder(h=20,d=ZipTie);
+			translate([5,32.5+Offset*a,5]) rotate([0,90,0]) color("lightgray") cylinder(h=20,d=ZipTie);
 		}
-		tieholes(Length);
-		translate([3,-5,-2]) cube([1,Length+10,10]);
-	}
-	difference() {
-		translate([1.5,0,-3]) color("yellow") cube([4,Length,3]);
-		translate([3,-5,-4]) cube([1,Length+10,10]);
-		tieholes(Length);
-	}
-	difference() {
-		translate([-6,0,-5.5]) color("gray") cubeX([20,Length,3],2);
-		tieholes(Length);
-	}
-	difference() {
-		translate([-6.84,0,-4.4]) rotate([0,45,0]) color("red") cubeX([15.5,Length,14.5],2);
-		translate([-15,-5,-5]) color("blue") cubeX([40,Length+10,20],2);
-		tieholes(Length);
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module tieholes(Length) {
-	if(Length <= 10) {
-		translate([-20,Length/2,-4.5]) rotate([0,90,0]) color("black") cylinder(h=50,d=3.5);
-	}
-	if(Length > 10) {
-		translate([-20,10,-4.5]) rotate([0,90,0]) color("black") cylinder(h=50,d=3);
-		translate([-20,Length-10,-4.5]) rotate([0,90,0]) color("blue") cylinder(h=50,d=3.5);
-	}
-	if(Length > 30) {
-			translate([-20,Length/2,-4.5]) rotate([0,90,0]) color("pink") cylinder(h=50,d=3.5);
-	}
-	if(Length > 100) {
-			translate([-20,Length/4+4,-4.5]) rotate([0,90,0]) color("gray") cylinder(h=50,d=3.5);
-			translate([-20,3*Length/4-4,-4.5]) rotate([0,90,0]) color("plum")cylinder(h=50,d=3.5);
 	}
 }
 
