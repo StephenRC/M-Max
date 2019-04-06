@@ -1,18 +1,21 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 // MMAX-Z-Support.scad - modifiy the TMAX Z supports
 // created: 2/16/14
-// last modified: 8/29/18
+// last modified: 4/4/19
 /////////////////////////////////////////////////////////////////////////////////////////
 // 8/29/18	- Added make two top or bottom
+// 4/4/19	- Removed notch under connecting extrusion mount, replaced minkowski() with cubeX()
+//			- fixed nut holes
 ////////////////////////////////////////////////////////////////////////////////////////
 include <inc/configuration.scad>
 include <inc/screwsizes.scad>
 include <inc/corner-tools.scad>
 // https://www.myminifactory.com/it/object/3d-print-tools-for-fillets-and-chamfers-on-edges-and-corners-straight-and-or-round-45862
 // by Ewald Ikemann
+use <inc/cubex.scad>
 ////////////////////////////////////////////////////////////////////////////////////////
 zrod = 10;			// z rod size
-extr20 = 21;		// size of 2020 plus some clearance
+extr20 = 20.5;		// size of 2020 plus some clearance
 screw_dist = 20;	// distance between the clamp screw holes
 length = 30;		// clamp length
 width = 9;			// clamp width
@@ -48,13 +51,14 @@ module top() // top z support
 	translate([-47,0,0]) {
 		difference() {
 			color("white") import("original stl/Z ROD MOUNT BOTTOM.stl");
-			translate([35,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
 			translate([45,-26,25]) newrod(); // resize rod notch
-			translate([45,49,20]) color("red") cube([extr20,extr20,4*extr20],true);
 		}
 		difference() {
+			filloldnuts();
+			translate([35,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
 			translate([55,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
-			translate([45,-26,25]) newrod(); // clear rod notch
+			translate([34.8,-18,50]) rotate([90,0,0]) color("gray") cylinder(h=10,d=screw5+0.1);
+			translate([54.8,-18,50]) rotate([90,0,0]) color("lightgray") cylinder(h=10,d=screw5+0.1);
 		}
 		topbracket(); // add mount for a brace between left & right tops
 		translate([28,-50,25.9]) clamp();
@@ -62,6 +66,19 @@ module top() // top z support
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
+
+module filloldnuts() {
+	color("plum") hull() {
+		translate([35,-18,50]) rotate([90,0,0]) cylinder(h=3,r=7);
+		translate([35,-22,50]) rotate([90,0,0]) cylinder(h=1,r=5);
+	}
+	color("cyan") hull() {
+		translate([55,-18,50]) rotate([90,0,0]) cylinder(h=3,r=7);
+		translate([55,-22,50]) rotate([90,0,0]) cylinder(h=1,r=5);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module bottom() { // bottom z support
 	translate([45,0,0]) {
@@ -119,12 +136,9 @@ module do_fillets(JustInner=0) { // round over the new hole
 module topbracket()  // for top horizontal brace between left & right sides
 {
 	difference() {
-		translate([45,46.5,41.75]) color("pink") minkowski() {
-			cube([extr20+2,extr20,extr20],true);
-			cylinder(r=2,h=1,$fn=100);
-		}
-		translate([45,49,20]) color("red") cube([extr20,extr20,4*extr20],true);
-		translate([25,48.5,43]) rotate([0,90,0]) color("black") cylinder(h = 2*extr20, r = screw5/2, $fn = 50);
+		translate([30.5,38.5,26]) color("pink") cubeX([extr20+7,extr20,1.5*extr20],2);
+		translate([44.3,52,2*extr20]) color("red") cube([extr20,extr20,2.5*extr20],true);
+		translate([25,49,44]) rotate([0,90,0]) color("black") cylinder(h = 2*extr20, r = screw5/2, $fn = 50);
 	}
 
 }
@@ -132,11 +146,10 @@ module topbracket()  // for top horizontal brace between left & right sides
 //////////////////////////////////////////////////////////////////////////
 
 module nuts() { // resize nut holes for 5mm
-	difference() {
-		color("plum") cylinder(h=5,r=7,$fn=100);
-		translate([0,0,0]) color("blue") cylinder(h=10,d=screw5);
+	//difference() {
+	//	translate([0,0,0]) color("blue") cylinder(h=10,d=screw5);
 		translate([0,0,-7]) color("red") nut(nut5,10,horizontal=false);
-	}
+	//}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -151,16 +164,16 @@ module clamp() { // clamp to z rod
 	difference() {
 		color("white") minkowski() {
 			cube([length,width,thickness]);
-			cylinder(h=1,r=3,$fn=100);
+			cylinder(h=1,r=3);
 		}
 		// mounting screws
-		translate([length/2-screw_dist/2,width/2,-1]) color("red") cylinder(h=thickness+3,r=screw5/2,$fn=100);
-		translate([length/2+screw_dist/2,width/2,-1]) color("blue") cylinder(h=thickness+3,r=screw5/2,$fn=100);
+		translate([length/2-screw_dist/2,width/2,-1]) color("red") cylinder(h=thickness+3,r=screw5/2);
+		translate([length/2+screw_dist/2,width/2,-1]) color("blue") cylinder(h=thickness+3,r=screw5/2);
 		// rod
-		translate([length/2,width+5,-0.5]) rotate([90,0,0]) color("plum") cylinder(h=width+10,r=zrod/2,$fn=100);
+		translate([length/2,width+5,-0.5]) rotate([90,0,0]) color("plum") cylinder(h=width+10,r=zrod/2);
 		// countersinks for screws
-		translate([length/2-screw_dist/2,width/2,thickness-2]) color("gray") cylinder(h=thickness+3,r=screw5hd/2,$fn=100);
-		translate([length/2+screw_dist/2,width/2,thickness-2]) color("black") cylinder(h=thickness+3,r=screw5hd/2,$fn=100);
+		translate([length/2-screw_dist/2,width/2,thickness-2]) color("gray") cylinder(h=thickness+3,r=screw5hd/2);
+		translate([length/2+screw_dist/2,width/2,thickness-2]) color("black") cylinder(h=thickness+3,r=screw5hd/2);
 	}
 }
 
