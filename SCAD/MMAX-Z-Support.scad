@@ -1,11 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 // MMAX-Z-Support.scad - modifiy the TMAX Z supports
 // created: 2/16/14
-// last modified: 4/4/19
+// last modified: 4/6/19
 /////////////////////////////////////////////////////////////////////////////////////////
 // 8/29/18	- Added make two top or bottom
 // 4/4/19	- Removed notch under connecting extrusion mount, replaced minkowski() with cubeX()
 //			- fixed nut holes
+// 4/6/19	- Rotated clamps to print on their side, new clamp_v2() using cubeX()
 ////////////////////////////////////////////////////////////////////////////////////////
 include <inc/configuration.scad>
 include <inc/screwsizes.scad>
@@ -17,17 +18,23 @@ use <inc/cubex.scad>
 zrod = 10;			// z rod size
 extr20 = 20.5;		// size of 2020 plus some clearance
 screw_dist = 20;	// distance between the clamp screw holes
-length = 30;		// clamp length
-width = 9;			// clamp width
-thickness = 8;		// z clamp thickness
+length = 33;		// clamp length
+width = 12;			// clamp width
+thickness = 9;		// z clamp thickness
 /////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
 /////////////////////////////////////////////////////////////////////////////////////////
 
 //top();
 //bottom();
-two(1); // 0 = bottom; 1 = top
-//clamp();
+//two(1); // 0 = bottom; 1 = top
+Clamps(2);
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+module Clamps(Qty=1) {
+	for(a=[0:Qty-1]) translate([0,a*(thickness+3),0]) rotate([90,0,0]) clamp_v2();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -61,7 +68,7 @@ module top() // top z support
 			translate([54.8,-18,50]) rotate([90,0,0]) color("lightgray") cylinder(h=10,d=screw5+0.1);
 		}
 		topbracket(); // add mount for a brace between left & right tops
-		translate([28,-50,25.9]) clamp();
+		translate([28,-50,25.9]) rotate([90,0,0]) clamp_v2();
 	}
 }
 
@@ -97,7 +104,7 @@ module bottom() { // bottom z support
 			translate([45,-26,25]) newrod(); // clear rod notch
 		}
 		bottomholeouter();
-		translate([28,-50,25.9]) clamp();
+		translate([28,-50,25.9]) clamp_v2();
 	}
 }
 
@@ -146,10 +153,7 @@ module topbracket()  // for top horizontal brace between left & right sides
 //////////////////////////////////////////////////////////////////////////
 
 module nuts() { // resize nut holes for 5mm
-	//difference() {
-	//	translate([0,0,0]) color("blue") cylinder(h=10,d=screw5);
-		translate([0,0,-7]) color("red") nut(nut5,10,horizontal=false);
-	//}
+	translate([0,0,-7]) color("red") nut(nut5,10,horizontal=false);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -177,5 +181,20 @@ module clamp() { // clamp to z rod
 	}
 }
 
+///////////////////////////////////////////////////////////////////////
+
+module clamp_v2() { // clamp to z rod
+	difference() {
+		color("white") cubeX([length,width,thickness],2);
+		// mounting screws
+		translate([length/2-screw_dist/2,width/2,-1]) color("red") cylinder(h=thickness+3,r=screw5/2);
+		translate([length/2+screw_dist/2,width/2,-1]) color("blue") cylinder(h=thickness+3,r=screw5/2);
+		// rod
+		translate([length/2,width+5,-0.5]) rotate([90,0,0]) color("plum") cylinder(h=width+10,r=zrod/2);
+		// countersinks for screws
+		translate([length/2-screw_dist/2,width/2,thickness-2]) color("gray") cylinder(h=thickness+3,r=screw5hd/2);
+		translate([length/2+screw_dist/2,width/2,thickness-2]) color("black") cylinder(h=thickness+3,r=screw5hd/2);
+	}
+}
 
 /////////////////////// end of mmax z support.scad ////////////////////////////////////////////////////////////////
