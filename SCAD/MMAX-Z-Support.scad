@@ -1,12 +1,13 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 // MMAX-Z-Support.scad - modifiy the TMAX Z supports
 // created: 2/16/14
-// last modified: 4/6/19
+// last modified: 4/27/19
 /////////////////////////////////////////////////////////////////////////////////////////
 // 8/29/18	- Added make two top or bottom
 // 4/4/19	- Removed notch under connecting extrusion mount, replaced minkowski() with cubeX()
-//			- fixed nut holes
+//			- fixed nut holes in top()
 // 4/6/19	- Rotated clamps to print on their side, new clamp_v2() using cubeX()
+// 4/27/19	- fixed nut holes in bottom()
 ////////////////////////////////////////////////////////////////////////////////////////
 include <inc/configuration.scad>
 include <inc/screwsizes.scad>
@@ -26,9 +27,9 @@ $fn=100;
 /////////////////////////////////////////////////////////////////////////////////////////
 
 //top();
-//bottom();
+bottom();
 //two(1); // 0 = bottom; 1 = top
-Clamps(2);
+//Clamps(2);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -60,13 +61,7 @@ module top() // top z support
 			color("white") import("original stl/Z ROD MOUNT BOTTOM.stl");
 			translate([45,-26,25]) newrod(); // resize rod notch
 		}
-		difference() {
-			filloldnuts();
-			translate([35,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
-			translate([55,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
-			translate([34.8,-18,50]) rotate([90,0,0]) color("gray") cylinder(h=10,d=screw5+0.1);
-			translate([54.8,-18,50]) rotate([90,0,0]) color("lightgray") cylinder(h=10,d=screw5+0.1);
-		}
+		replace_nuts();
 		topbracket(); // add mount for a brace between left & right tops
 		translate([28,-50,25.9]) rotate([90,0,0]) clamp_v2();
 	}
@@ -85,6 +80,24 @@ module filloldnuts() {
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module replace_nuts() {
+	difference() {
+		filloldnuts();
+		translate([35,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
+		translate([55,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
+		translate([34.8,-18,50]) rotate([90,0,0]) color("gray") cylinder(h=10,d=screw5+0.1);
+		translate([54.8,-18,50]) rotate([90,0,0]) color("lightgray") cylinder(h=10,d=screw5+0.1);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+module nuts() { // resize nut holes for 5mm
+	translate([0,0,-7]) color("red") nut(nut5,10,horizontal=false);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module bottom() { // bottom z support
@@ -95,14 +108,7 @@ module bottom() { // bottom z support
 			bottomhole(); // resize hole to allow a coupler to fit through
 			do_fillets(1); // round over where the new hole is
 		}
-		difference() {
-			translate([35,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
-			translate([45,-26,25]) newrod(); // clear rod notch
-		}
-		difference() {
-			translate([55,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
-			translate([45,-26,25]) newrod(); // clear rod notch
-		}
+		replace_nuts();
 		bottomholeouter();
 		translate([28,-50,25.9]) clamp_v2();
 	}
@@ -152,11 +158,6 @@ module topbracket()  // for top horizontal brace between left & right sides
 
 //////////////////////////////////////////////////////////////////////////
 
-module nuts() { // resize nut holes for 5mm
-	translate([0,0,-7]) color("red") nut(nut5,10,horizontal=false);
-}
-
-/////////////////////////////////////////////////////////////////////////////
 
 module newrod() { // resize the notch for the z rod
 	color("black") cylinder(h=40, r = zrod/2, $fn = 100);

@@ -31,7 +31,7 @@ module beltLoop(){ // the loop that holds the belt
 			translate([13.5,5.5,0]) cylinder(h = 12, r1 = 4, r2 = 4);
 		}
 	}
-	 color("gray") cube([8,4,12]); // belt exit slot
+	 color("gray") cube([8,2.5,12]); // belt exit slot
 }
 
 
@@ -45,7 +45,7 @@ module beltOpening(){  // both belt loops
 module platform(){
 	translate([8.5,-1,-0])  color("plum") cube([33,platformHeight,10]);
 	difference(){ // mount to y frame/bed
-		translate([0,0,0])  color("cyan") cube([50,4,10]);
+		translate([0,-1,0])  color("cyan") cube([50,4,10]);
 		translate([4.5,-1,6]) rotate([-90,0,0])  color("black") cylinder(h=30, r=1.7); //, $fn=100);
 		translate([45.5,-1,6]) rotate([-90,0,0])  color("salmon") cylinder(h=30, r=1.7); //, $fn=100);
 	}

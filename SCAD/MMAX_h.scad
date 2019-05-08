@@ -64,8 +64,6 @@ bltdepth = -2;	// a recess to adjust the z position to keep the retracted pin fr
 // adjust the BLTouch vars as necessary
 // The top mounting through hole works for the old MakerGear hotend (which is what I have)
 // J-head and the E3dV6 - not tested
-// -------------------------------------
-belt_adjust = 29;	// belt clamp hole position (increase to move rearward)
 //---------------------------------------------------------------------------------------
 // following are taken from https://miscsolutions.wordpress.com/mini-height-sensor-board
 hole1x = 2.70;
