@@ -32,7 +32,7 @@ module mount2(type,width,length,thickness,side_dx,side_dy) {
 		cubeX([length,width,thickness],2);
 		boardholes(screw3t,thickness,side_dx,side_dy,length,width);
 		if(type==0)	zip(width,length,thickness);
-		if(type==1) mounthole(screw5,width,length,thickness);
+		if(type==1) mounthole(screw3,width,length,thickness);
 		if(type==2) {
 			mounthole(screw5,width,length,thickness);
 			zip(width,length,thickness);
@@ -70,7 +70,7 @@ module boardholes(Screw,thickness,side_dx,side_dy,length,width) { // holes for m
 ///////////////////////////////////////////////////////////////////////////////
 
 module mounthole(Screw,width,length,thickness) { // hole to mount it to 2020
-	translate([length/2,width/2,-2]) cylinder(h=thickness+5,r=screw5/2);
+	translate([length/2,width/2,-2]) cylinder(h=thickness+5,d=Screw);
 	// countersink the screw
 	translate([length/2,width/2,thickness-1]) cylinder(h=thickness+5,r=screw5hd/2);
 	

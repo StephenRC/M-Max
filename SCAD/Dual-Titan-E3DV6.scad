@@ -24,21 +24,22 @@ $fn=50; // Compiling does take a while at 100, even with a 1950X, 32GB & 1080ti
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 AdjustE3DV6_UD = 0; // move the e3dv groove mounts in opposite directions for the bowden setup
 					// if one of the hotends is 0.01 too high, then set AdjustE3DV6_UD by half: 0.005
-					// if using genuine e3dv6 hotends, no adjustment is needed
+					// if using genuine e3dv6 hotends, adjustment isn't needed
 // these to be adjusted when it's finally printed:
 IR_Adapter_Length = 10;	// set position of dc42's ir adapter
 Shift_BL_Touch = 10;	// move bl_touch up/down
 Shift_Proximity = 10;	// move proximity up/down
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//titan(2,0,3,0);	// first arg is quanity of 1 or 2, second arg is 0 no bowden, 1 for bowden (default is 1, no bowden, no sensor)
-				// third arg is for sensor (0-ir,1=blt,2=blt recessed,3=proximity,4=none
-				// fourth arg: 0-no titan bracket and fanduct; 1-bracket and fanduct (openscad don't like the stls)
+//titan(2,0,3,0);	// 1st arg is quanity of 1 or 2; 2nd arg is 0 no bowden, 1 for bowden
+					// (default is 1, no bowden, no sensor); 3rd arg sensor: 0-ir,1=blt,2=blt recessed,
+					// 3=proximity,4=none; 4th arg: 0-no titan bracket and fanduct; 1-bracket and
+					// fanduct (openscad don't like the stls)
 //blt_mount(1);
-//newtitan(3,1,1);	// dual hotends that are closer together than the other
+newtitan(3,1);	// dual hotends that are closer together than the other
 				// 1st arg is for sensor (0-ir,1=blt,2=blt recessed,3=proximity,4=none
 				// 2nd arg: 0=no titan extruder mounts,1=titan extruder mounts
-bowden_titan(screw5);  // Titan extruder frame mount
+//bowden_titan(screw5);  // Titan extruder frame mount
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
