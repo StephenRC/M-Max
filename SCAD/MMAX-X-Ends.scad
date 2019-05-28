@@ -2,7 +2,7 @@
 // MMAX-X-Ends.scad - http://creativecommons.org/licenses/by-sa/3.0/
 //////////////////////////////////////////////////////////////////////////////////////////
 // created 3/1/16
-// last update 12/15/18
+// last update 5/27/19
 //////////////////////////////////////////////////////////////////////////////////////////
 // 3/1/16	- SCAD version of zClamp_4off.stl & x-bracket_1off.stl
 //			  at http://www.thingiverse.com/thing:12609
@@ -24,8 +24,11 @@
 // 12/23/18	- TR8 version replaces the hex nut version
 // 12/26/18	- Slide in MTSSR8 version fits fine, the M3 screw isn't needed.   Leaving the M3 tappable screw hole in case
 //			  it's needed in the future.
+// 5/27/19	- Fixed TR8 version and made the motor mount to mount on left side only, see Line 284, comment out the
+//			  if(!Left) to allow either side
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Notes:
+// Print full_clamps with a brim
 // Clamps can be made with PLA
 // Motormount should be ABS or better, since the X-motor can get hot
 // Set zrodd to the diameter of the smooth rod used for the z-axis
@@ -83,7 +86,7 @@ BearingShellOffset=16;
 /////////////////////////////////////////////////////////////////////
 
 //split_clamp(0,1,1,1);
-full_clamp(1,1,1);	// arg 1: 0-one clamp (left),1-two clamps,2-right clamp; arg2: 0-no motor mount,1-motor mount,
+full_clamp(1,0,0);	// arg 1: 0-one clamp (left),1-two clamps,2-right clamp; arg2: 0-no motor mount,1-motor mount,
 					// 3rd arg: 1-MTSSR8 nut, 0-TR8 flange nut
 //motormount();
 // 2-to test the fit of the motor mount to clamp
@@ -99,7 +102,7 @@ module full_clamp(Clamp=0,Mount=0,mits=0) {
 	if($preview) %translate([-70,-75,-16]) cube([200,200,5]);
 	if(Clamp == 0) rotate([90,0,0]) clamp(0,1,mits,1,0); 			// left side
 	if(Clamp == 1) { 											// both sides
-		rotate([90,0,0]) clamp(0,1,mits,1,0);
+		rotate([90,0,0]) clamp(0,1,mits,1,0);	// Bearing=0,mks=0,mits=0,Full=0,Left=0
 		translate([0,30,0]) rotate([90,0,0]) clamp(0,1,mits,1,1);
 	}
 	if(Clamp == 2) rotate([90,0,0]) clamp(0,1,mits,1,1);			// right side
@@ -160,22 +163,23 @@ module clamp(Bearing=0,mks=0,mits=0,Full=0,Left=0) {  // this version is now bro
 			difference() {
 				translate([length/2-znutw/2-0.5,z_drv,0]) znutshell(mits,1);
 				translate([37,30,-10]) color("black") cylinder(h=10,d=screw3t);
-				if(Left) translate([-length/2-znutw/2-0.7+42,z_drv,0]) znutscrew(mits);
-				else translate([-length/2-znutw/2-0.7+74.5,z_drv,0]) znutscrew(mits);
+				if(Left) rotate([0,180,0]) translate([-length/2-znutw/2-znutw,z_drv,0]) color("gray") znutscrew(mits);
+				else  translate([-length/2-znutw/2+74.5,z_drv,0]) znutscrew(mits);
 				if(!mits) {
-					translate([length/2-znutw/2-0.7,z_drv,0]) znutscrew(mits);
-					if(!mits) translate([length/2-znutw/2-0.7,z_drv,0]) rotate([0,90,0]) TR8_mounting_holes();
+					translate([length/2-znutw/2,z_drv,0]) color("white") znutscrew(mits);
+					if(!mits) translate([length/2-znutw/2,z_drv,0]) rotate([0,90,0]) TR8_mounting_holes();
 				}
 			}
 			difference() {
 				connector(mks,Bearing,mits);
-				translate([length/2-znutw/2-0.7,z_drv,0]) znutscrew(mits);
-				if(!mits) translate([length/2-znutw/2-0.7,z_drv,0]) rotate([0,90,0]) TR8_mounting_holes();
+				if(Left) translate([length/2-znutw/2+znutw,z_drv,0]) rotate([0,180,0]) znutscrew(mits);
+				else translate([length/2-znutw/2-2.7,z_drv,0]) znutscrew(mits);
+				if(!mits) translate([length/2-znutw/2,z_drv,0]) rotate([0,90,0]) TR8_mounting_holes();
 			}
 		}
 	}
 	difference() {
-		flange(mks,Bearing,mits);
+		flange(mks,Bearing,mits,Left);
 		if(!mits) translate([length/2-znutw/2-0.7,z_drv,0]) rotate([0,90,0]) TR8_mounting_holes();
 	}
 	cuthalf(Full); // remove everything below Z0
@@ -214,19 +218,19 @@ module spacers(Left=0) { // spacers for the makerslide side, so the clamps sit f
 	difference() {
 		translate([length/2-screw5/2+0.05,-0.5,9]) color("gray") cube([msw,msl,mst]);
 		translate([length/2-screw5/2-1,-5,4]) rotate([45,0,0]) color("pink") cube([msw+2,msl,mst+1]);
-		screwholes(1);
+		screwholes(1,Left);
 	}
 	if(Left) {
 		difference() {
 			translate([mks_slot-screw5-0.2,bolt_w/1.6-10,9]) color("blue") cube([msw,msl-13,mst]);
 			translate([mks_slot-screw5-1.2,bolt_w/1.6-15,4]) rotate([45,0,0]) color("gold") cube([msw+2,msl,mst]);
-			screwholes(1);
+			screwholes(1,Left);
 		}
 	} else {
 		difference() {
 			translate([mks_slot*3-screw5-0.2,bolt_w/1.6-10,9]) color("red") cube([msw,msl-13,mst]);
 			translate([mks_slot*3-screw5-1.2,bolt_w/1.6-15,4]) rotate([45,0,0]) color("brown") cube([msw+2,msl,mst]);
-			screwholes(1);
+			screwholes(1,Left);
 		}
 	}
 }
@@ -239,13 +243,14 @@ module cuthalf(Full=0) {	// remove everything below Z0
 
 //////////////////////////////////////////////////////////////////////
 
-module flange(mks,Bearing,mits) {  // the part that holds it together
+module flange(mks,Bearing,mits,Left=0) {  // the part that holds it together
 	difference() {
 		translate([0,zrodd/2,-(thickness)]) color("red") cube([length,bolt_w-0.7,thickness*2]);
-		screwholes(mks);
+		screwholes(mks,Left);
 		zrodhole();
 		bearings();	
-		translate([length/2-znutw/2-0.7,z_drv,0]) znutscrew(mits);
+		translate([length/2-znutw/2-0.7+znutw,z_drv,0])  rotate([0,180,0]) znutscrew(mits);
+		translate([length/2-znutw/2-0.7,z_drv,0])znutscrew(mits);
 		translate([length/2-znutw/2-0.7-40,z_drv,0]) znutscrew(mits);
 	}
 	translate([37,30,-9]) {
@@ -275,10 +280,10 @@ module motormountscrewholes() {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-module screwholes(mks=1) { // screw holes for makerslide or the round rod clamps
+module screwholes(mks=1,Left=0) { // screw holes for makerslide or the round rod clamps
 	translate([mks_slot-3,bolt_w/1.1,-znutt/2-5]) color("gray") cylinder(h=thickness*6,r=screw5/2);
 	translate([(mks_slot*2)-3,bolt_w/1.1,-znutt/2-5]) color("lightblue") cylinder(h=thickness*6,r=screw5/2);
-	translate([mks_slot*3-3,bolt_w/1.1,-znutt/2-5]) color("plum") cylinder(h=thickness*6,r=screw5/2);
+	if(!Left) translate([mks_slot*3-3,bolt_w/1.1,-znutt/2-5]) color("plum") cylinder(h=thickness*6,r=screw5/2);
 }
 
 ///////////////////////////////////////////////////////////////////////
