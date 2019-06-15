@@ -31,34 +31,15 @@ Shift_BL_Touch = 10;	// move bl_touch up/down
 Shift_Proximity = 10;	// move proximity up/down
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//titan(2,0,3,0);	// 1st arg is quanity of 1 or 2; 2nd arg is 0 no bowden, 1 for bowden
-					// (default is 1, no bowden, no sensor); 3rd arg sensor: 0-ir,1=blt,2=blt recessed,
-					// 3=proximity,4=none; 4th arg: 0-no titan bracket and fanduct; 1-bracket and
-					// fanduct (openscad don't like the stls)
-//blt_mount(1);
-newtitan(3,1);	// dual hotends that are closer together than the other
+DualTitan(3,1);	// dual hotends that are closer together than the other
 				// 1st arg is for sensor (0-ir,1=blt,2=blt recessed,3=proximity,4=none
 				// 2nd arg: 0=no titan extruder mounts,1=titan extruder mounts
 //bowden_titan(screw5);  // Titan extruder frame mount
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module titan(Qty = 1,Bowden=0,Sensor=4,Brackets=0) {
-	if(Bowden) titanbowden(Qty,Sensor);
-	else {
-		//if($preview) translate([0,0,-31]) %titanbracket(Qty); // show the titan mounts
-		if($preview) translate([-100,-50,-5]) %cube([200,200,5]); // show 200x200 platform
-		mountingblock(Qty,20,10);
-		if(Brackets) {
-			translate([-40,0,0]) titanbracket(1); // openscad dosen't like two of them
-			translate([-35,135,0]) fanduct(Qty);
-		}
-	}
-}
+//blt_mount(1);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module newtitan(Sensor=0,Extruders=0) {
+module DualTitan(Sensor=0,Extruders=0) {
 	if($preview) %translate([-100,-100,-5]) cube([200,200,5]);
 	translate([33,30,5]) rotate([0,-90,0]) dualmountingblock(Sensor,Extruders);
 }
@@ -91,17 +72,17 @@ module mountingblock(Qty=1,X=0,Y=0,Z=0,TMountholes=1) {
 
 module dualmountingblock(Sensor,Extruders) {
 	difference() {
-		translate([-5,-30,33]) newbracketmount(0);
-		translate([30,0,33]) NewCarriageMount();
+		translate([-5,-30,33]) BracketMount(0);
+		translate([30,0,33]) CarriageMount();
 		bowden_hotend_mount();
 	}
-	Newtitanbowden(2,Sensor,Extruders);
+	TitanBowden(2,Sensor,Extruders);
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module newbracketmount(TMountholes=0) {
+module BracketMount(TMountholes=0) {
 	difference() {
 		color("cyan") cubeX([60,80,8],2);
 		if(TMountholes) {
@@ -142,7 +123,7 @@ module bracketmount(TMountholes) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module NewCarriageMount() { // four mounting holes
+module CarriageMount() { // four mounting holes
 	// lower
 	translate([mount_bolt_seperation/2,0,-5]) color("pink") cylinder(h = 18, r = screw4/2);
 	translate([mount_bolt_seperation/2,0,6]) color("white") nut(m3_nut_diameter,14);
@@ -170,13 +151,6 @@ module CarriageMount() { // four mounting holes
 	translate([-mount_bolt_seperation/2,mount_bolt_seperation,6]) color("white") nut(m3_nut_diameter,14);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module titanbracket(Qty) {	// render completely fails with two of them
-	 translate([0,58,0]) import("SE_Titan_i3mk2_-_extruder_mount_v1.1.stl");
-	if(Qty ==2)import("SE_Titan_i3mk2_-_extruder_mount_v1.1.stl");
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module fanduct(Qty) {
@@ -186,7 +160,7 @@ module fanduct(Qty) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module Newtitanbowden(Dual=2,Sensor=0,Extruders) { // defaults to two bowden hotends
+module TitanBowden(Dual=2,Sensor=0,Extruders) { // defaults to two bowden hotends
 	if(Dual == 2) { // two bowden hotends
 		if(Extruders) {
 			translate([-5,-100,20]) rotate([0,90,0]) bowden_titan(screw5);  // Titan extruder frame mount

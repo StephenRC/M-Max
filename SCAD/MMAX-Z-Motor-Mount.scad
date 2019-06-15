@@ -39,7 +39,7 @@ module twomounts(X=0,Y=0,Z=0) { // two mounts
 
 module onemount(X=0,Y=0,Z=-52.75) { // just one mount
 	OldMount();
-	base(X,Y,-Z-52.75,New); // Z=-52.75 for original position
+	base(X,Y,-Z-52.75); // Z=-52.75 for original position
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -58,7 +58,7 @@ module top() // top z support
 {
 	translate([-47,0,0]) {
 		difference() {
-			color("white") import("original stl/Z ROD MOUNT BOTTOM.stl");
+			color("white") import("original stl/Z ROD MOUNT BOTTOM.stl", convexity=5);
 			translate([45,-26,25]) newrod(); // resize rod notch
 		}
 		replace_nuts();

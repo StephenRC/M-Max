@@ -83,6 +83,13 @@ mmthickness = 12;
 MTSSR8d = 15.5;	// outside diameter of Misumi MTSSR8
 MTSSR8l = 21.5;	// length of MTSSR8
 BearingShellOffset=16;
+//--------------------------------
+TR8_ht=34;
+TR8_clearance=0.5;
+TR8_small_dia=10.1+TR8_clearance;
+TR8_flange_dia=21.9+TR8_clearance;
+TR8_flange_thickness=4;
+TR8_mounting_holes_offset=16;
 /////////////////////////////////////////////////////////////////////
 
 //split_clamp(0,1,1,1);
@@ -163,7 +170,7 @@ module clamp(Bearing=0,mks=0,mits=0,Full=0,Left=0) {  // this version is now bro
 			difference() {
 				translate([length/2-znutw/2-0.5,z_drv,0]) znutshell(mits,1);
 				translate([37,30,-10]) color("black") cylinder(h=10,d=screw3t);
-				if(Left) rotate([0,180,0]) translate([-length/2-znutw/2-znutw,z_drv,0]) color("gray") znutscrew(mits);
+				if(Left) rotate([0,180,0]) translate([-length/2-znutw/2-1,z_drv,0]) color("gray") znutscrew(mits);
 				else  translate([-length/2-znutw/2+74.5,z_drv,0]) znutscrew(mits);
 				if(!mits) {
 					translate([length/2-znutw/2,z_drv,0]) color("white") znutscrew(mits);
@@ -183,7 +190,7 @@ module clamp(Bearing=0,mks=0,mits=0,Full=0,Left=0) {  // this version is now bro
 		if(!mits) translate([length/2-znutw/2-0.7,z_drv,0]) rotate([0,90,0]) TR8_mounting_holes();
 	}
 	cuthalf(Full); // remove everything below Z0
-	if(mks) spacers(Left);
+	if(mks) spacers(Left,mks,Bearing,mits);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -192,7 +199,7 @@ msw=screw5-0.1;	//    ""
 mst=2;			//    ""
 mss = 4.4; 		// spacer thickness
 
-module spacers(Left=0) { // spacers for the makerslide side, so the clamps sit flat
+module spacers(Left=0,mks=0,Bearing=0,mits=0) { // spacers for the makerslide side, so the clamps sit flat
 	if(Left) {
 		difference() {
 			color("yellow") hull() {
@@ -202,6 +209,7 @@ module spacers(Left=0) { // spacers for the makerslide side, so the clamps sit f
 			zrodhole();
 			translate([-1,0,0]) rotate([0,90,0]) sabb();
 			translate([mks_slot-3,bolt_w/1.1,-znutdt/2]) cylinder(h=thickness*5,r=screw5/2);
+			translate([length/2-znutw/2,z_drv,0]) color("white") znutscrew(mits);
 		}
 	} else {
 		difference() {
@@ -212,6 +220,7 @@ module spacers(Left=0) { // spacers for the makerslide side, so the clamps sit f
 			zrodhole();
 			translate([length-sabb_l,0,0]) rotate([0,90,0]) sabb();
 			translate([mks_slot*3-3,bolt_w/1.1,-znutdt/2]) cylinder(h=thickness*5,r=screw5/2);
+			rotate([0,180,0]) translate([-length/2-znutw/2,z_drv,0]) color("gray") znutscrew(mits);
 		}
 	}
 	// guide slot for makerslide
@@ -253,7 +262,7 @@ module flange(mks,Bearing,mits,Left=0) {  // the part that holds it together
 		translate([length/2-znutw/2-0.7,z_drv,0])znutscrew(mits);
 		translate([length/2-znutw/2-0.7-40,z_drv,0]) znutscrew(mits);
 	}
-	translate([37,30,-9]) {
+	if(mits) translate([37,30,-9]) {
 		difference() {
 			color("brown") hull() {
 				cylinder(h=1,d=screw3*2);
@@ -383,12 +392,6 @@ module znutscrew(mits) { // z-nut section
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TR8_ht = 34;
-TR8_small_dia=10.5;
-TR8_flange_dia=22.5;
-TR8_flange_thickness=4;
-TR8_mounting_holes_offset=16;
-
 module TR8_nut() {
 	color("cyan") cylinder(h=TR8_ht,d=TR8_small_dia,$fn=100); // center nut
 	color("pink") cylinder(h=TR8_flange_thickness,d=TR8_flange_dia,$fn=100);
@@ -399,9 +402,9 @@ module TR8_nut() {
 
 module TR8_mounting_holes() {
 	translate([0,TR8_mounting_holes_offset/2,-2]) color("blue") cylinder(h=30,d=screw3,$fn=100);
-	translate([0,-TR8_mounting_holes_offset/2,-2]) color("cyan") cylinder(h=30,d=screw3t,$fn=100);
+	translate([0,-TR8_mounting_holes_offset/2,-2]) color("cyan") cylinder(h=30,d=screw3,$fn=100);
 	translate([TR8_mounting_holes_offset/2,0,-2]) color("gray") cylinder(h=30,d=screw3,$fn=100);
-	translate([-TR8_mounting_holes_offset/2,0,-2]) color("black") cylinder(h=30,d=screw3t,$fn=100);
+	translate([-TR8_mounting_holes_offset/2,0,-2]) color("black") cylinder(h=30,d=screw3,$fn=100);
 }
 
 
