@@ -2,7 +2,7 @@
 // Power.scad - uses a pc style power socket with switch
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // created 7/4/2016
-// last update 5/28/19
+// last update 7/24/19
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 8/4/16	- Added cover
 // 8/5/16	- adjusted cover & 2020 mounting holes
@@ -13,6 +13,7 @@
 // 5/11/19	- Added a power cover with rounded edges and square edges
 // 5/16/19	- Merged power supply mount into here and renamed this file
 // 5/28/19	- Added a housing version with seperate power plug and switch, added M5 countersinks to housing
+// 7/24/19	- Adjusted cover() screw holes
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // NOTE: Version 0 uses Digi-Key Part number: CCM1666-ND : combined power socket and switch
 //		 http://www.digikey.com/product-detail/en/te-connectivity-corcom-filters/1609112-3/CCM1666-ND/758835
@@ -41,17 +42,18 @@ Length = 113;
 Width = 13;
 Thickness = 10;
 LayerThickness = 0.2;
-SocketPlugWidth=28.5;
-SocketPlugHeight=20;
+SocketPlugWidth=SwitchSocketWidth;
+SocketPlugHeight=SwitchSocketHeight;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//all(0,13,19.5,2,1,2,1);// 1st arg: flip; next 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
+all(0,19.5,13,2,1,2,1);// 1st arg: flip; next 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
 //testfit();	// print part of it to test fit the socket & 2020
 //switch();		// 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
 //powersupply_cover();
 //powersupply_cover_v2();
 //pbar(1,2);
-housing(1,13,19.5);
+//housing(1,13,19.5);
+//cover();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -145,25 +147,26 @@ module housing(Version=0,s_w=13,s_l=19.5) {
 		translate([SwitchSocketWidth,9,-9]) color("lightgreen") cylinder(h=10,d=screw5hd); // center 2020 mounting hole
 		// socket hole
 		if(Version==0) {
-			translate([SwitchSocketWidth/2+SocketShiftLR,SwitchSocketHeight/2+14+SocketShiftUD,-2]) color("cyan") cube([SwitchSocketWidth,SwitchSocketHeight,10]);
+			translate([SwitchSocketWidth/2+SocketShiftLR,SwitchSocketHeight/2+14+SocketShiftUD,-2])
+				color("cyan") cube([SwitchSocketWidth,SwitchSocketHeight,10]);
 		} else {
-			translate([SwitchSocketWidth/2+SocketShiftLR-5,SwitchSocketHeight/2+14+SocketShiftUD,-2]) color("cyan")
+			translate([SwitchSocketWidth/2+SocketShiftLR-10,SwitchSocketHeight/2+14+SocketShiftUD,-2]) color("cyan")
 				cube([SocketPlugWidth,SocketPlugHeight,10]); // plug socket
-			translate([SwitchSocketWidth/2+33+SocketShiftLR,SwitchSocketHeight/2+14.2+SocketShiftUD,-2]) color("pink")
+			translate([SwitchSocketWidth/2+SocketShiftLR+36,SwitchSocketHeight/2+14.2+SocketShiftUD,-2]) color("pink")
 				cube([s_w,s_l,8]); // swicth
 		}
 	}
 	difference() {
 		translate([0,SwitchSocketHeight+35,0]) color("red") cubeX([SwitchSocketWidth+40,5,40],2); // top wall
-		cover_screw_holes();
+		cover_screw_holes(screw3t);
 	}
 	difference() {
 		translate([0,19,0]) color("black") cubeX([5,SwitchSocketHeight+21,40],2); // left wall
-		cover_screw_holes();
+		cover_screw_holes(screw3t);
 	}
 	difference() {
 		translate([SwitchSocketWidth+35,19,0]) color("white") cubeX([5,SwitchSocketHeight+21,40],2); // right wall
-		cover_screw_holes();
+		cover_screw_holes(screw3t);
 	}
 	difference() { // right wing
 		translate([SwitchSocketWidth+35,19,0]) color("lightblue") cubeX([25,5,25],2); // wall
@@ -200,27 +203,27 @@ module screwholesupport() {
 module coverscrewholes() {
 	difference() {
 		translate([5,40,20]) color("blue") cylinder(h=20,d=screw5); // left
-		translate([5,35,13]) rotate([0,-45,0]) color("red") cube([10,10,5]);
-		cover_screw_holes();
+		translate([5,35,13]) rotate([0,-50,0]) color("red") cube([10,10,5]);
+		cover_screw_holes(screw3t);
 	}
 	difference() {
 		translate([SwitchSocketWidth+35,40,20]) color("red") cylinder(h=20,d=screw5); // right
-		translate([SwitchSocketWidth+27,35,22]) rotate([0,45,0]) color("blue") cube([10,10,5]);
-		cover_screw_holes();
+		translate([SwitchSocketWidth+27,35,22]) rotate([0,50,0]) color("blue") cube([10,10,5]);
+		cover_screw_holes(screw3t);
 	}
 	difference() {
 		translate([SwitchSocketWidth,62,20]) color("white") cylinder(h=20,d=screw5); // top screw hole
-		translate([SwitchSocketWidth-5,55,20]) rotate([-45,0,0]) color("green") cube([10,10,5]);
-		cover_screw_holes();
+		translate([SwitchSocketWidth-5,55,20]) rotate([-50,0,0]) color("green") cube([10,10,5]);
+		cover_screw_holes(screw3t);
 	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module cover_screw_holes() {
-	translate([5,40,12]) color("white") cylinder(h=35,d=screw3t); // left
-	translate([SwitchSocketWidth+35,40,12]) color("gray") cylinder(h=35,d=screw3t); // right
-	translate([SwitchSocketWidth,62,12]) color("hotpink") cylinder(h=35,d=screw3t); // top screw hole
+module cover_screw_holes(Screw=screw3t) {
+	translate([5,40,7]) color("white") cylinder(h=40,d=Screw); // left
+	translate([SwitchSocketWidth+35,40,7]) color("gray") cylinder(h=40,d=Screw); // right
+	translate([SwitchSocketWidth,62,7]) color("hotpink") cylinder(h=40,d=Screw); // top screw hole
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -238,13 +241,11 @@ module testfit() { // may need adjusting if the socket size is changed
 
 module cover() {
 	difference() {
-		translate([0,15,40]) color("cyan") cubeX([SwitchSocketWidth+40,SwitchSocketHeight+27,5],2); // base
-		translate([5,42,30]) color("red") cylinder(h=20,d=screw3); // left
-		translate([SwitchWidth+35,42,30]) color("white") cylinder(h=20,d=screw3); // right
-		translate([SwitchSocketWidth,64,30]) color("green") cylinder(h=20,d=screw3); // top
+		translate([0,13.8,40]) color("cyan") cubeX([SwitchSocketWidth+40,SwitchSocketHeight+27,5],2); // base
+		cover_screw_holes(screw3);
 	}
 	difference() {
-		translate([0,15,25]) color("red") cubeX([SwitchSocketWidth+40,5,20],2); // base
+		translate([0,13.8,25]) color("red") cubeX([SwitchSocketWidth+40,5,20],2); // base
 		color("white") hull() {
 			translate([SwitchSocketWidth,25,30]) rotate([90,0,0]) cylinder(h=15,d=10);
 			translate([SwitchSocketWidth,25,25]) rotate([90,0,0]) cylinder(h=15,d=10);
@@ -300,30 +301,30 @@ module printchar(String,Height=1.5,Size=4) { // print something
 
 module pbar(Makerslide=0,Quanity=1) {
 	for(b=[0:Quanity-1])
-		translate([1,b*(width+3),0]) bar(Makerslide); // two needed to mount p/s
+		translate([1,b*(Width+3),0]) bar(Makerslide); // two needed to mount p/s
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module bar(mks=1) {
 	difference() {
-		color("cyan") cubeX([Length,width,Thickness]);
+		color("cyan") cubeX([Length,Width,Thickness]);
 		// p/s mounting holes
-		translate([31.5,width/2,-2]) rotate([0,0,0]) color("gray") cylinder(h=Thickness*2,r=screw4/2);
+		translate([31.5,Width/2,-2]) rotate([0,0,0]) color("gray") cylinder(h=Thickness*2,r=screw4/2);
 		color("black") hull() {
-			translate([82.5,width/2,-2]) rotate([0,0,0]) cylinder(h=Thickness*2,r=screw4/2);
-			translate([80.5,width/2,-2]) rotate([0,0,0]) cylinder(h=Thickness*2,r=screw4/2);
+			translate([82.5,Width/2,-2]) rotate([0,0,0]) cylinder(h=Thickness*2,r=screw4/2);
+			translate([80.5,Width/2,-2]) rotate([0,0,0]) cylinder(h=Thickness*2,r=screw4/2);
 		}
 		// countersink the mounting holes
-		translate([31.5,width/2,-14]) rotate([0,0,0]) color("red") cylinder(h=Thickness*2,r=screw4hd/2);
+		translate([31.5,Width/2,-14]) rotate([0,0,0]) color("red") cylinder(h=Thickness*2,r=screw4hd/2);
 		color("plum") hull() {
-			translate([82.5,width/2,-14]) rotate([0,0,0]) cylinder(h=Thickness*2,r=screw4hd/2);
-			translate([80.5,width/2,-14]) rotate([0,0,0]) cylinder(h=Thickness*2,r=screw4hd/2);
+			translate([82.5,Width/2,-14]) rotate([0,0,0]) cylinder(h=Thickness*2,r=screw4hd/2);
+			translate([80.5,Width/2,-14]) rotate([0,0,0]) cylinder(h=Thickness*2,r=screw4hd/2);
 		}
 		makerslide_mount(mks);
 		// zip tie holes
-		translate([5,width+2,Thickness/2]) rotate([90,0,0]) color("salmon") cylinder(h=Thickness*2,r=screw5/2);
-		translate([Length-5,width+2,Thickness/2]) rotate([90,0,0]) color("blue") cylinder(h=Thickness*2,r=screw5/2);
+		translate([5,Width+2,Thickness/2]) rotate([90,0,0]) color("salmon") cylinder(h=Thickness*2,r=screw5/2);
+		translate([Length-5,Width+2,Thickness/2]) rotate([90,0,0]) color("blue") cylinder(h=Thickness*2,r=screw5/2);
 	}
 	mks_mount_support(mks);
 }
@@ -333,25 +334,25 @@ module bar(mks=1) {
 module makerslide_mount(mks) {
 	if(mks) {
 		// makerslide mounting holes
-		translate([Length/2+10,width/2,-2]) color("gold") cylinder(h=Thickness*2,r=screw5/2);
-		translate([Length/2-10,width/2,-2]) color("pink") cylinder(h=Thickness*2,r=screw5/2);
-		translate([Length/2+10,width/2,Thickness/2]) color("lightgray") cylinder(h=Thickness*2,r=screw5hd/2);
-		translate([Length/2-10,width/2,Thickness/2]) color("black") cylinder(h=Thickness*2,r=screw5hd/2);
+		translate([Length/2+10,Width/2,-2]) color("gold") cylinder(h=Thickness*2,r=screw5/2);
+		translate([Length/2-10,Width/2,-2]) color("pink") cylinder(h=Thickness*2,r=screw5/2);
+		translate([Length/2+10,Width/2,Thickness/2]) color("lightgray") cylinder(h=Thickness*2,r=screw5hd/2);
+		translate([Length/2-10,Width/2,Thickness/2]) color("black") cylinder(h=Thickness*2,r=screw5hd/2);
 	} else {
-		translate([Length/2,width/2,-2]) color("gold") cylinder(h=Thickness*2,r=screw5/2);
-		translate([Length/2,width/2,Thickness/2]) color("lightgray") cylinder(h=Thickness*2,r=screw5hd/2);
-		translate([Length/2-screw5hd/2,width/2-screw5hd/2,Thickness/2]) color("black") cube([screw5hd,screw5hd,LayerThickness]);
+		translate([Length/2,Width/2,-2]) color("gold") cylinder(h=Thickness*2,r=screw5/2);
+		translate([Length/2,Width/2,Thickness/2]) color("lightgray") cylinder(h=Thickness*2,r=screw5hd/2);
+		translate([Length/2-screw5hd/2,Width/2-screw5hd/2,Thickness/2]) color("black") cube([screw5hd,screw5hd,LayerThickness]);
 	}
 }
 
 module mks_mount_support(mks) {
 	if(mks) {
-		translate([Length/2+10-screw5hd/2,width/2-screw5hd/2,Thickness/2])
+		translate([Length/2+10-screw5hd/2,Width/2-screw5hd/2,Thickness/2])
 			color("lightgray") cube([screw5hd,screw5hd,LayerThickness]);
-		translate([Length/2-10-screw5hd/2,width/2-screw5hd/2,Thickness/2])
+		translate([Length/2-10-screw5hd/2,Width/2-screw5hd/2,Thickness/2])
 			color("black") cube([screw5hd,screw5hd,LayerThickness]);
 	} else
-		translate([Length/2-screw5hd/2,width/2-screw5hd/2,Thickness/2]) color("black") cube([screw5hd,screw5hd,LayerThickness]);
+		translate([Length/2-screw5hd/2,Width/2-screw5hd/2,Thickness/2]) color("black") cube([screw5hd,screw5hd,LayerThickness]);
 }
 
 //////////////// end of powersocket.scad /////////////////////////
