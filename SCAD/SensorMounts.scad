@@ -7,13 +7,95 @@
 // 6/2/19	- Separated from single_titan_extruder_mount.scad
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
+use <fanduct_v2.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////
 psensornut = 28; // size of proximity sensor nut
+FanSpacing = 32;			// hole spacing for a 40mm fan
+PCfan_spacing = 47;//FanSpacing+15;
+DuctLength=25; // set length of 50150 fan duct
+Thickness = 6.5;
+MHeight = 6;
+MWidth = 60;
+FHeight = 10;
+MountingHoleHeight = 60; 	// screw holes may need adjusting when changing the front to back size
+ExtruderOffset = 18;		// adjusts extruder mounting holes from front edge
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ProximityMount(8); // arg is shift up/down (min:2)
 //BLTouchMount(1,10);
 //IRAdapter(0,0);
+//FanAndProximityMount(8); // arg is shift up/down (min:2) *** blocks e3dv6 fan ***
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module FanAndProximityMount(Shift) {
+	difference() {
+		translate([-1,-2.5,0]) color("red") cubeX([32,32,8],2);
+		translate([15,12,-2]) color("olive") cylinder(h=wall*2,d=psensord); // proximity sensor hole
+		translate([15,12,4.5]) color("blue") cylinder(h=5,d=psensornut,$fn=6); // proximity nut
+	}
+	difference() {
+		translate([-20,26,0]) color("cyan") cubeX([63,5,13+Shift],2);
+		translate([-20,0,8]) IRBracketMountHoles(Shift);
+		translate([37,35,Shift+8]) rotate([90,0,0]) color("gold") cylinder(h=20,d=screw3+0.5); // a ziptie hole
+	}
+	translate([-20,27,0]) color("blue") cubeX([5,63,13+Shift],2);
+	translate([-20,95,0]) rotate([0,0,-90]) Short_Motor_Version(1,6,25,6);
+	
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+module Short_Motor_Version(Duct=0,Move=0,Raise=0,Back=0,Offset=0) {
+	FanBlowerMount(Move,Raise,Back);
+	if(Duct) translate([0,12,0]) color("red") FanDuct_v3(DuctLength);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BracketMount_v2(Move=0) {
+	translate([3,10,FHeight/4+0.3]) rotate([90,0,0]) color("red") cylinder(h = 18,r = screw3/2,$fn=50);
+	translate([3,1,FHeight/4+0.3]) rotate([90,0,0]) color("gray") cylinder(h = 18,r = screw3hd/2,$fn=50);
+	translate([3+PCfan_spacing,10,FHeight/4+0.3]) rotate([90,0,0]) color("blue") cylinder(h = 18,r = screw3/2,$fn=50);
+	translate([3+PCfan_spacing,1,FHeight/4+0.3]) rotate([90,0,0]) color("plum") cylinder(h = 18,r = screw3hd/2,$fn=50);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module FanBlowerMount(Move=0,Raise=0,Back=0,X=0,Y=0,Z=0,Spacer=0,Offset=0) {
+	if(Spacer) {
+		difference() {
+			translate([Move+6,-30+Back,0]) color("gray") cubeX([21,21-Back,Raise+Z+5],1);
+			RemoveForBlower(Move+6,Raise,Spacer);
+			translate([Move+X,-14-Back+Y,Raise+Z]) rotate([0,90,0]) color("purple") cylinder(h=42,r=screw4/2,$fn=50);
+			translate([Move+2,-40+Back,10]) rotate([-45,0,0]) color("black") cube([30,30,10]);
+		}
+		//difference() {
+		//	translate([Move+6,Offset+2,0]) color("lightgray") cubeX([21,Offset,Thickness],1);
+		//	translate([0,0,0.5]) BracketMount(Move);
+		//	translate([5,-5-Offset,0]) color("plum") cube([30,20,20]);
+		//}
+	} else {
+		difference() {
+			translate([Move,-16+Back,0]) color("gray") cubeX([21,21-Back,Raise+4],2);
+			RemoveForBlower(Move,Raise);
+			translate([Move+X-3,-Back+Y,Raise+Z]) rotate([0,90,0]) color("purple") cylinder(h=42,r=screw4/2,$fn=50);
+			translate([Move-5,-29+Back,9]) rotate([-45,0,0]) color("black") cube([30,30,10]);
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module RemoveForBlower(Move=0,Raise=0,Spacer=0) {
+	if(Spacer) {
+		translate([Move+3,-57,-10]) color("yellow") cubeX([15,45,Raise*2],1);
+		//translate([Move+3,-15.5,-17]) rotate([35,0,0]) color("lightgreen") cubeX([15,15,15],1);
+	} else {
+		translate([Move+3,-45,-10]) color("yellow") cubeX([15,45,Raise*2],1);
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
