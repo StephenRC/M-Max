@@ -2,16 +2,19 @@
 // relaymount.scad - something to mount a relay board onto 2020
 ///////////////////////////////////////////////////////////////////////////////
 // created 2/13/16
-// last update 5/10/19
+// last update 4/21/20
 ///////////////////////////////////////////////////////////////////////////////
-// 2/24/16 - added zip tie option
-// 5/17/16 - changed to use CubeX and the corrected the math for the mount holes
-//			 added zip tie thickness and the option to have screw & zip mount
-// 8/18/16 - Added x,y vars for pc board holes
+// 2/24/16	- added zip tie option
+// 5/17/16	- changed to use CubeX and the corrected the math for the mount holes
+//			  added zip tie thickness and the option to have screw & zip mount
+// 8/18/16	- Added x,y vars for pc board holes
 // 5/10/19	- made the mount() parametric via the passed variables
+// 4/21/20	- added 3mm brass inserts
 ///////////////////////////////////////////////////////////////////////////////
 use <inc/cubex.scad>
 include <inc/screwsizes.scad>
+Use3mmInsert=1;
+include <brassfunctions.scad>
 $fn=50;
 ///////////////////////////////////////////////////////////////////////////////
 // vars
@@ -23,14 +26,14 @@ zipthick = 2;	// zip tie thickness (depth of slot will the zipthick/2)
 
 // 1st arg is type: 0 - zip tie mount;1 - screw mount;2 - both;3 - neither
 //mount2(2,Width,Length,Thickness,Side_dx,Side_dy);
-//mount2(2,21.24,43.37,5,6.6,2.6); // 12v relay module from Amazon
-mount2(2,21.2,43.1,5,6.3,3); // ebay buck convertor
+mount2(2,21.5,50,5,2.6,2.6); // 12v relay module from Amazon
+//mount2(2,21.2,43.1,5,6.3,3); // ebay buck convertor
 ///////////////////////////////////////////////////////////////////////////////
 
 module mount2(type,width,length,thickness,side_dx,side_dy) {
 	difference() {
 		cubeX([length,width,thickness],2);
-		boardholes(screw3t,thickness,side_dx,side_dy,length,width);
+		boardholes(Yes3mmInsert(),thickness,side_dx,side_dy,length,width);
 		if(type==0)	zip(width,length,thickness);
 		if(type==1) mounthole(screw3,width,length,thickness);
 		if(type==2) {
@@ -39,7 +42,7 @@ module mount2(type,width,length,thickness,side_dx,side_dy) {
 		}
 		if(type==3) ;	// neither
 	}
-	boss(screw3t,thickness,side_dx,side_dy,length,width);
+	boss(Yes3mmInsert(),thickness,side_dx,side_dy,length,width);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,10 +65,10 @@ module mount2(type,width,length,thickness,side_dx,side_dy) {
 ///////////////////////////////////////////////////////////////////////////////
 
 module boardholes(Screw,thickness,side_dx,side_dy,length,width) { // holes for mounting the relay board
-		translate([side_dx,side_dy,-2]) cylinder(h=thickness+8,r=screw3/2);
-		translate([length-side_dx,side_dy,-2]) cylinder(h=thickness+8,r=screw3/2);
-		translate([side_dx,width-side_dy,-2]) cylinder(h=thickness+8,r=screw3/2);
-		translate([length-side_dx,width-side_dy,-2]) cylinder(h=thickness+8,r=screw3/2);
+		translate([side_dx,side_dy,-2]) cylinder(h=thickness+8,d=Screw);
+		translate([length-side_dx,side_dy,-2]) cylinder(h=thickness+8,d=Screw);
+		translate([side_dx,width-side_dy,-2]) cylinder(h=thickness+8,d=Screw);
+		translate([length-side_dx,width-side_dy,-2]) cylinder(h=thickness+8,d=Screw);
 }
 ///////////////////////////////////////////////////////////////////////////////
 

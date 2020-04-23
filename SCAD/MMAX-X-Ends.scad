@@ -2,7 +2,7 @@
 // MMAX-X-Ends.scad - http://creativecommons.org/licenses/by-sa/3.0/
 //////////////////////////////////////////////////////////////////////////////////////////
 // created 3/1/16
-// last update 5/27/19
+// last update 4/14/2020
 //////////////////////////////////////////////////////////////////////////////////////////
 // 3/1/16	- SCAD version of zClamp_4off.stl & x-bracket_1off.stl
 //			  at http://www.thingiverse.com/thing:12609
@@ -26,6 +26,7 @@
 //			  it's needed in the future.
 // 5/27/19	- Fixed TR8 version and made the motor mount to mount on left side only, see Line 284, comment out the
 //			  if(!Left) to allow either side
+// 4/14/20	- Added ability to use brass inserts
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Notes:
 // Print full_clamps with a brim
@@ -46,6 +47,10 @@
 include <inc/cubex.scad>
 include <inc/nema17.scad>
 include <inc/screwsizes.scad>
+Use3mmInsert=1;
+//Use4mmInsert=0; // set to 1 to use 4mm brass inserts
+//Use5mmInsert=0; // set to 1 to use 4mm brass inserts
+include <brassfunctions.scad>
 ///////////////////////////////////////////////////////////////////////////////////////////
 //vars
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +98,7 @@ TR8_mounting_holes_offset=16;
 /////////////////////////////////////////////////////////////////////
 
 //split_clamp(0,1,1,1);
-full_clamp(1,0,0);	// arg 1: 0-one clamp (left),1-two clamps,2-right clamp; arg2: 0-no motor mount,1-motor mount,
+full_clamp(1,0,1);	// arg 1: 0-one clamp (left),1-two clamps,2-right clamp; arg2: 0-no motor mount,1-motor mount,
 					// 3rd arg: 1-MTSSR8 nut, 0-TR8 flange nut
 //motormount();
 // 2-to test the fit of the motor mount to clamp
@@ -169,7 +174,7 @@ module clamp(Bearing=0,mks=0,mits=0,Full=0,Left=0) {  // this version is now bro
 			}
 			difference() {
 				translate([length/2-znutw/2-0.5,z_drv,0]) znutshell(mits,1);
-				translate([37,30,-10]) color("black") cylinder(h=10,d=screw3t);
+				translate([37,30,-10]) color("black") cylinder(h=10,d=YesInsert3mm());
 				if(Left) rotate([0,180,0]) translate([-length/2-znutw/2-1,z_drv,0]) color("gray") znutscrew(mits);
 				else  translate([-length/2-znutw/2+74.5,z_drv,0]) znutscrew(mits);
 				if(!mits) {
@@ -266,9 +271,9 @@ module flange(mks,Bearing,mits,Left=0) {  // the part that holds it together
 		difference() {
 			color("brown") hull() {
 				cylinder(h=1,d=screw3*2);
-				translate([0,0,-3]) cylinder(h=1,d=screw3);
+				translate([0,0,-3]) cylinder(h=1,d=screw3*1.5);
 			}
-			translate([0,0,-5]) cylinder(h=10,d=screw3t);
+			translate([0,0,-5]) cylinder(h=10,d=YesInsert3mm());//screw3t);
 		}
 	}
 }
@@ -325,7 +330,7 @@ module connectorflat(mks,mits) { // raised section between z rod and z nut
 				if(mks) {
 					difference() {
 						translate([(length/2-znutw/2),znutw/6-2,-znutt/2-0.9]) color("pink") cube([znutw,znutl,znutt+1.7]);
-						translate([37,30,-15]) cylinder(h=20,d=screw3t);
+						translate([37,30,-15]) cylinder(h=20,d=YesInsert3mm());
 					}
 				} else
 					translate([(length/2-znutw/2),znutw/6-2,-znutt/2-0.9]) color("cyan") cube([znutw,znutl,znutt+1.5]);

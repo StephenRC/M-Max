@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cxy-msv1_h.scad - variable file for the CXY-MGNv2, a corexy with mgn12 rails
+// MMAX_h.scad - variable file for the MMAX
 // created: 8/19/2018
 // last modified: 8/19/18
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16,14 +16,14 @@ $fn=50;
 // variables
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 wall = 8;		// thickness of the plates
-width = 75;		// width of back/front/extruder plates
+HorizontallCarriageWidth = 75;		// width of back/front/extruder plates
 depth = wall;	// used where depth is a better description
 height = 90;	// height of the back/front plates
-widthE = width;	// extruder plate width
-depthE = wall;	// thickness of the extruder plate
+//widthE = HorizontallCarriageWidth;	// extruder plate width
+ExtruderThickness = wall;	// thickness of the extruder plate
 heightE = 60; 	// screw holes may need adjusting when changing the front to back size
-dual_sep = 50.6; // distance between bottom two wheels (this is less than what's on a standard carriage aluminum plate)
-tri_sep = 64.6;	// distance between bottom two wheels and top wheel
+BottomTwoHolesSeperation = 50.6; // distance between bottom two wheels (this is less than what's on a standard carriage aluminum plate)
+TopHoleSeperation = 64.6;	// distance between bottom two wheels and top wheel
 screw = 5.4;	// makerslide wheel screw hole (all the screw holes are oversize since slic3r makes them too small)
 screw_hd = 12.5;	// size of hole for screw head for countersink
 screw4 = 4.5;	// extruder mount screw hole
@@ -38,6 +38,7 @@ strutw=8;		// little side struts
 struth = 25;
 fan_spacing = 32;
 fan_offset = -6;  // adjust to align fan with extruder
+PCfan_spacing = fan_spacing+30; // spacing for pc part fan adapter mounting
 servo_spacing = 32;
 servo_offset = 20; // adjust to move servo mount
 screw_depth = 25;
@@ -46,6 +47,7 @@ ps_spacer = 10.5; // don't need to print support between lm8uu holders, adjust t
 mount_seperation = 23;	// mount for Prusa i3 stlye extruder; Wilson is 23, Prusa i3 is 30
 mount_height = 11.5;	// move the Prusa i3 extruder mounting holes up/down
 psensord = 19;	// diameter of proximity sensor (x offset is 0)
+psensornut = 28; // size of proximity sensor nut
 layer = 0.2;	// printed layer thickness
 // BLTouch variables - uses the screw2 size for the mounting holes, which work fine with the provided screws or can
 // ----------------   tapped for 3mm screws
@@ -109,3 +111,7 @@ mount_bolt_seperation = 23;	// four bolt mount on x carridge
 beltw = 16;	// belt mount hole width
 belth = 26; // belt mount hole height
 beltadjust = -12; // move the holes up/down
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Use3mmInsert=1; // set to 1 to use 3mm brass inserts
+Use4mmInsert=0; // set to 1 to use 4mm brass inserts
+Use5mmInsert=0; // set to 1 to use 5mm brass inserts
