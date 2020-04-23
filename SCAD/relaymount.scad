@@ -26,7 +26,7 @@ zipthick = 2;	// zip tie thickness (depth of slot will the zipthick/2)
 
 // 1st arg is type: 0 - zip tie mount;1 - screw mount;2 - both;3 - neither
 //mount2(2,Width,Length,Thickness,Side_dx,Side_dy);
-mount2(2,21.5,50,5,2.6,2.6); // 12v relay module from Amazon
+mount2(2,26.2,50,5,2.6,2.6); // 12v relay module from Amazon
 //mount2(2,21.2,43.1,5,6.3,3); // ebay buck convertor
 ///////////////////////////////////////////////////////////////////////////////
 
