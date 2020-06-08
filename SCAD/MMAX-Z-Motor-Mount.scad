@@ -1,11 +1,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// MMAX-Z-Motor-Mount.scad -  shift the z motor mount from original postion
+// MMAX-Z-Motor-Mount.scad -  be able to shift the z motor mount up/down
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 8/21/2018
-// Last Update: 8/26/18
+// Last Update: 5/25/20
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // 8/21/18	- From https://www.thingiverse.com/thing:28876, this file is based on the Z MOTOR MOUNT.stl
 // 8/26/18	- Fixed nema17 location
+// 5/24/20	- Added arg discription to twomounts()
+// 5/25/20	- Made it compatible with MGN.scad, Added ZmotorMount(arg), the arg is quanity
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 use <inc/cubeX.scad>
 include <inc/nema17.scad>
@@ -18,33 +20,28 @@ b_length = 100;
 thickness = 5.5;
 /////////////////////////////////////////////////////////////////////////////////////////
 
-twomounts(0,0,47);	// 46 shifts it to the end
-//onemount(0,0,47);		// 0 places it at the original postion
-						// negative numbers need the support to be adjusted manually
+ZMotorMount(1,0,0,47);	// 1st arg:Quanity (default is 2); 2nd arg: X position; 3rd arg Y position; 4th arg Z position (0 min)
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ZMotorMount(Qty=2,X=0,Y=0,Z=0) {
+	for(x = [0 : Qty-1]) {
+		translate([x*100,0,0]) {
+			//OldMount();
+			base(X,Y,-Z-52.75); // Z=-52.75 for original position
+		}
+	}
+}
+ 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 module OldMount() {  // overlay old one to get the positions and sizes right
 	if($preview) %import("original stl/Z MOTOR MOUNT.stl");
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-module twomounts(X=0,Y=0,Z=0) { // two mounts
-	onemount(X,Y,Z);
-	translate([100,0,0]) onemount(X,Y,Z);
-}
- 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module onemount(X=0,Y=0,Z=-52.75) { // just one mount
-	OldMount();
-	base(X,Y,-Z-52.75); // Z=-52.75 for original position
-}
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module base(X=0,Y=0,Z=0) { // mkes the motor mount holder
+module base(X=0,Y=0,Z=0) { // makes the motor mount holder
 	difference() {
 		color("skyblue") cubeX([b_width,b_length,thickness],2);
 		baseholes(X,Y,Z);
@@ -76,31 +73,31 @@ module baseholes(X=0,Y=0,Z=0) { // moke the holes in the base
 	color("blue") translate([8,10,thickness-1]) cylinder(h=thickness*2,d=screw5hd);
 	color("powderblue") hull() { // left side notch
 		color("cyan") hull() {
-			translate([9,24,-thickness/2]) color("cyan") cylinder(h=thickness*2,d=10);
-			translate([-5,24,-thickness/2]) color("powderblue") cylinder(h=thickness*2,d=10);
+			translate([9,24,-thickness/2]) cylinder(h=thickness*2,d=10);
+			translate([-5,24,-thickness/2]) cylinder(h=thickness*2,d=10);
 		}
 		color("turquoise") hull() {
-			translate([-5,b_length-25,-thickness/2]) color("turquoise") cylinder(h=thickness*2,d=10);
-			translate([9,b_length-25,-thickness/2]) color("aquamarine") cylinder(h=thickness*2,d=10);
+			translate([-5,b_length-25,-thickness/2]) cylinder(h=thickness*2,d=10);
+			translate([9,b_length-25,-thickness/2]) cylinder(h=thickness*2,d=10);
 		}
 	}
-	color("plum") hull() { // rigth side notch
+	color("plum") hull() { // right side notch
 		color("turquoise") hull() {
-			translate([b_width+2,25,-thickness/2]) color("turquoise") cylinder(h=thickness*2,d=10);
-			translate([b_width-9,25,-thickness/2]) color("plum")cylinder(h=thickness*2,d=10);
+			translate([b_width+2,25,-thickness/2]) cylinder(h=thickness*2,d=10);
+			translate([b_width-9,25,-thickness/2]) cylinder(h=thickness*2,d=10);
 		}
 		color("yellowgreen") hull() {
-			translate([b_width+2,b_length-25,-thickness/2]) color("yellowgreen") cylinder(h=thickness*2,d=10);
-			translate([b_width-9,b_length-25,-thickness/2]) color("limegreen") cylinder(h=thickness*2,d=10);
+			translate([b_width+2,b_length-25,-thickness/2]) cylinder(h=thickness*2,d=10);
+			translate([b_width-9,b_length-25,-thickness/2]) cylinder(h=thickness*2,d=10);
 		}
 	}
 	color("cyan") hull() { // bottom slot
-		translate([30,10,-thickness/2]) color("cyan") cylinder(h=thickness*2,d=10);
-		translate([b_width-30,10,-thickness/2]) color("cyan") cylinder(h=thickness*2,d=10);
+		translate([30,10,-thickness/2]) cylinder(h=thickness*2,d=10);
+		translate([b_width-30,10,-thickness/2]) cylinder(h=thickness*2,d=10);
 	}
 	color("pink") hull() { // top slot
-		translate([30,b_length-10,-thickness/2]) color("cyan") cylinder(h=thickness*2,d=10);
-		translate([b_width-30,b_length-10,-thickness/2]) color("cyan") cylinder(h=thickness*2,d=10);
+		translate([30,b_length-10,-thickness/2]) cylinder(h=thickness*2,d=10);
+		translate([b_width-30,b_length-10,-thickness/2]) cylinder(h=thickness*2,d=10);
 	}
 }
 
@@ -126,10 +123,10 @@ module NEMA_Holder(X=0,Y=0,Z=0) { // part that the motor mounts to
 	difference() {
 		NEMA17(X,Y,Z);
 		//innerhole(X,Y,Z);
-		color("pink") hull() { // notch below the motor
-			translate([X+b_width/2-8.5,Y+b_length/2-Z-47,1]) rotate([90,0,0]) cylinder(h=thickness*2,d=29);
-			translate([X+b_width/2+8.6,Y+b_length/2-Z-47,1]) rotate([90,0,0]) cylinder(h=thickness*2,d=29);
-		}
+		//color("pink") hull() { // notch below the motor
+		//	translate([X+b_width/2-8.5,Y+b_length/2-Z-47,1]) rotate([90,0,0]) cylinder(h=thickness*2,d=29);
+		//	translate([X+b_width/2+8.6,Y+b_length/2-Z-47,1]) rotate([90,0,0]) cylinder(h=thickness*2,d=29);
+		//}
 	}
 }
 
@@ -138,7 +135,7 @@ module NEMA_Holder(X=0,Y=0,Z=0) { // part that the motor mounts to
 module NEMA17(X=0,Y=0,Z=0) { // maker the holes to hold the motor
 	rotate([90,0,0]) difference() {
 		translate([X+14.6,Y+0.5,Z]) color("red") cubeX([b_width-30.7,b_length-39,thickness],2);
-		translate([X+45,Y+33.5,Z-1]) rotate([0,0,45]) color("white") NEMA17_x_holes(7, 2);
+		translate([X+45,Y+33.5,Z-1]) rotate([0,0,90]) color("white") NEMA17_parallel_holes(10, 10);
 	}
 }
 

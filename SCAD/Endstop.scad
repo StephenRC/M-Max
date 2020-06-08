@@ -1,10 +1,11 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Optical-Endstop.scad
 // created: 9/30/2018
-// last update: 12/26/18
+// last update: 5/31/20
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 12/20/18	- Thickened makerslide mount
 // 12/26/18	- made part hitting the microswitch wider
+// 5/31/20	- Added the y endstop holder
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Note: not all plastics block IR, you may need to paint the flag
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12,6 +13,13 @@ include <inc/screwsizes.scad>
 include <inc/cubex.scad>
 $fn=100;
 layer=0.2;
+Screw_dia=screw3;			// clamp screw diameter
+Screw_Thread_dia=screw3t;	// screw hole diameter to make a 3mm threaded hole
+Switch_ht=20;//15;			// height of holder
+Switch_thk = 6;			// thickness of holder
+Switch_thk2 = 7;		// thickness of spacer
+width = 33;	// width of holder
+shift = 6;	// move switch mounting holes along width
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Optical endstop
@@ -21,9 +29,46 @@ layer=0.2;
 
 // microswitch endstop
 //rotate([0,90,0]) // rotate to make it printable without supports, slic3r PE doesn't need this
-	X_ms_microswitch(screw5);
+//	X_ms_microswitch(screw5);
+YEndStop(10,0,7,screw2);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module YEndStop(Sep,DiagOffset,Offset,Screw) {
+	base(Sep,DiagOffset,Offset,Screw);
+	mount2(Sep,DiagOffset,Offset,Screw);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+module mount2(Sep,DiagOffset,Offset,Screw) {
+	difference() {
+		color("red") cubeX([Switch_thk,width,30],2);
+		translate([-1,6.5,Switch_thk*2+10]) rotate([0,90,0]) color("white") cylinder(h=Switch_thk*2,r=screw5/2);
+		translate([-1,26.5,Switch_thk*2+10]) rotate([0,90,0]) color("gray") cylinder(h=Switch_thk*2,r=screw5/2);
+		translate([2.5,15,-5]) GreenMSHoles(Screw,Offset,DiagOffset,Sep);			// screw holes for switch
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+module base(Sep,DiagOffset,Offset,Screw=screw2) {
+	difference() {
+		translate([-2.5,0,-4]) color("cyan") cubeX([10,width,Switch_thk],2);
+		translate([2.5,15,-5]) GreenMSHoles(Screw,Offset,DiagOffset,Sep);			// screw holes for switch
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module GreenMSHoles(Screw=screw2,Offset,DiagOffset,Sep) {
+	rotate([0,0,0]) {		
+		translate([0,0,0]) color("lightgray") cylinder(h = 11, d = Screw, center = false, $fn=100);
+		translate([0,Sep,0]) color("black") cylinder(h = 11, d = Screw, center = false, $fn=100);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module X_flag(Length=35,Height=15) {
 	difference() { // flag

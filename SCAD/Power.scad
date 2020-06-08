@@ -23,6 +23,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 use <inc/cubeX.scad>	// http://www.thingiverse.com/thing:112008
 include <inc/screwsizes.scad>
+Use3mmInsert=1;
+include <brassfunctions.scad>
 use <BABIND.TTF>	// true type font used for the label
 $fn = 50;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,22 +48,22 @@ SocketPlugWidth=SwitchSocketWidth;
 SocketPlugHeight=SwitchSocketHeight;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-all(0,19.5,13,2,1,2,1);// 1st arg: flip; next 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
+//all(0,19.5,13,2,1,2,1);// 1st arg: flip; next 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
 //testfit();	// print part of it to test fit the socket & 2020
 //switch();		// 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
 //powersupply_cover();
 //powersupply_cover_v2();
 //pbar(1,2);
-//housing(1,13,19.5);
+housing(1,13,19.5);
 //cover();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module all(flip=0,s_w=13,s_l=19.5,s_t=2,Makerslide=1,PBQuantiy=2,Version=0) {
-	if($preview) %translate([25,20,0]) cube([200,200,2],center=true); // show the 200x200 bed
+	//if($preview) %translate([25,20,0]) cube([200,200,2],center=true); // show the 200x200 bed
 	translate([0,-12,0]) housing(Version,s_l,s_w);
 	translate([0,-5,45]) rotate([180,0,0]) cover();
-	translate([-50,-45,0]) switch(flip,s_w,s_l,s_t);		// 3 args: Width, length, clip Thickness; defaults to 13,19.5,2
+	translate([-50,-45,0]) switch(flip);		// 3 args: Width, length, clip Thickness; defaults to 13,19.5,2
 	translate([-30,60,0]) powersupply_cover();
 	translate([-35,-10,0]) rotate([0,0,90]) pbar(Makerslide,PBQuantiy);
 }
@@ -158,15 +160,15 @@ module housing(Version=0,s_w=13,s_l=19.5) {
 	}
 	difference() {
 		translate([0,SwitchSocketHeight+35,0]) color("red") cubeX([SwitchSocketWidth+40,5,40],2); // top wall
-		cover_screw_holes(screw3t);
+		cover_screw_holes(Yes3mmInsert());
 	}
 	difference() {
 		translate([0,19,0]) color("black") cubeX([5,SwitchSocketHeight+21,40],2); // left wall
-		cover_screw_holes(screw3t);
+		cover_screw_holes(Yes3mmInsert());
 	}
 	difference() {
 		translate([SwitchSocketWidth+35,19,0]) color("white") cubeX([5,SwitchSocketHeight+21,40],2); // right wall
-		cover_screw_holes(screw3t);
+		cover_screw_holes(Yes3mmInsert());
 	}
 	difference() { // right wing
 		translate([SwitchSocketWidth+35,19,0]) color("lightblue") cubeX([25,5,25],2); // wall
@@ -204,26 +206,26 @@ module coverscrewholes() {
 	difference() {
 		translate([5,40,20]) color("blue") cylinder(h=20,d=screw5); // left
 		translate([5,35,13]) rotate([0,-50,0]) color("red") cube([10,10,5]);
-		cover_screw_holes(screw3t);
+		cover_screw_holes(Yes3mmInsert());
 	}
 	difference() {
 		translate([SwitchSocketWidth+35,40,20]) color("red") cylinder(h=20,d=screw5); // right
 		translate([SwitchSocketWidth+27,35,22]) rotate([0,50,0]) color("blue") cube([10,10,5]);
-		cover_screw_holes(screw3t);
+		cover_screw_holes(Yes3mmInsert());
 	}
 	difference() {
 		translate([SwitchSocketWidth,62,20]) color("white") cylinder(h=20,d=screw5); // top screw hole
 		translate([SwitchSocketWidth-5,55,20]) rotate([-50,0,0]) color("green") cube([10,10,5]);
-		cover_screw_holes(screw3t);
+		cover_screw_holes(Yes3mmInsert());
 	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module cover_screw_holes(Screw=screw3t) {
-	translate([5,40,7]) color("white") cylinder(h=40,d=Screw); // left
-	translate([SwitchSocketWidth+35,40,7]) color("gray") cylinder(h=40,d=Screw); // right
-	translate([SwitchSocketWidth,62,7]) color("hotpink") cylinder(h=40,d=Screw); // top screw hole
+module cover_screw_holes(Screw=Yes3mmInsert()) {
+	translate([5,40,33]) color("white") cylinder(h=GetHoleLen3mm(Yes3mmInsert()),d=Screw); // left
+	translate([SwitchSocketWidth+35,40,33]) color("gray") cylinder(h=GetHoleLen3mm(Yes3mmInsert()),d=Screw); // right
+	translate([SwitchSocketWidth,62,33]) color("hotpink") cylinder(h=GetHoleLen3mm(Yes3mmInsert()),d=Screw); // top screw hole
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -259,17 +261,17 @@ module switch(Flip=0,s_w=13,s_l=19.5,s_t=2) {
 	difference() {  // switch front and switch mounting hole
 		color("cyan") cubeX([s_l+15,s_w+15,5],2);
 		translate([s_l/2-2,s_w/2+1,-2]) color("pink") cube([s_l,s_w,8]);
-		translate([s_l/2-3.5,s_w/2+1,s_t]) color("red") cube([s_l+3,s_w,8]);
+		translate([s_l/2-4,s_w/2+1,s_t]) color("red") cube([s_l+3,s_w,8]);
 		switch_label(Flip);
 	}
-	translate([0,-2,0]) color("blue") cubeX([5,s_l+11,s_w+25],2); // left wall
-	translate([s_l+10,-2,0]) color("salmon") cubeX([5,s_l+11,s_w+25],2); // right wall
-	translate([s_l-18,s_w+10.5,0]) color("tan") cubeX([s_l+13,5,s_w+15],2); // rear wall
+	translate([0,-1,0]) color("blue") cubeX([5,s_l+9,s_w+18],2); // left wall
+	translate([s_l+10,-1,0]) color("salmon") cubeX([5,s_l+9,s_w+18],2); // right wall
+	translate([s_l-19.5,s_w+10,0]) color("tan") cubeX([s_l+15,5,s_w+18],2); // rear wall
 	difference() {
-		translate([s_l-18,-2,0]) color("brown") cubeX([s_l+13,5,s_w+25],2); // top wall
-		switch_label(Flip);
+		translate([s_l-19,-2,0]) color("brown") cubeX([s_l+14.5,5,s_w+18],2); // top wall
+		translate([0,0,0]) switch_label(Flip);
 	}
-	translate([0,0,33]) color("plum") cubeX([s_l+15,s_w+15,5],2); // rear cover
+	translate([0,-1,26]) color("plum") cubeX([s_l+15,s_w+5,5],2); // rear cover
 	translate([0,-22,0]) sw_mount(Flip,s_l+15);
 }
 
@@ -278,23 +280,23 @@ module switch(Flip=0,s_w=13,s_l=19.5,s_t=2) {
 module sw_mount(Flip=0,Width) {
 	difference() {
 		color("green") cubeX([Width,27,5],2);
-		translate([10,10,-2]) color("red") cylinder(h=10,d=screw5,$fn=100);
-		translate([25,10,-2]) color("blue") cylinder(h=10,d=screw5,$fn=100);
-		translate([0,22,0]) switch_label(Flip);
+		translate([7,10,-2]) color("red") cylinder(h=10,d=screw5,$fn=100);
+		translate([26,10,-2]) color("blue") cylinder(h=10,d=screw5,$fn=100);
+		translate([-3,22,0]) switch_label(Flip);
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module switch_label(Flip=0) {
-	if(!Flip) translate([5.5,-0,1]) rotate([180,0,0]) printchar("POWER",2,4);
-	else translate([29,-2,1]) rotate([0,180,0]) printchar("POWER",2,4);
+	if(!Flip) translate([9,-1,1]) rotate([180,0,0]) printchar("POWER",2,4);
+	else translate([32,-4,1]) rotate([0,180,0]) printchar("POWER",2,4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 module printchar(String,Height=1.5,Size=4) { // print something
-	color("black") linear_extrude(height = Height) text(String, font = "Babylon Industrial:style=Normal",size=Size);
+	color("black") linear_extrude(height = Height) text(String, font = "Arial:style=Black",size=Size);
 }
 
 ///////////////////////////////////////////////////////////////////////////
