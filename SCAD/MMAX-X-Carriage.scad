@@ -11,6 +11,7 @@
 // uses http://www.thingiverse.com/thing:211344 for the y belt
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
+Use3mmInsert=1;
 include <BrassFunctions.scad>
 use <ybeltclamp.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,19 +65,23 @@ module Carriage_v2(Titan=0,Tshift=0,Rear=0) { // extruder side
 		} else
 			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,3]) color("lightgray") cylinder(h = depth+10,r = screw_hd/2);
 		translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue") cylinder(h = depth+10,r = adjuster/2);
-		translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("yellow") cylinder(h = depth+10,r = screw/2);
-		translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("purple") cylinder(h = depth+10,r = screw/2);
-		translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,3]) color("gray") cylinder(h = depth+10,r = screw_hd/2);
-		translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,3]) color("green") cylinder(h = depth+10,r = screw_hd/2);
+		translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("yellow")
+			cylinder(h = depth+10,r = screw/2);
+		translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("purple")
+			cylinder(h = depth+10,r = screw/2);
+		translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,3]) color("gray")
+			cylinder(h = depth+10,r = screw_hd/2);
+		translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,3]) color("green")
+			cylinder(h = depth+10,r = screw_hd/2);
 		translate([38,height/2+8,-wall/2]) color("gray") hull() { // reduce usage of filament
 			cylinder(h = wall+10, r = 6);
 			translate([0,-40,0]) cylinder(h = wall+10, r = 6);
 		}
 		if(!Titan || Rear) translate([37.5,34,0]) CarriageMount(); // 4 mounting holes for an extruder
 		// screw holes to mount extruder plate
-		translate([37.5,44,4]) ExtruderMountHolesFn(YesInsert3mm(),25);
+		translate([37.5,44,4]) ExtruderMountHolesFn(Yes3mmInsert(),25);
 		// screw holes in top
-		translate([38,45,4]) TopMountBeltHoles(YesInsert3mm());
+		translate([38,45,4]) TopMountBeltHoles(Yes3mmInsert());
 	}
 }
 
@@ -264,14 +269,14 @@ module cableholder() {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TopMountBeltHoles(Screw=YesInsert3mm()) {
+module TopMountBeltHoles(Screw=Yes3mmInsert()) {
 	translate([HorizontallCarriageWidth/4-5,height/2+2,0]) rotate([90,0,0]) color("red") cylinder(h = GetHoleLen3mm(Screw), d = Screw);
 	translate([-(HorizontallCarriageWidth/4-5),height/2+2,0]) rotate([90,0,0]) color("blue") cylinder(h = GetHoleLen3mm(Screw), d = Screw);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ExtruderMountHolesFn(Screw=YesInsert3mm(),Length=GetHoleLen3mm(),Fragments=100) {
+module ExtruderMountHolesFn(Screw=Yes3mmInsert(),Length=GetHoleLen3mm(),Fragments=100) {
 		// screw holes to mount extruder plate
 		translate([0,-20,0]) rotate([90,0,0]) color("blue") cylinder(h = Length, d = Screw, $fn=Fragments);
 		translate([HorizontallCarriageWidth/2-5,-20,0]) rotate([90,0,0]) color("red") cylinder(h = Length, d = Screw, $fn=Fragments);
@@ -292,16 +297,5 @@ module CarriageMount(Screw=screw4) { // four mounting holes for using seperate m
 	translate([-mount_seperation/2,-height/4+ mount_height + mount_seperation,-5])
 		color("plum") cylinder(h = wall+10, d = Screw,$fn = 50);
 }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//function GetHoleLen3mm(Screw) =	(Screw==screw3in) ? screw3inl*2.5 : 25;
-//function YesInsert3mm() = (Use3mmInsert==1) ? screw3in : screw3;
-
-//function GetHoleLenM4(Screw) =	(Screw==screw4in) ? screw4inl*2.5 : 25;
-//function YesInsertM4() = (Use4mmInsert==1) ? screw4in : screw4;
-
-//function GetHoleLenM5(Screw) =	(Screw==screw5in) ? screw5inl*2.5 : 25;
-//function YesInsertM5() = (Use5mmInsert==1) ? screw5in : screw5;
 
 ////////////////////end of x-carriage.scad////////////////////////////////////////////////////////////////////////////

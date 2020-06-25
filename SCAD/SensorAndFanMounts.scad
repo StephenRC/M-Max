@@ -20,10 +20,11 @@ MWidth = 60;
 FHeight = 10;
 MountingHoleHeight = 60; 	// screw holes may need adjusting when changing the front to back size
 ExtruderOffset = 18;		// adjusts extruder mounting holes from front edge
+Layer=0.3; // printed layer thickness
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ProximityMount(6); // arg is shift up/down (min:2)
-//BLTouchMount(1,10);
+//ProximityMount(6); // arg is shift up/down (min:2)
+BLTouchMount(0,10);
 //IRAdapter(0,0);
 //FanAndProximityMount(8); // arg is shift up/down (min:2) *** blocks e3dv6 fan ***
 
@@ -230,8 +231,9 @@ module ProximityMount(Shift=0) {
 
 module SensorMount(Shift=0) {
 	difference() {
-		translate([0,26,0]) color("cyan") cubeX([32,5,13+Shift],2);
+		translate([0,26,0]) color("cyan") cubeX([57,5,13+Shift],2);
 		translate([4,0,8]) IRBracketMountHoles(Shift,1);
+		translate([30,0,8]) IRBracketMountHoles(Shift,1);
 	}
 }
 
@@ -254,11 +256,18 @@ module BLTouchMount(Type,Shift) {
 		if(Type==0) translate([15,0,bltdepth+3]) BLTouch_Holes(Type);//BLTouchMountHole(Type); // blt body hole
 		if(Type==1) translate([15,0,bltdepth+3]) BLTouch_Holes(Type);//BLTouchMountHole(Type); // no blt body hole
 	}
+	if(Type==1) BLTouchSupport();
 	SensorMount(Shift);
 	BLTouchAngleSupport();
 	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BLTouchSupport() {
+	translate([0,7.5,4]) color("green") cube([bltl,bltw,Layer]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module BLTouchAngleSupport() {
 	translate([2,21,5]) {
@@ -273,7 +282,7 @@ module BLTouchAngleSupport() {
 	
 module BLTouchBracketMountHoles(Shift) {
 	translate([-15,0,Shift+44.5]) rotate([90,0,90]) FanMountHoles();
-	 translate([25,70,Shift]) IRMountHoles(Screw=screw3);
+	translate([25,70,Shift]) IRMountHoles(Screw=screw3);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,6 +297,7 @@ module BLTouch_Holes(recess=0) {
 		translate([-bltl/2+8,bltw/2,-5]) color("blue") cube([bltd,bltd+1,wall+3]); // hole for BLTouch
 		translate([bltouch/2,16,-10]) color("pink") cylinder(h=25,r=screw2/2);
 		translate([-bltouch/2,16,-10]) color("black") cylinder(h=25,r=screw2/2);
+
 	}
 	if(recess == 0) {	// for mounting on top of the extruder plate
 		translate([-bltl/2+8,bltw/2,-5]) color("blue") cube([bltd,bltd+1,wall+3]); // hole for BLTouch

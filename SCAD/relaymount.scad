@@ -31,14 +31,14 @@ ZipTieThickness = 2;	// zip tie thickness)
 //RelayMount(2,Width,Length,Thickness,Side_dx,Side_dy);
 //RelayMount(2,26.2,50,6,2.6,2.6); // 12v relay module from Amazon
 //RelayMount(2,21.2,43.1,6,6.3,3); // ebay buck convertor
-//RelayMount(2,33,49.9,6,3.1,3.1); // 24vdc relay module from Amazon
-RelayMount(2,46.7,51.5,6,4,6); // 24vdc to 12vdc convertor
+RelayMount(2,33,49.9,6,3,3); // 24vdc relay module from Amazon
+//RelayMount(2,46.7,51.5,6,4,6); // 24vdc to 12vdc convertor
 ///////////////////////////////////////////////////////////////////////////////
 
 module RelayMount(type,width,length,thickness,side_dx,side_dy) {
 	difference() {
 		color("cyan") cubeX([length,width,thickness],2);
-		boardholes(Yes3mmInsert(),thickness+1,side_dx,side_dy,length,width);
+		boardholes(Yes3mmLInsert(),thickness+1,side_dx,side_dy,length,width);
 		if(type==0)	zip(width,length,thickness);
 		if(type==1) mounthole(screw3,width,length,thickness);
 		if(type==2) {
@@ -47,7 +47,7 @@ module RelayMount(type,width,length,thickness,side_dx,side_dy) {
 		}
 		if(type==3) ;	// neither
 	}
-	boss(Yes3mmInsert(),thickness,side_dx,side_dy,length,width);
+	boss(Yes3mmLInsert(),thickness,side_dx,side_dy,length,width);
 }
 
 
