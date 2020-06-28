@@ -46,14 +46,14 @@ MTSSR8d = 15.5;	// outside diameter of Misumi MTSSR8
 MTSSR8l = 21.5;	// length of MTSSR8
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//ZCarriage(1,0); // 1st arg: TR8=0, MTSS=1; arg2: One=0-Left, 1-Right, 2-Left & Right
+ZCarriage(1,0); // 1st arg: TR8=0, MTSS=1; arg2: One=0-Left, 1-Right, 2-Left & Right
 //ZCarriageMGNOn2020(1,2); // 1st arg: TR8=0, MTSS=1; arg2: One=0-Left, 1-Right, 2-Left & Right
-//translate([0,60,0]) MotorMount(1); // arg is quanity, defaulte is 2
-//translate([0,-55,0]) XIdler();
-translate([-50,-25,0]) CornerBraces(4); // arg is Quanity, default is 4
-translate([-115,-25,0]) CornerBraces(4); // arg is Quanity, default is 4
+translate([0,60,0]) MotorMount(1); // arg is quanity, defaulte is 2
+translate([0,-55,0]) XIdler();
+//translate([-65,-25,0]) CornerBraces(4); // arg is Quanity, default is 4
+//translate([-130,-25,0]) CornerBraces(4); // arg is Quanity, default is 4
 //BedMount(2); // default is 2
-//XCarriage();
+//XCarriageForMGN();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -351,7 +351,7 @@ module BedScrewHoles(Screw=Yes3mmInsert()) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module XCarriage() {
+module XCarriageForMGN() {
 	difference() {
 		cubeX([HorizontallCarriageWidth,MGN12HWidth,wall],2);
 		translate([15,0,0]) {

@@ -13,7 +13,7 @@ use <inc/corner-tools.scad>
 use <SensorAndFanMounts.scad>
 use <Drill-Guide-for-2020.scad>
 Use3mmInsert=1; // set to 1 to use 3mm brass inserts
-Use5mmInsert=0;
+Use5mmInsert=1;
 include <brassfunctions.scad>
 //-------------------------------------------------------------------------------------------------------------
 ShiftTitanUp = -9;	// move motor +up/-down: -13:Titan Aero; -2.5: Titan w/e3dv6
@@ -31,7 +31,7 @@ IRGap = 0;			// adjust edge of board up/down
 HeightIR = (HotendLength - IRBoardLength - IRGap) - irmount_height;	// height of the mount
 //---------------------------------------------------------------------------------------------------------
 LEDLight=1; // print LED ring mounting with spacer
-LEDSpacer=0;  // length need for titan is 8; leantgh need for aero is 0
+LEDSpacer=0;  // length need for titan is 8; length need for aero is 0
 //==================================================================================================
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,7 +197,7 @@ module FanNutHoles(Nut=nut3,Left=1) {	// fan mounting holes
 
 module IRMountHoles(Screw=Yes3mmInsert()) // ir screw holes for mounting to extruder plate
 {
-	translate([Spacing,-107,0]) rotate([90,0,0]) color("blue") cylinder(h=GetHoleLen3mm(Screw),d=screw3in);
+	translate([Spacing,-107,0]) rotate([90,0,0]) color("blue") cylinder(h=GetHoleLen3mm(Screw),d=Yes3mmInsert());
 	translate([0,-107,0]) rotate([90,0,0]) color("red") cylinder(h=(GetHoleLen3mm(Screw)),d=Screw);
 }
 
@@ -235,9 +235,9 @@ module LEDRingMount(Screw=Yes5mmInsert()) {
 
 module PCFanMounting(Screw=Yes3mmInsert()) {
 		translate([-extruder/2+54,-heightE/2 - 1.8*wall,heightE - extruder_back - PCfan_spacing/2 + fan_offset])
-			rotate([0,90,0]) color("red") cylinder(h = GetHoleLen3mm(Screw),d = screw3in);
+			rotate([0,90,0]) color("red") cylinder(h = GetHoleLen3mm(Screw),d = Yes3mmInsert());
 		translate([-extruder/2+54,-heightE/2 - 1.8*wall,heightE - extruder_back + fan_spacing/2 + fan_offset])
-			rotate([0,90,0]) color("blue") cylinder(h = GetHoleLen3mm(Screw),d = screw3in);
+			rotate([0,90,0]) color("blue") cylinder(h = GetHoleLen3mm(Screw),d = Yes3mmInsert());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
