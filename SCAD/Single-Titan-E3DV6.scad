@@ -107,11 +107,11 @@ module TitanExtruderPlatform(recess=2,InnerSupport=0,MountingHoles=1,Aero=0) {
 		union() {
 			translate([-37.5+17,-37,-wall/2])
 				color("cyan") cubeX([HorizontallCarriageWidth+ShiftHotend2/1.3-15,heightE+8,wall],2); // extruder side
-			translate([14,21,-wall/2]) color("plum") cubeX([25,10,wall],2);
-			translate([-38,21,-wall/2]) color("blue") cubeX([25,10,wall],2);
+			translate([14,23,-wall/2]) color("plum") cubeX([23,wall,wall],2);
+			translate([-38,23,-wall/2]) color("blue") cubeX([25,wall,wall],2);
 		}
 		//if(MountingHoles && Yes3mmInsert()==screw3)
-		ExtruderMountHoles();
+		translate([0,1,0]) ExtruderMountHoles();
  		if(LEDLight) LEDRingMount();
 		if(Aero) {
 			translate([-19,3,-5]) color("purple") cylinder(wall*2,d=30); // clearance for aero titan e3dv6 heater block
@@ -224,10 +224,8 @@ module BLTouch_Holes(recess=0) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module LEDRingMount(Screw=Yes5mmInsert()) {
-	// mounting hole for a holder for 75mm circle led
-	translate([30.5+ShiftHotend2,-24+ShiftHotend,-10]) color("gray") cylinder(h=GetHoleLen5mm(Yes5mmInsert()),d=Screw);
-	if(!Use5mmInsert) translate([30.5+ShiftHotend2,-24+ShiftHotend,1.5]) color("black") nut(nut5,5);
-	translate([30.5+ShiftHotend2,12.5+ShiftHotend,-10]) color("lightgray") cylinder(h=GetHoleLen5mm(Yes5mmInsert()),d=Screw);
+	// a mounting hole for a holder for 75mm circle led
+	translate([30.5+ShiftHotend2,2+ShiftHotend,-10]) color("lightgray") cylinder(h=GetHoleLen5mm(Yes5mmInsert()),d=Screw);
 	if(!Use5mmInsert) translate([30.5+ShiftHotend2,12.5+ShiftHotend,1.5]) color("black") nut(nut5,5);
 }
 

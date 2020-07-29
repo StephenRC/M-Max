@@ -5,15 +5,15 @@
 // last update: 4/12/20
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // 6/2/19	- Separated from single_titan_extruder_mount.scad
-// 4/12/20	- Made the mount to extruder plate the same for Proximty & BLTouch
+// 4/12/20	- Made the mount to extruder plate the same for Proximity & BLTouch
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
 use <fanduct_v2.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////
-psensornut = 28; // size of proximity sensor nut
-FanSpacing = 32;			// hole spacing for a 40mm fan
-PCfan_spacing = 47;//FanSpacing+15;
-DuctLength=25; // set length of 50150 fan duct
+psensornut = 28; 	// size of proximity sensor nut
+FanSpacing = 32;	// hole spacing for a 40mm fan
+PCfan_spacing = 47;	//FanSpacing+15;
+DuctLength=25; 		// set length of 50150 fan duct
 Thickness = 6.5;
 MHeight = 6;
 MWidth = 60;
@@ -23,8 +23,8 @@ ExtruderOffset = 18;		// adjusts extruder mounting holes from front edge
 Layer=0.3; // printed layer thickness
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//ProximityMount(6); // arg is shift up/down (min:2)
-BLTouchMount(0,10);
+ProximityMount(6); // arg is shift up/down (min:2)
+//BLTouchMount(0,10);	// 1st arg:type; 2nd: shift
 //IRAdapter(0,0);
 //FanAndProximityMount(8); // arg is shift up/down (min:2) *** blocks e3dv6 fan ***
 
@@ -259,7 +259,7 @@ module BLTouchMount(Type,Shift) {
 	if(Type==1) BLTouchSupport();
 	SensorMount(Shift);
 	BLTouchAngleSupport();
-	}
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

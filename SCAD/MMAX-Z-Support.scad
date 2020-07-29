@@ -1,13 +1,14 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 // MMAX-Z-Support.scad - modifiy the TMAX Z supports
 // created: 2/16/14
-// last modified: 4/27/19
+// last modified: 6/29/20
 /////////////////////////////////////////////////////////////////////////////////////////
 // 8/29/18	- Added make two top or bottom
 // 4/4/19	- Removed notch under connecting extrusion mount, replaced minkowski() with cubeX()
 //			- fixed nut holes in top()
 // 4/6/19	- Rotated clamps to print on their side, new clamp_v2() using cubeX()
 // 4/27/19	- fixed nut holes in bottom()
+// 6/29/20	- Can now use 5mm brass inserts
 ////////////////////////////////////////////////////////////////////////////////////////
 include <inc/configuration.scad>
 include <inc/screwsizes.scad>
@@ -15,6 +16,8 @@ include <inc/corner-tools.scad>
 // https://www.myminifactory.com/it/object/3d-print-tools-for-fillets-and-chamfers-on-edges-and-corners-straight-and-or-round-45862
 // by Ewald Ikemann
 use <inc/cubex.scad>
+Use5mmInsert=1;
+include <brassfunctions.scad>
 ////////////////////////////////////////////////////////////////////////////////////////
 zrod = 10;			// z rod size
 extr20 = 20.5;		// size of 2020 plus some clearance
@@ -61,7 +64,7 @@ module top() // top z support
 			color("white") import("original stl/Z ROD MOUNT BOTTOM.stl", convexity=5);
 			translate([45,-26,25]) newrod(); // resize rod notch
 		}
-		replace_nuts();
+		replace_nuts(Yes5mmInsert());
 		topbracket(); // add mount for a brace between left & right tops
 		translate([28,-50,25.9]) rotate([90,0,0]) clamp_v2();
 	}
@@ -82,13 +85,15 @@ module filloldnuts() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module replace_nuts() {
+module replace_nuts(Screw=Yes5mmInsert()) {
 	difference() {
 		filloldnuts();
-		translate([35,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
-		translate([55,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
-		translate([34.8,-18,50]) rotate([90,0,0]) color("gray") cylinder(h=10,d=screw5+0.1);
-		translate([54.8,-18,50]) rotate([90,0,0]) color("lightgray") cylinder(h=10,d=screw5+0.1);
+		if(Screw==screw5) {
+			translate([35,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
+			translate([55,-18,50]) rotate([90,0,0]) nuts();	// resize nut hole
+		}
+		translate([34.8,-17,50]) rotate([90,0,0]) color("gray") cylinder(h=10,d=Screw);
+		translate([54.8,-17,50]) rotate([90,0,0]) color("lightgray") cylinder(h=10,d=Screw);
 	}
 }
 
