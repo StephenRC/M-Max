@@ -2,7 +2,7 @@
 // MGN.scad - use MGN rails for the Z axis
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 5/21/2020
-// Last Update: 7/24/20
+// Last Update: 8/22/20
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 5/23/20	- Added X axis motor mount and idler mount that go at the ends of the makerslide
 // 5/23/20	- Added abilty to print more that one MotorMount and to print a left, right or both of the ZCarriage
@@ -14,14 +14,16 @@
 // 7/9/20	- Added a belt clamp for the x-carriage
 // 7/18/20	- Added an endstop holder for the X axis, copied from the X axis one for CXY-MSv1
 // 7/24/20	- Fixed the MTSS version
+// 8/1/20	- Added X endstop that mounts on the rail side of makerslide
+// 8/2/20	- Added a 2020 to MGN bed mount for a 12"x12" bed
+// 8/5/20	- Changed location of extrusion mount holes
+// 8/6/20	- BedMount2020() added tabs on the ends
+// 8/9/20	- Added Y axis braces
+// 8/22/20	- MGN X carraige with optional single e3dv6 extruder mount
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//**************************************************
-// NOT TESTED
-//**************************************************
-//==================================================================================
-// 2020x460mm with the 400mm MGN12 are to be connected to the middle and upper 2020
-// Support included with BeltAttachment(), use a raft to keep the supports from coming off the bed
-//==================================================================================
+//=====================================================================================================
+// 2020x460mm with the 400mm MGN12 are to be connected to the middle and upper 2020 on the M-Max
+//=====================================================================================================
 include <mmax_h.scad>
 Use3mmInsert=1;
 Use5mmInsert=1;
@@ -29,8 +31,9 @@ include <brassfunctions.scad>
 include <inc/screwsizes.scad>
 use <Z-Motor_Leadscrew-Coupler.scad> // coupler(motorShaftDiameter = 5,threadedRodDiameter = 5)
 include <inc/NEMA17.scad>
-include <inc/cubeX.scad>
+use <inc/cubeX.scad>
 use <yBeltClamp.scad>
+use <Single-Titan-E3DV6.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
 MGN12HHoleOffset=20;
@@ -63,22 +66,116 @@ Switch_thk=5;	// thickness of holder
 Switch_thk2=7;	// thickness of spacer
 HolderWidth=33;	// width of holder
 SwitchShift=6;	// move switch mounting holes along width
+//------------------------------------------------------------
+Bed1212Height=310; // 12" bed
+Bed1212Width=310;
+UseLarge3mmInsert=1; // got new inserts and the 3mm inserts are larger
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //XEndsAndEndstop(1,1); // 1st arg: TR8=0, MTSS=1; 2nd arg: 0=CN0097, 1=Black microswicth, 2=no endstop
 //XEndHorizontalBeltEnds();
-BeltAttachment();
+BeltAttachment(1,0);	// 1st arg: 0=carriage belt mount only; 1=belt mount only; 2=both
+						// 2nd arg: 0=individual belt mounts; 1= one piece blat mount
+//XEnd(1);
+//translate([100,0,0]) mirror([1,0,0]) XEnd(1);
 //XEndMGNOn2020(1); // 1st arg: TR8=0, MTSS=1
 //translate([100,0,0]) mirror([1,0,0]) XEndMGNOn2020(1);
-//translate([0,60,0])
-//	MotorMount();
-//translate([0,-55,0]) XIdler();
-//translate([-65,-25,0]) CornerBraces(4); // arg is Quanity, default is 4
-//translate([-130,-25,0]) CornerBraces(4); // arg is Quanity, default is 4
-//BedMount(2); // default is 2
-//XCarriageForMGN();
+//AxisBrace(4); // arg is Quanity
+//translate([65,0,0])
+//AxisBrace(4,65,0); // arg is Quanity; args 2&3 are X,Y
+//BedMount(2); // default is 2 (for 200x300 bed)
+//BedMount2020(2); // default is 2 (for 12"x12" bed)
+//XCarriageForMGN(1);  // changed to 1 for Single E3DV6 extruder setup
+//XEndStopOnly(1,1);	// 1st arg: 0=CN0097, 1=Black microswicth, 2=no endstop; 2nd arg: makerslide mounting slot location
+//																   0-bottom, 1-top, 2-none
+//YEndStop(10,0,8,screw2t,screw5,2.3,1); // Black small
+//YEndStop(22,10,8,Yes3mmInsert(UseLarge3mmInsert),screw5,11.5); // CN0097
+//Spacer(8,10,screw5);
+//FatSpacer(8,20,screw3+0.5);
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+module Spacer(Quanity=1,Thickness,Screw=screw3,) { // spacer to move pc board off platform, use translate() when you call it
+	for(a=[0:Quanity-1]) {
+		difference() {
+			translate([0,a*15,0]) color("gray") cylinder(h=Thickness,d = Screw*2);
+			translate([0,a*15,-1]) color("white") cylinder(h=Thickness*2,d = Screw);
+		}
+		difference() {
+			translate([screw3-3.5,-(screw3-3.5)+a*15,0]) color("cyan") cylinder(h=4,d=Screw*3);
+			translate([0,a*15,-1]) color("white") cylinder(h=Thickness*2,d = Screw);
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////
+
+module FatSpacer(Quanity=1,Thickness,Screw=screw3,) { // spacer to move pc board off platform, use translate() when you call it
+	for(a=[0:Quanity-1]) {
+		difference() {
+			translate([0,a*25,0]) color("gray") cylinder(h=Thickness,d = Screw*4);
+			translate([0,a*25,-1]) color("white") cylinder(h=Thickness*2,d = Screw);
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module YEndStop(Sep,DiagOffset,Offset,ScrewS,ScrewM=screw5,Adjust,MS=0) {
+	if(ScrewS==screw2t) {
+		difference() {
+			union() {
+				color("red") cubeX([22,33,5],2);
+				color("purple") cubeX([5,20,17+Adjust],2);
+			}
+			YEndStopExtrusionMountingHole(Sep,DiagOffset,Offset,ScrewS,ScrewM,Adjust);
+			if(MS) translate([-10,-2,0]) rotate([0,45,0]) color("black") cube([10,40,10]);
+		}
+	}
+	if(ScrewS==Yes3mmInsert(UseLarge3mmInsert)) {
+		difference() {
+			union() {
+				color("blue") cubeX([22,33,5],2);
+				color("cyan") cubeX([5,33,18+Adjust],2);
+			}
+			YEndStopExtrusionMountingHole(Sep,DiagOffset,Offset,ScrewS,ScrewM,Adjust);
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module YEndStopExtrusionMountingHole(Sep,DiagOffset,Offset,ScrewS,ScrewM,Adjust) {
+	translate([12,8,-2]) color("white") cylinder(h=10,d=ScrewM);
+	translate([0,-1,0]) EndStopScrewHoles(Sep,DiagOffset,Offset,ScrewS,Adjust);
+	translate([12,23,-2]) color("cyan") cylinder(h=10,d=ScrewM);
+	translate([0,-1,0]) EndStopScrewHoles(Sep,DiagOffset,Offset,ScrewS,Adjust);
+	if(ScrewM==screw5) {
+		translate([12,8,4]) color("cyan") cylinder(h=8,d=screw5hd);
+		translate([12,23,4]) color("pink") cylinder(h=8,d=screw5hd);
+	}
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module EndStopScrewHoles(Sep,DiagOffset,Offset,ScrewT,Adjust) {
+	// screw holes for switch
+	translate([0,0,Adjust]) {
+		rotate([0,90,0]) {		
+			translate([-(Switch_ht-Offset), SwitchShift, -2]) {
+				color("purple") cylinder(h = 11, r = ScrewT/2, center = false, $fn=100);
+			}
+		}
+		rotate([0,90,0]) {
+			translate(v = [-(Switch_ht-Offset)+DiagOffset, SwitchShift+Sep, -2]) {
+				color("black") cylinder(h = 11, r = ScrewT/2, center = false, $fn=100);
+			}
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module XEndHorizontalBeltEnds() {
 	translate([25,30,20]) rotate([-90,0,90]) MotorMountH();
@@ -88,28 +185,36 @@ module XEndHorizontalBeltEnds() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module XEndsAndEndstop(Type=0,EndStopType=0) {
-	XEnd(1); // 1st arg: TR8=0, MTSS=1
-	translate([50,0,0]) XEnd2(1);
-	if(EndStopType==0) translate([17,-62,0]) XEndStop(22,10,8,Yes3mmInsert(),8);
-	else if(EndStopType==1) translate([17,-62,0]) XEndStop(10,0,8,screw2,8); // black microswitch inline mount
+	XEnd(Type); // 1st arg: TR8=0, MTSS=1
+	translate([100,0,0]) mirror([1,0,0]) XEnd(Type);
+	XEndStopOnly(EndStopType);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module XEndStopOnly(EndStopType=0,Side=0) {
+	if(EndStopType==0) translate([17,-62,0]) XEndStop(22,10,8,Yes3mmInsert(UseLarge3mmInsert),8,Side);
+	else if(EndStopType==1) translate([17,-62,0]) XEndStop(10,0,8,screw2,8,Side); // black microswitch inline mount
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-module XEndStop(Sep,DiagOffset,Offset,ScrewS,Adjust) {
+module XEndStop(Sep,DiagOffset,Offset,ScrewS,Adjust,Side) {
 	base(Sep,DiagOffset,Offset,ScrewS,Adjust);
-	mount();
+	mount(screw5,Side);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module mount(Screw=screw5) {
+module mount(Screw=screw5,Side=0) {
 	difference() {
 		union() {
 			color("cyan") cubeX([22,HolderWidth,Switch_thk2],1);
-			translate([3-Screw/2,3,Switch_thk2-1]) color("blue") cubeX([22,6,2],1); // slot align
+			if(Side==0) translate([Screw/2-3,23,Switch_thk2-1]) color("red") cubeX([22,6,2],1); // slot align
+			if(Side==1) translate([Screw/2-3,3,Switch_thk2-1]) color("blue") cubeX([22,6,2],1); // slot align
 		}
 		translate([10,6,-1])  color("red") cylinder(h=Switch_thk2*2,d=Screw);
+		translate([10,26,-1])  color("green") cylinder(h=Switch_thk2*2,d=Screw);
 	}
 }
 
@@ -121,12 +226,12 @@ module base(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 			// screw holes for switch
 			rotate([0,90,0]) {		
 				translate([-(Switch_ht-Offset)-0.5, SwitchShift, -1]) {
-					color("purple") cylinder(h = 11, r = ScrewT/2, center = false, $fn=100);
+					color("purple") cylinder(h = 11, d=ScrewT);
 				}
 			}
 			rotate([0,90,0]) {
 				translate(v = [-(Switch_ht-Offset)-0.5+DiagOffset, SwitchShift+Sep, -1]) {
-					color("black") cylinder(h = 11, r = ScrewT/2, center = false, $fn=100);
+					color("black") cylinder(h = 11, d=ScrewT);
 				}
 			}
 		}
@@ -135,10 +240,9 @@ module base(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module BeltAttachment() { // must print on side with supports from bed only
-	//%translate([-50,-70,-23]) cube([200,200,3]);
-	CarriageMount();
-	BeltMount();
+module BeltAttachment(DoBelt=0,OnePiece=0) { // must print on side with supports from bed only
+	if(DoBelt>1 || DoBelt==0) CarriageMount();
+	if(DoBelt) BeltMount(OnePiece);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,14 +252,14 @@ module CarriageMount() {
 		difference() {
 			color("cyan") cubeX([55,49.3,20],2);
 			translate([8,-2,-1]) color("plum") cubeX([40,53,11],1);
-			translate([14,3.5,0]) TopMountBeltHoles(screw3);
-			translate([14,45.5,0]) TopMountBeltHoles(screw3);
-			translate([14,3.5,14]) TopMountBeltHoles(screw3hd);
-			translate([14,45.5,14]) TopMountBeltHoles(screw3hd);
-			translate([-35,26,14.5]) color("red") rotate([0,90,0]) cylinder(h=130,d=Yes5mmInsert());
+			translate([14,3.5,5]) TopMountBeltHoles(screw3); // mounting screw
+			translate([14,45.5,5]) TopMountBeltHoles(screw3); // mounting screw
+			translate([14,3.5,14]) TopMountBeltHoles(screw3hd); // countersink
+			translate([14,45.5,14]) TopMountBeltHoles(screw3hd); // countersink
+			translate([-35,26,14.5]) color("red") rotate([0,90,0]) cylinder(h=130,d=Yes5mmInsert()); // belt mount screw
 			color("red") hull() { // plastic reduction
-				translate([23,24.75,-2]) cylinder(h=25,d=28);
-				translate([33,24.75,-2]) cylinder(h=25,d=28);
+				translate([26,24.75,-2]) cylinder(h=25,d=28);
+				translate([30,24.75,-2]) cylinder(h=25,d=28);
 			}
 		}
 		translate([8,1,13.7]) color("black") cube([40,10,LayerThickness]);
@@ -165,60 +269,42 @@ module CarriageMount() {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module BeltMount() {
+module BeltMount(OnePiece=0) {
 	translate([0,20,14]) rotate([-90,0,0]) {
 		difference() {
 			translate([0,17,0]) {
-				translate([-3,0,0]) Loop1();
-				translate([3,0,0]) Loop2();
+				translate([-3,0,0]) Loop1(); // motor side
+				translate([3,0,0]) Loop2();  // idler side
 			}
-			translate([-35,26,14.5]) color("red") rotate([0,90,0]) cylinder(h=130,d=screw5);//Yes5mmInsert);
+			BeltMountScrew();
 		}
-		translate([-22.25,17,20]) color("gray") cubeX([100.25,17,8],2);
+		translate([-20,19,6]) rotate([90,0,0]) printchar("Motor",3,5);
+		translate([60,19,12]) rotate([90,0,0]) printchar("Idler",3,5);
+		if(OnePiece)
+			translate([-22.25,17,20]) color("gray") cubeX([100.25,17,4],2); // one piece bletmount
+		else {
+			translate([-22.25,17,20]) color("gray") cubeX([35,17,4],2); // individual pieces
+			translate([43,17,20]) color("plum") cubeX([35,17,4],2);
+		}
 		difference() {
 			translate([-22.25,17,16]) color("green") cubeX([22,17,8],2);
 			translate([-35,26,14.5]) color("red") rotate([0,90,0]) cylinder(h=130,d=screw5);//Yes5mmInsert);
+			BeltMountScrew();
 		}
 		difference() {
 			translate([55,17,16]) color("khaki") cubeX([23,17,8],2);
 			translate([-35,26,14.5]) color("red") rotate([0,90,0]) cylinder(h=130,d=screw5);//Yes5mmInsert);
+			BeltMountScrew();
 		}
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module BeltAttachmentV1() { // must print on side with supports from bed only
-	translate([0,0,49.3]) rotate([-90,0,0]) {
-		difference() {
-			color("cyan") cubeX([55,49.3,20],2);
-			translate([8,-2,-1]) color("plum") cubeX([40,53,11],1);
-			translate([14,3.5,0]) TopMountBeltHoles(screw3);
-			translate([14,45.5,0]) TopMountBeltHoles(screw3);
-			translate([14,3.5,14]) TopMountBeltHoles(screw3hd);
-			translate([14,45.5,14]) TopMountBeltHoles(screw3hd);
-			color("red") hull() { // plastic reduction
-				translate([23,24.75,-2]) cylinder(h=25,d=28);
-				translate([33,24.75,-2]) cylinder(h=25,d=28);
-			}
-		}
-		translate([0,17,0]) {
-			Loop1();
-			Loop2();
-		}
-	}
-	// Loop1 side support
-	translate([-17.5,-7,0]) color("black") cube([Nozzle,25.5,19]); // end support
-	translate([-17-Nozzle,-7,0]) color("lightgray") cube([19,Nozzle,19]); // bottom support
-	translate([-17.5-Nozzle,5,0]) color("green") cube([19,Nozzle,19]); // bottom support
-	translate([-17.5,18.5-Nozzle,0]) color("purple") cube([19,Nozzle,19]); // top support
-	translate([1,-7,0]) color("plum") cube([Nozzle,8,19]); // end support
-	// Loop2 side support
-	translate([73,-4,0]) color("black") cube([Nozzle,23,19]); // end support
-	translate([53.5,-4,0]) color("lightgray") cube([20,Nozzle,19]); // bottom support
-	translate([53.5,7,0]) color("red") cube([19,Nozzle,19]); // bottom support
-	translate([53.5,18+Nozzle,0]) color("purple") cube([20,Nozzle,19]); // top support
-	translate([53.5,-4,0]) color("plum") cube([Nozzle,9,19]); // end support
+module BeltMountScrew() {
+	translate([-35,26,14.5]) color("red") rotate([0,90,0]) cylinder(h=130,d=screw5);//Yes5mmInsert);
+	translate([-26,26,14.5]) color("blue") rotate([0,90,0]) cylinder(h=5,d=screw5hd);//Yes5mmInsert);
+	translate([77,26,14.5]) color("gray") rotate([0,90,0]) cylinder(h=5,d=screw5hd);//Yes5mmInsert);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,8 +312,8 @@ module BeltAttachmentV1() { // must print on side with supports from bed only
 module Loop1() {
 	translate([0,0,35]) rotate([-90,0,0]) {
 		difference() {
-			translate([-19.25,15,0]) color("plum") cubeX([22,28,17],2);
-			translate([-20,31,0]) beltLoop();
+			translate([-19.25,15,0]) color("plum") cubeX([22,33,17],2);
+			translate([-20,34,0]) beltLoop();
 		}
 	}
 }
@@ -245,11 +331,19 @@ module Loop2() {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TopMountBeltHoles(Screw=Yes3mmInsert()) {
-	color("red") cylinder(h = GetHoleLen3mm(Screw), d = Screw);
-	color("blue") hull() {
-		translate([26,0,0]) cylinder(h = GetHoleLen3mm(Screw), d = Screw);
-		translate([28,0,0]) cylinder(h = GetHoleLen3mm(Screw), d = Screw);
+module TopMountBeltHoles(Screw=Yes3mmInsert(UseLarge3mmInsert),UseHull=1) {
+	if(UseHull) {
+		color("blue") hull() {
+			translate([26,0,0]) cylinder(h=20,d= Screw);
+			translate([29,0,0]) cylinder(h = 20, d = Screw);
+		}
+		color("red") hull() {
+			translate([-1,0,0])	cylinder(h = 20, d = Screw);
+			translate([2,0,0])	cylinder(h = 20, d = Screw);
+		}
+	} else {
+	color("red") cylinder(h = 20, d = Screw);
+		translate([27,0,0]) cylinder(h=20,d= Screw);
 	}
 }
 //////////////////////////////////////////////////////////////////////////
@@ -301,37 +395,17 @@ module XIdlerH(IdlerScrew=Yes5mmInsert()) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module XEnd(MTSS=0) {  // idler side
-	mgnbase(0,3,1,1);
-	if(MTSS)
-		translate([5,-TR8_offset-2,TR8_Height-9]) rotate([0,90,0]) ZNutMTSS8();
-	else {	
-		translate([39,-TR8_offset-2,TR8_Height-9]) rotate([0,90,180]) ZNutTR8();
-	}
 	difference() {
-		translate([0,-12,0]) color("pink") cubeX([MGN12HLength,15,Thickness],2);
-		//translate([45,-TR8_offset-2,TR8_Height-10]) rotate([0,90,0]) TR8_nut();
+		mgnbase(0,-22,1,1);
 		if(MTSS)
-			translate([-1,-TR8_offset-2,TR8_Height-9]) rotate([0,90,0]) color("blue") cylinder(h=30,d=MTSSR8d);
+			translate([-1,-TR8_offset+8,TR8_Height-9]) rotate([0,90,0]) color("blue") cylinder(h=30,d=MTSSR8d);
 		else
-			translate([5,-TR8_offset-30,TR8_Height-10]) rotate([0,90,0]) TR8_nut();
+			translate([25,-TR8_offset+8,TR8_Height-9]) rotate([0,270,0]) TR8_nut();
 	}
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module XEnd2(MTSS=0) {// motor side
-	mgnbase(0,3,1,1);
 	if(MTSS)
-		translate([32,-TR8_offset-30,TR8_Height-9]) rotate([180,90,0]) ZNutMTSS8();
+		translate([5,-TR8_offset+8,TR8_Height-9]) rotate([0,90,0]) ZNutMTSS8();
 	else {	
-		translate([-2,-TR8_offset-30,TR8_Height-9]) rotate([0,90,0]) ZNutTR8();
-	}
-	difference() {
-		translate([0,-38.5,0]) color("pink") cubeX([MGN12HLength-12,45,Thickness],2);
-		if(MTSS)
-			translate([7,-TR8_offset-30,TR8_Height-10]) rotate([0,90,0]) color("blue") cylinder(h=25,d=MTSSR8d);
-		else
-			translate([5,-TR8_offset-30,TR8_Height-10]) rotate([0,90,0]) TR8_nut();
+		translate([39,-TR8_offset+8,TR8_Height-9]) rotate([0,90,180]) ZNutTR8();
 	}
 }
 
@@ -339,17 +413,17 @@ module XEnd2(MTSS=0) {// motor side
 
 module XEndMGNOn2020(MTSS=0) {  // Add the leadscrew mount
 	difference() {
-		mgnbase(10,1,0,0,9);
-		translate([10,14,0]) MountingHoles2020();
+		mgnbase(10,-22,0,0,9);
+		translate([10,20,0]) MountingHoles2020();
+		if(MTSS)
+			translate([-1,-TR8_offset+8,TR8_Height-10]) rotate([0,90,0]) color("blue") cylinder(h=30,d=MTSSR8d);
+		else
+			translate([25,-TR8_offset+8,TR8_Height-9]) rotate([0,90,0]) TR8_nut();
 	}
 	if(MTSS)
-		translate([5,-TR8_offset-2,TR8_Height-10]) rotate([0,90,0]) ZNutMTSS8();
+		translate([5,-TR8_offset+8,TR8_Height-10]) rotate([0,90,0]) ZNutMTSS8();
 	else	
-		translate([5,-TR8_offset-2,TR8_Height-10]) rotate([0,90,0]) ZNutTR8();
-	difference() {
-		translate([0,-5,0]) color("pink") cube([MGN12HLength,5,Thickness]);
-		translate([9,-TR8_offset-2,TR8_Height-10]) rotate([0,90,0]) TR8_nut();
-	}
+		translate([5,-TR8_offset+8,TR8_Height-10]) rotate([0,90,0]) ZNutTR8();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -358,7 +432,7 @@ module ZNutTR8() {
 	difference() {
 		ZNutFrame();
 		translate([0,0,TR8_flange_thickness]) TR8_nut();
-		translate([0,0,GetHoleLen3mm(Yes3mmInsert())-20]) TR8_mounting_holes();
+		translate([0,0,GetHoleLen3mm()-20]) TR8_mounting_holes();
 		translate([TR8_flange_dia-11.8,-TR8_flange_dia/2-2,-1]) color("gray") cube([TR8_flange_dia+5,TR8_flange_dia+5,TR8_ht+5]);
 	}
 }
@@ -380,14 +454,14 @@ module ZNutMTSS8() {
 		translate([0,0,-2]) color("cyan") cylinder(h=MTSSR8l+2,d=MTSSR8d);
 		translate([0,0,-3]) color("purple") cylinder(h=TR8_ht+5,d=9);
 		translate([TR8_flange_dia-11.8,-TR8_flange_dia/2-2,-1]) color("gray") cube([TR8_flange_dia+5,TR8_flange_dia+5,TR8_ht+5]);
-		MTSSGrubScrewHole(Yes3mmInsert(),-18,0,TR8_ht/2-2);
+		MTSSGrubScrewHole(Yes3mmInsert(UseLarge3mmInsert),-18,0,TR8_ht/2-2);
 	}
-	MTSSGrubScrew(Yes3mmInsert(),-18,0,TR8_ht/2-2);
+	MTSSGrubScrew(Yes3mmInsert(UseLarge3mmInsert),-18,0,TR8_ht/2-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module MTSSGrubScrew(Screw=Yes3mmInsert(),X=0,Y=0,Z=0) {
+module MTSSGrubScrew(Screw=Yes3mmInsert(UseLarge3mmInsert),X=0,Y=0,Z=0) {
 	difference() {
 		hull() {
 			translate([X,Y,Z]) rotate([0,90,0]) cylinder(h=5,d=Screw+2);
@@ -400,22 +474,22 @@ module MTSSGrubScrew(Screw=Yes3mmInsert(),X=0,Y=0,Z=0) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module MTSSGrubScrewHole(Screw=Yes3mmInsert(),X=0,Y=9,Z=0) {
+module MTSSGrubScrewHole(Screw=Yes3mmInsert(UseLarge3mmInsert),X=0,Y=9,Z=0) {
 	translate([X-2,Y,Z]) rotate([0,90,0]) cylinder(h=20,d=Screw);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module mgnbase(X=0,Y=0,Z=0,Two2020=0,AddLength=0) {
 	difference() {
-		color("cyan") cubeX([MGN12HLength,MGN12HWidth+MountWidth+AddLength,Thickness],2);
-		translate([MGN12HLength/4+1,12,-2]) mgnscrewholes();
-		translate([MGN12HLength/4+1,12,-Thickness+3]) mgnscountersink();
+		color("cyan") cubeX([MGN12HLength,MGN12HWidth+MountWidth+AddLength+5,Thickness],2);
+		translate([MGN12HLength/4+1,32,-2]) mgnscrewholes();
+		translate([MGN12HLength/4+1,32,-Thickness+4]) mgnscountersink();
 		translate([X,Y,Z]) MountingHoles2020(Two2020);
-		translate([22,22,-1]) color("blue") cylinder(h=10,d=20); // plastic reduction
+		translate([22,42,-1]) color("blue") cylinder(h=10,d=20); // plastic reduction
 	}
 	difference() {
-		translate([5,10,Z+2]) color("black") cube([35,25,LayerThickness]); // countersink support
-		translate([22,22,-1]) color("blue") cylinder(h=10,d=20); // plastic reduction
+		translate([5,30,4]) color("black") cube([35,25,LayerThickness]); // countersink support
+		translate([22,42,-1]) color("blue") cylinder(h=10,d=20); // plastic reduction
 	}
 }
 
@@ -460,44 +534,10 @@ module TR8_nut() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module TR8_mounting_holes() {
-	translate([0,TR8_mounting_holes_offset/2,-2]) color("blue") cylinder(h=40,d=Yes3mmInsert(),$fn=100);
-	translate([0,-TR8_mounting_holes_offset/2,-2]) color("cyan") cylinder(h=40,d=Yes3mmInsert(),$fn=100);
-	translate([TR8_mounting_holes_offset/2,0,-2]) color("gray") cylinder(h=40,d=Yes3mmInsert(),$fn=100);
-	translate([-TR8_mounting_holes_offset/2,0,-2]) color("black") cylinder(h=40,d=Yes3mmInsert(),$fn=100);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module MotorMount() {
-	difference() {
-		translate([0,-2.5,0]) color("red") cubeX([55,55,4],2);
-		translate([28,25,-1]) color("blue") NEMA17_parallel_holes(6,10);
-	}
-	difference() {
-		translate([0,-2.5,0]) color("yellow") cubeX([4,55,45],2);
-		translate([-2,27.5+MotorOffset,10]) MSSideHoles();
-	}
-	SideSupports();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-module XIdler() {
-	difference() {
-		union() {
-			translate([0,-4,0]) color("cyan") cubeX([50,28,Thickness],2);
-			translate([-Thickness+4,-TR8_flange_dia/4+1.5,0]) color("blue")
-				cubeX([Thickness,28,TR8_flange_dia+Thickness/2],2);
-		}
-		translate([12,Thickness/2+11.5,9]) rotate([90,90,90]) MSSideHoles();
-		translate([-13,Thickness/2+1,Thickness/2+TR8_flange_dia/2]) rotate([0,90,0]) color("red") cylinder(h=20,d=screw5);
-		translate([0,Thickness/2+1,Thickness/2+TR8_flange_dia/2]) rotate([0,90,0]) color("purple") cylinder(h=5,d=nut5,$fn=6);
-		translate([0,12,1]) mgnscountersink(screw5hd,20);
-	}
-	difference() {
-		IdlerSuppoerts();
-		translate([0,12,1]) mgnscountersink(screw5hd,10);
-	}
+	translate([0,TR8_mounting_holes_offset/2,-2]) color("blue") cylinder(h=40,d=Yes3mmInsert(UseLarge3mmInsert),$fn=100);
+	translate([0,-TR8_mounting_holes_offset/2,-2]) color("cyan") cylinder(h=40,d=Yes3mmInsert(UseLarge3mmInsert),$fn=100);
+	translate([TR8_mounting_holes_offset/2,0,-2]) color("gray") cylinder(h=40,d=Yes3mmInsert(UseLarge3mmInsert),$fn=100);
+	translate([-TR8_mounting_holes_offset/2,0,-2]) color("black") cylinder(h=40,d=Yes3mmInsert(UseLarge3mmInsert),$fn=100);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -539,14 +579,14 @@ module SideSupports() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module CornerBraces(Qty=4,X=0,Y=0) {
+module AxisBrace(Qty=1,X=0,Y=0) {
 	for(x = [0 : Qty-1]) {
 		translate([X,x*65+Y,0]) difference() {
 			color("blue") hull() {
 				translate([40,0,0]) cubeX([20,60,5],2);
-				translate([2,0,0]) cubeX([1,20,5],2);
+				translate([2,20,0]) cubeX([1,20,5],2);
 			}
-			translate([10,10,-3]) 2020ScrewHoles(1);
+			translate([10,30,-3]) 2020ScrewHoles(1);
 			translate([50,10,-3]) 2020ScrewHoles();
 			translate([50,30,-3]) rotate([0,0,90]) 2020ScrewHoles(1);
 		}
@@ -570,53 +610,121 @@ module 2020ScrewHoles(Two=0) {
 module BedMount(Qty=2) {
 	for(x = [0 : Qty-1]) {
 		translate([0,x*45,0]) {
-			translate([70.5,0,8]) cube([1,40,5]);
 			difference() {
-				color("cyan") cubeX([140,40,screw4cs*2],2);
-				translate([59-10,6,-2]) mgnscrewholes(screw3);
-				translate([59-10,6,-screw3cs+2]) mgnscountersink(screw3hd);
-				translate([25.5 - 20.5,7.5,0]) BedScrewHoles(Yes3mmInsert());
-				translate([41+56.5,7.5,0]) BedScrewHoles(Yes3mmInsert());
+				translate([-55,0,0]) color("cyan") cubeX([250,40,screw4cs*2],2);
+				translate([59,10,-2]) mgnscrewholes(screw3);
+				translate([59,10,-screw4cs*2+screw3cs*1.5]) mgnscountersink(screw3hd);
+				translate([6.5,7.5,0]) BedScrewHoles(Yes3mmInsert(UseLarge3mmInsert));
+				translate([96,7.5,0]) BedScrewHoles(Yes3mmInsert(UseLarge3mmInsert));
 			}
+			translate([54,7,screw3cs*1.5]) color("black") cube([30,30,LayerThickness]);
+			difference() {
+				translate([-55,0,1]) color("green") cubeX([4,40,screw4cs*2+3],1.5);
+				translate([25.5 - 20.5,7.5,0]) BedScrewHoles(Yes3mmInsert(UseLarge3mmInsert));
+				translate([-58,15,screw4cs*2+2]) color("black") cubeX([10,10,10],2); // notch for the bumper at the end of the mgn
+			}
+			difference() {
+				translate([191,0,1]) color("purple") cubeX([4,40,screw4cs*2+3],1.5);
+				translate([25.5 - 20.5,7.5,0]) BedScrewHoles(Yes3mmInsert(UseLarge3mmInsert));
+				translate([188,15,screw4cs*2+2]) color("white") cubeX([10,10,10],2); // notch for the bumper at the end of the mgn
+			}
+			translate([-55,0,1]) color("gray") cubeX([250,3,screw4cs*2+3],1.5);
+			translate([-55,36.99,1]) color("white") cubeX([250,3,screw4cs*2+3],1.5);
+		}
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BedMount2020(Qty=2) {
+	for(x = [0 : Qty-1]) {
+		translate([0,x*75,0]) {
+			difference() {
+				union() {
+					color("cyan") cubeX([307,40,6],2);
+					translate([0,35,0]) color("blue") cubeX([20,35,6],2);
+					translate([307-20,35,0]) color("red") cubeX([20,35,6],2);
+				}
+				translate([Bed1212Height/2-10,9,-2]) mgnscrewholes(screw3);
+				translate([Bed1212Height/2-10,9,3]) mgnscountersink(screw3hd);
+				translate([10,57,0]) BedScrewHoles2020(screw5,0);
+				translate([10,7,0]) BedScrewHoles2020(screw5,0);
+				translate([Bed1212Height/2-50,7,0]) BedScrewHoles2020(screw5,0);
+				translate([Bed1212Height/2-100,7,0]) BedScrewHoles2020(screw5,0);
+				translate([Bed1212Height-10.5,57.5,0]) BedScrewHoles2020(screw5,0);
+				translate([Bed1212Height-10.5,7.5,0]) BedScrewHoles2020(screw5,0);
+				translate([Bed1212Height/2+50,7,0]) BedScrewHoles2020(screw5,0);
+				translate([Bed1212Height/2+100,7,0]) BedScrewHoles2020(screw5,0);
+			}
+			translate([20,35,0]) color("green") cubeX([307-40,5,10],2);
 		}
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module BedScrewHoles(Screw=Yes3mmInsert()) {
-	translate([0,0,-2]) color("red") cylinder(h=GetHoleLen3mm(Screw)*2,d=Screw);
-	translate([40.2-4,0,-2]) color("blue") cylinder(h=GetHoleLen3mm(Screw)*2,d=Screw);
-	translate([0,28.7-4,-2]) color("gray") cylinder(h=GetHoleLen3mm(Screw)*2,d=Screw);
-	translate([40.2-4,28.7-4,-2]) color("white") cylinder(h=GetHoleLen3mm(Screw)*2,d=Screw);
+module BedScrewHoles(Screw=Yes3mmInsert(UseLarge3mmInsert)) {
+	translate([0,0,-2]) color("red") cylinder(h=GetHoleLen3mm()*2,d=Screw);
+	translate([40.2-4,0,-2]) color("blue") cylinder(h=GetHoleLen3mm()*2,d=Screw);
+	translate([0,28.7-4,-2]) color("gray") cylinder(h=GetHoleLen3mm()*2,d=Screw);
+	translate([40.2-4,28.7-4,-2]) color("white") cylinder(h=GetHoleLen3mm()*2,d=Screw);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BedScrewHoles2020(Screw=Yes5mmInsert(),Triple=1) {
+	translate([0,0,-2]) color("red") cylinder(h=GetHoleLen3mm()*2,d=Screw);
+	if(Triple) {
+		translate([0,28.7-4,-2]) color("gray") cylinder(h=GetHoleLen3mm()*2,d=Screw);
+		translate([0,55,-2]) color("white") cylinder(h=GetHoleLen3mm()*2,d=Screw);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module XCarriageForMGN() {
+module XCarriageForMGN(AddExtruder=0) {
 	difference() {
-		cubeX([HorizontallCarriageWidth,MGN12HWidth,wall],2);
-		translate([15,0,0]) {
-			mgnscrewholes();
-			mgnscountersink();
+		color("cyan") cubeX([HorizontallCarriageWidth,MGN12HWidth+5,wall],2);
+		translate([27,6,0]) mgnscrewholes();
+		translate([27,6,5])  mgnscountersink();
+		translate([37,30,wall/2])
+		ExtruderMountHolesFn();
+	}
+	difference() { // belt mount
+		translate([HorizontallCarriageWidth/2-20,MGN12HWidth,0]) color("red") cubeX([40,40,wall],2);
+		translate([27,6,0]) mgnscrewholes();
+		translate([27,6,5])  mgnscountersink();
+		translate([HorizontallCarriageWidth/2-14,70,4]) rotate([90,0,0]) TopMountBeltHoles(Yes3mmInsert(UseLarge3mmInsert),0);
+	}
+	if(AddExtruder) {
+		difference() {
+			translate([37,0,32]) rotate([-90,0,0]) Extruder(1,5,1);
+			translate([27,6,0]) mgnscrewholes();
+			translate([27,6,5])  mgnscountersink();
 		}
-		translate([37,40,wall/2]) ExtruderMountHolesFn();
+		translate([47.5,41,wall-2]) color("blue") cubeX([10,10,8],2);
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ExtruderMountHolesFn(Screw=Yes3mmInsert(),Length=GetHoleLen3mm(),Fragments=100) {
-		// screw holes to mount extruder plate
-		translate([0,-20,0]) rotate([90,0,0]) color("blue") cylinder(h = Length, d = Screw, $fn=Fragments);
-		translate([HorizontallCarriageWidth/2-5,-20,0]) rotate([90,0,0]) color("red")
-			cylinder(h = Length, d = Screw, $fn=Fragments);
-		translate([-(HorizontallCarriageWidth/2-5),-20,0]) rotate([90,0,0]) color("black")
-			cylinder(h = Length, d = Screw, $fn=Fragments);
-		//translate([HorizontallCarriageWidth/4-2,-20,0]) rotate([90,0,0]) color("gray")
-		//	cylinder(h = Length, d = Screw, $fn=Fragments);
-		//translate([-(HorizontallCarriageWidth/4-2),-20,0]) rotate([90,0,0]) color("cyan")
-		//	cylinder(h = Length, d = Screw, $fn=Fragments);
+module ExtruderMountHolesFn(Screw=Yes3mmInsert(UseLarge3mmInsert),Length=GetHoleLen3mm(),Fragments=100) {
+	// screw holes to mount extruder plate
+	translate([0,-20,0]) rotate([90,0,0]) color("blue") cylinder(h = Length, d = Screw, $fn=Fragments);
+	translate([HorizontallCarriageWidth/2-5,-20,0]) rotate([90,0,0]) color("red")
+		cylinder(h = Length, d = Screw, $fn=Fragments);
+	translate([-(HorizontallCarriageWidth/2-5),-20,0]) rotate([90,0,0]) color("black")
+		cylinder(h = Length, d = Screw, $fn=Fragments);
+	translate([HorizontallCarriageWidth/4-2,-20,0]) rotate([90,0,0]) color("gray")
+		cylinder(h = Length, d = Screw, $fn=Fragments);
+	translate([-(HorizontallCarriageWidth/4-2),-20,0]) rotate([90,0,0]) color("cyan")
+		cylinder(h = Length, d = Screw, $fn=Fragments);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+module printchar(String,Height=1.5,Size=4,Font="Liberation Sans",Color="coral") { // print something
+	color(Color) linear_extrude(height = Height) text(String, font = Font,size=Size);
 }
 
 ///////////////////// end of mgn.scad ////////////////////////////////////////////////////////////////////////////

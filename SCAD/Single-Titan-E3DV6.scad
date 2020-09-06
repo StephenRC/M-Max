@@ -70,7 +70,7 @@ module ExtruderPlatform(recess=0) // bolt-on extruder platform
 	difference() {
 		color("red") cubeX([HorizontallCarriageWidth,heightE,wall],radius=2,center=true); // extruder side
 		translate([0,-height/3-6,0]) ExtruderPlatformNotch(); // extruder notch
-		ExtruderMountHoles(screw3);	// screw holes to mount extruder plate
+		translate([0,26,10]) rotate([90,0,0]) ExtruderMountHoles(screw3);	// screw holes to mount extruder plate
 		// extruder mounting holes
 		color("black") hull() {
 			translate([extruder/2+2,-heightE/2+14,-8]) cylinder(h = ExtruderThickness+10,r = screw4/2);
@@ -107,11 +107,11 @@ module TitanExtruderPlatform(recess=2,InnerSupport=0,MountingHoles=1,Aero=0) {
 		union() {
 			translate([-37.5+17,-37,-wall/2])
 				color("cyan") cubeX([HorizontallCarriageWidth+ShiftHotend2/1.3-15,heightE+8,wall],2); // extruder side
-			translate([14,23,-wall/2]) color("plum") cubeX([23,wall,wall],2);
+			translate([14,24,-wall/2]) color("plum") cubeX([23,wall-1,wall],2);
 			translate([-38,23,-wall/2]) color("blue") cubeX([25,wall,wall],2);
 		}
 		//if(MountingHoles && Yes3mmInsert()==screw3)
-		translate([0,1,0]) ExtruderMountHoles();
+		translate([0,27,10]) rotate([90,0,0]) ExtruderMountHoles();
  		if(LEDLight) LEDRingMount();
 		if(Aero) {
 			translate([-19,3,-5]) color("purple") cylinder(wall*2,d=30); // clearance for aero titan e3dv6 heater block
@@ -124,8 +124,8 @@ module TitanExtruderPlatform(recess=2,InnerSupport=0,MountingHoles=1,Aero=0) {
 		}
 	    
 		
-		translate([-13,76,0]) IRMountHoles(Yes3mmInsert()); // mounting holes for irsensor bracket
-		translate([-11,20,44.5]) rotate([90,0,0]) PCFanMounting(Yes3mmInsert());
+		translate([-13,85,0]) IRMountHoles(Yes3mmInsert()); // mounting holes for irsensor bracket
+		translate([-17,20,44.5]) rotate([90,0,0]) PCFanMounting(Yes3mmInsert());
 		if(!Use3mmInsert) translate([15,15,0]) rotate([90,0,0]) PCFanNutHoles(nut3);
 
 	}
@@ -173,7 +173,7 @@ module MirrorTitanExtruderPlatform(recess=2,InnerSupport=0,MountingHoles=1,Mirro
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module FanMountHoles(Screw=Yes3mmInsert(),Left=1) {	// fan mounting holes
-	ScrewL=GetHoleLen3mm(Screw);
+	ScrewL=GetHoleLen3mm();
 	translate([-extruder/2+35,-heightE/2 - 1.8*wall,heightE - extruder_back - fan_spacing/2 + fan_offset])
 		rotate([0,90,0]) color("pink") cylinder(h =ScrewL,d = Screw);
 	translate([-extruder/2+35,-heightE/2 - 1.8*wall,heightE - extruder_back + fan_spacing/2 + fan_offset])
@@ -197,8 +197,8 @@ module FanNutHoles(Nut=nut3,Left=1) {	// fan mounting holes
 
 module IRMountHoles(Screw=Yes3mmInsert()) // ir screw holes for mounting to extruder plate
 {
-	translate([Spacing,-107,0]) rotate([90,0,0]) color("blue") cylinder(h=GetHoleLen3mm(Screw),d=Yes3mmInsert());
-	translate([0,-107,0]) rotate([90,0,0]) color("red") cylinder(h=(GetHoleLen3mm(Screw)),d=Screw);
+	translate([Spacing,-107,0]) rotate([90,0,0]) color("blue") cylinder(h=GetHoleLen3mm(),d=Yes3mmInsert());
+	translate([0,-107,0]) rotate([90,0,0]) color("red") cylinder(h=(GetHoleLen3mm()),d=Screw);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +225,7 @@ module BLTouch_Holes(recess=0) {
 
 module LEDRingMount(Screw=Yes5mmInsert()) {
 	// a mounting hole for a holder for 75mm circle led
-	translate([30.5+ShiftHotend2,2+ShiftHotend,-10]) color("lightgray") cylinder(h=GetHoleLen5mm(Yes5mmInsert()),d=Screw);
+	translate([30.5+ShiftHotend2,2+ShiftHotend,-10]) color("lightgray") cylinder(h=GetHoleLen5mm(),d=Screw);
 	if(!Use5mmInsert) translate([30.5+ShiftHotend2,12.5+ShiftHotend,1.5]) color("black") nut(nut5,5);
 }
 
@@ -233,9 +233,9 @@ module LEDRingMount(Screw=Yes5mmInsert()) {
 
 module PCFanMounting(Screw=Yes3mmInsert()) {
 		translate([-extruder/2+54,-heightE/2 - 1.8*wall,heightE - extruder_back - PCfan_spacing/2 + fan_offset])
-			rotate([0,90,0]) color("red") cylinder(h = GetHoleLen3mm(Screw),d = Yes3mmInsert());
+			rotate([0,90,0]) color("red") cylinder(h = GetHoleLen3mm(),d = Yes3mmInsert());
 		translate([-extruder/2+54,-heightE/2 - 1.8*wall,heightE - extruder_back + fan_spacing/2 + fan_offset])
-			rotate([0,90,0]) color("blue") cylinder(h = GetHoleLen3mm(Screw),d = Yes3mmInsert());
+			rotate([0,90,0]) color("blue") cylinder(h = GetHoleLen3mm(),d = Yes3mmInsert());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -297,9 +297,13 @@ module TitanSupport(Clear=0, Screw=Yes3mmInsert()) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ExtruderMountHoles(Screw=screw3) {		// screw holes to mount extruder plate
-	translate([0,30-wall/2,-10]) color("red") cylinder(h = 25, d = Screw); // center
-	translate([HorizontallCarriageWidth/2-5,30-wall/2,-10]) color("white") cylinder(h = 25, d = Screw); // right
-	translate([-(HorizontallCarriageWidth/2-5),30-wall/2,-10]) color("lightblue") cylinder(h = 25, d = Screw); // left
+module ExtruderMountHoles(Screw=screw3,All=1) {		// screw holes to mount extruder plate
+	translate([0,0,0]) rotate([90,0,0]) color("blue") cylinder(h = 20, d = Screw);
+	translate([HorizontallCarriageWidth/2-5,0,0]) rotate([90,0,0]) color("red") cylinder(h = 20, d = Screw);
+	translate([-(HorizontallCarriageWidth/2-5),0,0]) rotate([90,0,0]) color("black") cylinder(h = 20, d = Screw);
+	if(All) {	
+		translate([HorizontallCarriageWidth/4-2,0,0]) rotate([90,0,0]) color("gray") cylinder(h = 20, d = Screw);
+		translate([-(HorizontallCarriageWidth/4-2),0,0]) rotate([90,0,0]) color("cyan") cylinder(h = 20, d = Screw);
+	}
 }
 
