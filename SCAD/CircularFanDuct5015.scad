@@ -16,10 +16,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 use </inc/cubex.scad>
 include <inc/screwsizes.scad>
-//Use4mmInsert=1;
-use <brassfunctions.scad>
+use <brassinserts.scad>
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
+Use4mmInsert=1;
 Thickness = 6.5;
 MHeight = 6;
 MWidth = 60;
@@ -32,6 +32,7 @@ BlowerWidth=15;
 BlowerLength=20;
 BlowerScrewUpper=45;
 BlowerScrewUpperOffset=3.5;
+LayerHeight=0.3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Blower5015Output();
@@ -42,7 +43,10 @@ CircularDuct(1,0.9,-0.3,25,0); // titan aero *** needs testing for fit ***
 
 module CircularDuct(ShiftLR=0,Angle=0,ShiftBracketUD=0,ScrewHZ=0,Show=0) {
 	difference() {  // mounting bracket
-		translate([-14+ShiftLR,-5,16.5+ShiftBracketUD]) rotate([90,0,0]) CircularFanBase(ScrewHZ,ScrewHZ,ShiftLR,Angle);
+		union() {
+			translate([-14+ShiftLR,-5,16.5+ShiftBracketUD]) rotate([90,0,0]) CircularFanBase(ScrewHZ,ScrewHZ,ShiftLR,Angle);
+			translate([42,-17.5,0]) color("black") cylinder(h=LayerHeight,d=15);  // CircularFanBase support tab
+		}
 		translate([-17,-28,1]) color("red") cube([35,15,8]);
 		translate([17,-21,1]) rotate([0,0,48]) color("brown") cube([10,10,8]);
 		translate([-17,-21,1]) rotate([0,0,48]) color("black") cube([10,10,8]);
@@ -56,6 +60,7 @@ module CircularDuct(ShiftLR=0,Angle=0,ShiftBracketUD=0,ScrewHZ=0,Show=0) {
 	}
 	difference() {
 		MainDuct();
+		translate([-11,-26.2,3]) color("green") cube([21,6,11]);
 //		translate([-20,-28,5]) color("white") cube([50,50,50]);
 	}
 }
@@ -100,12 +105,12 @@ module MainDuct() {
 
 module Blower5015Output() { // the output conector for the blower
 	difference() {
-		color("cyan") cubeX([BlowerLength+1.5,BlowerWidth+1.5,15],1);
+		translate([-1,0,0]) color("cyan") cubeX([BlowerLength+3,BlowerWidth+2,15],1);
 		translate([0.7,0.7,1]) color("red") cube([BlowerLength,BlowerWidth,15]);
 		translate([-1.5,-6,1]) color("white") cube([25,10,8]);
 	}
 	difference() {
-		translate([-2.5,1,0]) color("green") cubeX([27,5,11],1);
+		translate([-2,0,0]) color("green") cubeX([27,6.5,11],1);
 		translate([0,-6,8]) color("khaki") cube([BlowerLength+1,BlowerWidth,4]);
 		translate([-1.5,-6,1]) color("white") cube([25,10,8]);
 		translate([0,-6,1]) color("blue") cube([BlowerLength+1,BlowerWidth,8]);
@@ -115,16 +120,13 @@ module Blower5015Output() { // the output conector for the blower
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CircularFanBase(Height=55,ScrewHZ=0,ShiftLR,Angle=0) {
-	echo("Height:",Height);
-	echo("ScrewHZ:",ScrewHZ);
 	difference() {
 		rotate([Angle,0,0])  difference() {
 			union() {
 				color("plum") translate([-3,-16,10]) cubeX([60,Height,5],2);
-				translate([ShiftLR-BlowerScrewUpperOffset-1,-16.15,10]) color("red") cubeX([9,64,5],2);
+				translate([ShiftLR-BlowerScrewUpperOffset+4,-15.15,10]) color("red") cubeX([11,64,5],2);
 			}
-			translate([ShiftLR-BlowerScrewUpperOffset,0.5,9]) FanMount5015Holes(-4,Yes4mmInsert());
-			//translate([2-ShiftLR,0.5,9]) FanMount5015Holes(-4,screw2t);
+			translate([ShiftLR-BlowerScrewUpperOffset+6,0.5,9]) FanMount5015Holes(-4,Yes4mmInsert(Use4mmInsert));
 		}
 		translate([0,0,12]) rotate([90,0,0]) BracketMount(-ScrewHZ);
 	}

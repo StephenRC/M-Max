@@ -19,9 +19,9 @@ length = 60;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //spool();
-//translate([-10,10,0])
-	spacer(70); // fill in 8mm rod, so you don't have to screw the nut on/off for what seems like forever
+spacer(35); // fill in 8mm rod, so you don't have to screw the nut on/off for what seems like forever
 
+translate([20,0,0]) spacer(60); // fill in 8mm rod, so you don't have to screw the nut on/off for what seems like forever
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

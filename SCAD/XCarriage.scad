@@ -1,23 +1,25 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MMAX-X-Carriage - x carriage for makerslide
+// XCarriage - x carriage for M-Max using makerslide
 // created: 2/3/2014
-// last modified: 8/9/2020
+// last modified: 9/16/20
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 9/2/18	- Original file modified for MMAX, extruder plate and top mounting belt removed
 // 12/10/18	- Changed to loop type bel holder on carraiage
 // 5/6/19	- Added carriage_v2() from corexy-x-carriage.scad
 // 4/9/20	- Added ability to use 3mm brass inseerts
 // 8/8/20	- Renamed Carriage_v2() to Carriage(), add use of 5mm insertes in Carriage()
+// 9/16/20	- Added a complete version of the xcarraige and extruder with the belt mount
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // uses http://www.thingiverse.com/thing:211344 for the y belt
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
-Use3mmInsert=1;
-Use5mmInsert=1;
-include <BrassFunctions.scad>
+include <Brassinserts.scad>
 use <ybeltclamp.scad>
 use <Single-Titan-E3DV6.scad>
+use <HorizontalXBeltDrive.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Use3mmInsert=1;
+Use5mmInsert=1;
 //Tshift=0;	// shift titan knob clearance notch
 BeltShift=10; // move belt holder up/down
 BeltHoleShift=5; // move belt holder up/down
@@ -30,9 +32,33 @@ HorizontallCarriageHeight=20;
 //Belt_Holder();
 //Carriage(); // front; Titan=0,Tshift=0,Rear=0
 //Carriage(0,0,0,0,0,1); // rear
-XCarriageWithExtruder(1,1);
+//XCarriageWithExtruder(1,1);
+XCarriageFullAssembly(1);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module XCarriageFullAssembly(Titan) {
+	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,1); // front
+	translate([37.5,-31,0]) Extruder(2,5,1,0);
+	translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connector
+	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1); // rear
+	difference() {
+		union() {
+			translate([9.5,-wall,80]) rotate([180,0,0]) BeltAttachment(0,0,0);
+			translate([12,-wall,80]) color("red") cubeX([10,wall,13],2);
+			translate([12,33.3,80]) color("pink") cubeX([10,wall,13],2);
+			translate([52,-wall,80]) color("blue") cubeX([10,wall,13],2);
+			translate([52,33.3,80]) color("green") cubeX([10,wall,13],2);
+		}
+		translate([16,-10,70]) color("khaki") rotate([0,-45,0]) cubeX([10,55,25],2);
+		translate([52,-10,78]) color("gray") rotate([0,45,0]) cubeX([10,55,25],2);
+	}
+	translate([0,33.3,-4]) color("black") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
+	translate([0,-wall,-4]) color("white") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module XCarriageWithExtruder(Titan,DoRear=1) {
 	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0); // front
 	translate([37.5,-31,0]) Extruder(1,5,1);
@@ -316,13 +342,13 @@ module cableholder() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module TopMountBeltHoles(Screw=Yes3mmInsert()) {
-	translate([HorizontallCarriageWidth/4-5,height/2+2,0]) rotate([90,0,0]) color("red") cylinder(h = GetHoleLen3mm(), d = Screw);
-	translate([-(HorizontallCarriageWidth/4-5),height/2+2,0]) rotate([90,0,0]) color("blue") cylinder(h = GetHoleLen3mm(), d = Screw);
+	translate([HorizontallCarriageWidth/4-5,height/2+2,0]) rotate([90,0,0]) color("red") cylinder(h = 20, d = Screw);
+	translate([-(HorizontallCarriageWidth/4-5),height/2+2,0]) rotate([90,0,0]) color("blue") cylinder(h = 20, d = Screw);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ExtruderMountHolesFn(Screw=Yes3mmInsert(),Length=GetHoleLen3mm(),Fragments=100) {
+module ExtruderMountHolesFn(Screw=Yes3mmInsert(),Length=20,Fragments=100) {
 		// screw holes to mount extruder plate
 		translate([0,-20,0]) rotate([90,0,0]) color("blue") cylinder(h = Length, d = Screw, $fn=Fragments);
 		translate([HorizontallCarriageWidth/2-5,-20,0]) rotate([90,0,0]) color("red") cylinder(h = Length, d = Screw, $fn=Fragments);

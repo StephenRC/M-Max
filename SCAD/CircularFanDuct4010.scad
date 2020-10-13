@@ -2,7 +2,7 @@
 // FanDuct4010.scad
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created 8/10/2019
-// last upate 8/7/20
+// last upate 10/1/20
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 8/10/19	- Created fan duct of my own design
 // 8/12/19	- Added ability to set length
@@ -12,6 +12,7 @@
 // 7/4/20	- Made circular fan duct long enought for an titan aero
 // 8/1/20	- Made angle adjustable on CircularDuct() and cleaned up unused code
 // 8/7/20	- Removed more partial blockages inside and adjust the inside of the duct extensions
+// 10/1/20	- Added a tab to the CircularFanBase() to help prevent lifting
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 use </inc/cubex.scad>
 include <inc/screwsizes.scad>
@@ -26,32 +27,29 @@ MountingHoleHeight = 60; 	// screw holes may need adjusting when changing the fr
 ExtruderOffset = 18;		// adjusts extruder mounting holes from front edge
 FanSpacing = 32;			// hole spacing for a 40mm fan
 PCfan_spacing = 47;			// mount spacing to extruder platform
+LayerHeight=0.3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CircularDuct(1,0,-0.3,50,0); // Titan with an E3Dv6, with the extruder mount set up for a Titan Aero
+//CircularDuct(1,0,-0.3,50,0); // Titan with an E3Dv6, with the extruder mount set up for a Titan Aero
 	// ShiftLR=0,Angle=0,ShiftBracketUD=0,ScrewHZ=0,Show=0
+CircularDuct(2,0,-0.3,25,0); // titan aero
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CircularDuct(ShiftLR=0,Angle=0,ShiftBracketUD=0,ScrewHZ=0,Show=0) {
 	if(Show) translate([5.5,-21,30]) rotate([90,0,0]) Show4040();
 	difference() {  // mounting bracket
-		translate([-14+ShiftLR,-5,16.5+ShiftBracketUD]) rotate([90,0,0]) CircularFanBaseV2(ScrewHZ,ScrewHZ,ShiftLR,Angle);
+		union() {
+			translate([-14+ShiftLR,-5,16.5+ShiftBracketUD]) rotate([90,0,0]) CircularFanBase(ScrewHZ,ScrewHZ,ShiftLR,Angle);
+			translate([42,-17.5,0]) color("black") cylinder(h=LayerHeight,d=15);  // CircularFanBase support tab
+		}
 		translate([-17,-28,1]) color("red") cube([35,15,8]);
 		translate([17,-21,1]) rotate([0,0,48]) color("brown") cube([10,10,8]);
 		translate([-17,-21,1]) rotate([0,0,48]) color("black") cube([10,10,8]);
 	}
 	translate([-8,-0.75,0]) Blower4010Output();
-	difference() {
-		union() {
-			MainDuct();
-			translate([-14,-24,0]) color("green") cube([6,2,10]); // ****** will need adjusting if duct angle is changed
-			translate([13,-23,0]) color("blue") cube([6,4,10]);
-			translate([10,-22,0]) color("red") rotate([0,0,0]) cube([9,3,1]); // top filler
-		}
-		translate([12,-25,1]) color("black") cube([6,6,9]);
-		translate([12,-28,5]) color("gray") cube([6,6,8]);
-	}
-			translate([10,-22,9]) color("white") rotate([0,0,0]) cube([9,3,1]); // top filler
+	MainDuct();
+	translate([16,-22,0]) color("green") cube([3,1,10]); // ****** will need adjusting if duct angle is changed
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,8 +85,6 @@ module MainDuct() {
 				translate([1,-2,1]) color("pink") cube([10,30,8]);
 			}
 		}
-		translate([-14,-24.5,0]) color("blue") rotate([0,0,0]) cube([27,5,1]); // bottom filler
-		translate([-14,-22,9]) color("khaki") rotate([0,0,0]) cube([27,3,1]); // top filler
 	}
 }
 
@@ -149,7 +145,7 @@ module CircularDuctOuter() {
 			color("cyan") cylinder(h=10,d=55);
 			translate([0,0,-3]) color("blue") cylinder(h=15,d=30); // inner
 			translate([-10,5,-3]) color("plum") cube([20,30,15]);
-			translate([-14,-40,-5]) color("black") cube([27,20,20]);
+			translate([-8,-42,-5]) color("black") cube([27,20,20]);
 		}
 		translate([-17.5,0,11.5]) rotate([0,45,0]) color("black") cube([15,30,10]); //bevel
 		translate([0,0,8]) rotate([0,45,0]) color("white") cube([10,30,15]); //bevel

@@ -10,12 +10,13 @@
 include <MMAX_h.scad>
 use <ybeltclamp.scad>	// modified https://www.thingiverse.com/thing:863408
 use <inc/corner-tools.scad>
-use <SensorAndFanMounts.scad>
-use <Drill-Guide-for-2020.scad>
+use <SensorMounts.scad>
+use <DrillGuidefor2020AndBedFrame.scad>
+include <brassinserts.scad>
+//-------------------------------------------------------------------------------------------------------------
 Use3mmInsert=1; // set to 1 to use 3mm brass inserts
 Use5mmInsert=1;
-include <brassfunctions.scad>
-//-------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------
 ShiftTitanUp = -9;	// move motor +up/-down: -13:Titan Aero; -2.5: Titan w/e3dv6
 ShiftHotend = 0;		// move hotend opening front/rear
 ShiftHotend2 = -20;		// move hotend opening left/right
@@ -33,10 +34,11 @@ HeightIR = (HotendLength - IRBoardLength - IRGap) - irmount_height;	// height of
 LEDLight=1; // print LED ring mounting with spacer
 LEDSpacer=0;  // length need for titan is 8; length need for aero is 0
 //==================================================================================================
-
+//**** NOTE: heater blocker on a areo titan: heater side towards fan side
+//==================================================================================================
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Extruder(1,5,1);	// arg1: extruderplatform type
+Extruder(2,5,1,1);	// arg1: extruderplatform type
 					//	0 - flat plate platform for a Wades type extruder
 					//	1 - mirrored titan extruder platform
 					//	2 - titan extruder platform
@@ -50,7 +52,7 @@ Extruder(1,5,1);	// arg1: extruderplatform type
 					// arg 3: 0 - titan; 1 - aero
 /////////////////////////////////////////////////////////////////////////////////////////
 
-module Extruder(Extruder=0,Sensor=0,Aero=0) {
+module Extruder(Extruder=0,Sensor=0,Aero=0,ExtruderMountHoles=1) {
 	//if($preview) %translate([-100,-100,-5]) cube([200,200,1]);
 	if(Extruder == 0)
 		ExtruderPlatform(Sensor);	// for BLTouch: 0 = top mounting through hole, 1 - bottom mount in recess
@@ -58,9 +60,9 @@ module Extruder(Extruder=0,Sensor=0,Aero=0) {
 									// 3 - dc42's ir sensor
 	// args: recess=3,InnerSupport=0,MountingHoles=1,Mirror=0,Aero=0
 	if(Extruder == 1) // titan/E3Dv6 combo or titan aero
-			MirrorTitanExtruderPlatform(Sensor,0,1,1,Aero);
+			MirrorTitanExtruderPlatform(Sensor,0,ExtruderMountHoles,1,Aero);
 	if(Extruder == 2) // titan/E3Dv6 combo of  titan aero
-			MirrorTitanExtruderPlatform(Sensor,0,1,0,Aero); // not mirror version
+			MirrorTitanExtruderPlatform(Sensor,0,ExtruderMountHoles,0,Aero); // not mirror version
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,7 +83,7 @@ module ExtruderPlatform(recess=0) // bolt-on extruder platform
 			translate([-extruder/2-2,-heightE/2+14,-8]) cylinder(h = ExtruderThickness+10,r = screw4/2);
 		}
 		//translate([0,26,41+wall/2])
-		translate([-50,28,45]) rotate([90,0,0]) FanMountHoles(Yes3mmInsert());
+		translate([-50,28,45]) rotate([90,0,0]) FanMountHoles(Yes3mmInsert(Use3mmInsert));
 		if(recess==0 || recess==1) translate([0,-4,0]) BLTouch_Holes(recess);
 		if(recess == 2) translate([0,10,-6]) color("pink") cylinder(h=wall*2,r=psensord/2); // proximity sensor
 	}
@@ -110,8 +112,7 @@ module TitanExtruderPlatform(recess=2,InnerSupport=0,MountingHoles=1,Aero=0) {
 			translate([14,24,-wall/2]) color("plum") cubeX([23,wall-1,wall],2);
 			translate([-38,23,-wall/2]) color("blue") cubeX([25,wall,wall],2);
 		}
-		//if(MountingHoles && Yes3mmInsert()==screw3)
-		translate([0,27,10]) rotate([90,0,0]) ExtruderMountHoles();
+		if(MountingHoles) translate([0,27,10]) rotate([90,0,0]) ExtruderMountHoles();
  		if(LEDLight) LEDRingMount();
 		if(Aero) {
 			translate([-19,3,-5]) color("purple") cylinder(wall*2,d=30); // clearance for aero titan e3dv6 heater block
@@ -124,15 +125,15 @@ module TitanExtruderPlatform(recess=2,InnerSupport=0,MountingHoles=1,Aero=0) {
 		}
 	    
 		
-		translate([-13,85,0]) IRMountHoles(Yes3mmInsert()); // mounting holes for irsensor bracket
-		translate([-17,20,44.5]) rotate([90,0,0]) PCFanMounting(Yes3mmInsert());
+		translate([-13,85,0]) IRMountHoles(Yes3mmInsert(Use3mmInsert)); // mounting holes for irsensor bracket
+		translate([-17,20,44.5]) rotate([90,0,0]) PCFanMounting(Yes3mmInsert(Use3mmInsert));
 		if(!Use3mmInsert) translate([15,15,0]) rotate([90,0,0]) PCFanNutHoles(nut3);
 
 	}
 	if(LEDLight && LEDSpacer) translate([30,10,-4]) ScrewSpacer(LEDSpacer,screw5);
 	difference() {
 		translate([ShiftHotend2-0.5,-32,0]) rotate([90,0,90]) TitanMotorMount(0,0,InnerSupport);
-		translate([-13,73,0]) IRMountHoles(Yes3mmInsert()); // mounting holes for irsensor bracket
+		translate([-13,73,0]) IRMountHoles(Yes3mmInsert(Use3mmInsert)); // mounting holes for irsensor bracket
 	}
 	DoSensorMount(recess);
 }
@@ -145,7 +146,7 @@ module DoSensorMount(recess=2) {
 	if(recess == 3) { // ir mount
 		translate([0,33,-wall/2]) difference() {
 			IRAdapter(0,HeightIR);
-			translate([25,4,40]) rotate([90,0,0]) IRMountHoles(Yes3mmInsert());
+			translate([25,4,40]) rotate([90,0,0]) IRMountHoles(Yes3mmInsert(Use3mmInsert));
 		}
 	}
 	if(recess==4) {
@@ -153,7 +154,7 @@ module DoSensorMount(recess=2) {
 		translate([39,55,-wall/2]) ProximityMount(ShiftProximity); // mount proximity sensor
 		translate([10,35,-wall/2]) difference() { // ir mount
 			IRAdapter(0,HeightIR);
-			translate([25,4,40]) rotate([90,0,0]) IRMountHoles(Yes3mmInsert());
+			translate([25,4,40]) rotate([90,0,0]) IRMountHoles(Yes3mmInsert(Use3mmInsert));
 		}
 	}
 }
@@ -172,8 +173,8 @@ module MirrorTitanExtruderPlatform(recess=2,InnerSupport=0,MountingHoles=1,Mirro
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module FanMountHoles(Screw=Yes3mmInsert(),Left=1) {	// fan mounting holes
-	ScrewL=GetHoleLen3mm();
+module FanMountHoles(Screw=Yes3mmInsert(Use3mmInsert),Left=1) {	// fan mounting holes
+	ScrewL=20;
 	translate([-extruder/2+35,-heightE/2 - 1.8*wall,heightE - extruder_back - fan_spacing/2 + fan_offset])
 		rotate([0,90,0]) color("pink") cylinder(h =ScrewL,d = Screw);
 	translate([-extruder/2+35,-heightE/2 - 1.8*wall,heightE - extruder_back + fan_spacing/2 + fan_offset])
@@ -195,10 +196,10 @@ module FanNutHoles(Nut=nut3,Left=1) {	// fan mounting holes
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module IRMountHoles(Screw=Yes3mmInsert()) // ir screw holes for mounting to extruder plate
+module IRMountHoles(Screw=Yes3mmInsert(Use3mmInsert)) // ir screw holes for mounting to extruder plate
 {
-	translate([Spacing,-107,0]) rotate([90,0,0]) color("blue") cylinder(h=GetHoleLen3mm(),d=Yes3mmInsert());
-	translate([0,-107,0]) rotate([90,0,0]) color("red") cylinder(h=(GetHoleLen3mm()),d=Screw);
+	translate([Spacing,-107,0]) rotate([90,0,0]) color("blue") cylinder(h=20,d=Yes3mmInsert(Use3mmInsert));
+	translate([0,-107,0]) rotate([90,0,0]) color("red") cylinder(h=(20),d=Screw);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -223,19 +224,19 @@ module BLTouch_Holes(recess=0) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module LEDRingMount(Screw=Yes5mmInsert()) {
+module LEDRingMount(Screw=Yes5mmInsert(Use5mmInsert)) {
 	// a mounting hole for a holder for 75mm circle led
-	translate([30.5+ShiftHotend2,2+ShiftHotend,-10]) color("lightgray") cylinder(h=GetHoleLen5mm(),d=Screw);
+	translate([30.5+ShiftHotend2,2+ShiftHotend,-10]) color("lightgray") cylinder(h=20,d=Screw);
 	if(!Use5mmInsert) translate([30.5+ShiftHotend2,12.5+ShiftHotend,1.5]) color("black") nut(nut5,5);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module PCFanMounting(Screw=Yes3mmInsert()) {
+module PCFanMounting(Screw=Yes3mmInsert(Use3mmInsert)) {
 		translate([-extruder/2+54,-heightE/2 - 1.8*wall,heightE - extruder_back - PCfan_spacing/2 + fan_offset])
-			rotate([0,90,0]) color("red") cylinder(h = GetHoleLen3mm(),d = Yes3mmInsert());
+			rotate([0,90,0]) color("red") cylinder(h = 20,d = Yes3mmInsert(Use3mmInsert));
 		translate([-extruder/2+54,-heightE/2 - 1.8*wall,heightE - extruder_back + fan_spacing/2 + fan_offset])
-			rotate([0,90,0]) color("blue") cylinder(h = GetHoleLen3mm(),d = Yes3mmInsert());
+			rotate([0,90,0]) color("blue") cylinder(h = 20,d = Yes3mmInsert(Use3mmInsert));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,19 +279,19 @@ module TitanMountSupports(WallMount=0,InnerSupport=0,Screw=screw4) {
 			}
 		}
 	} else {
-		if(!InnerSupport) TitanSupport(0,Yes3mmInsert());
-		translate([-50,0,0]) TitanSupport(1,Yes3mmInsert());
+		if(!InnerSupport) TitanSupport(0,Yes3mmInsert(Use3mmInsert));
+		translate([-50,0,0]) TitanSupport(1,Yes3mmInsert(Use3mmInsert));
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TitanSupport(Clear=0, Screw=Yes3mmInsert()) {
+module TitanSupport(Clear=0, Screw=Yes3mmInsert(Use3mmInsert)) {
 	difference() { // rear support
 		translate([49,47.5,-1.5]) rotate([50]) color("cyan") cubeX([4,6,69],2);
 		translate([47,-1,-67]) color("gray") cube([7,70,70]);
 		translate([47,-73,-28]) color("lightgray") cube([7,75,75]);
-		if(Clear) translate([44,44.5,75]) rotate([0,90,0]) PCFanMounting(Screw=Yes3mmInsert());
+		if(Clear) translate([44,44.5,75]) rotate([0,90,0]) PCFanMounting(Screw=Yes3mmInsert(Use3mmInsert));
 	}
 }
 

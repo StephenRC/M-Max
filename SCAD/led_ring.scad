@@ -17,12 +17,12 @@ $fa=0.01;
 $fn=0;
 //$fs=0.5;
 
-module ref ()
-{
-  translate ([9,0,10])
-//  translate ([9,0,-5])
-  import_stl ("C:/BitsFromBytes/things/7484-led-ring/led_ring_holder_01.stl");
-}
+//module ref ()
+//{
+//  translate ([9,0,10])
+////  translate ([9,0,-5])
+//  import_stl ("C:/BitsFromBytes/things/7484-led-ring/led_ring_holder_01.stl");
+//}
 
 module led_ring_holder(diam)
 {
@@ -113,11 +113,11 @@ module test ()
   }
 }
 
-module draw()
+module draw(diam=70)
 {
   //Original part
 
-  diam = 70;
+  //diam = 80;
   
   led_ring_holder(diam);
   fixing_tabs(diam);
