@@ -11,10 +11,6 @@ include <inc/screwsizes.scad>
 use <inc/cubeX.scad>	// http://www.thingiverse.com/thing:112008
 $fn=50;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//vars
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// "Babylon5:style=Regular" is b5_____.ttf
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 plate();
 
@@ -22,19 +18,19 @@ plate();
 
 module plate() {
 	difference() {
-		color("cyan") cubeX([86,20,3]);
+		color("cyan") cubeX([81,20,3]);
 		translate([7,10,-5]) color("red") cylinder(h=10,d=screw5,$fn=100);
-		translate([7,10,2]) color("red") cylinder(h=10,d=screw5hd,$fn=100);
-		translate([78,10,-5]) color("blue") cylinder(h=10,d=screw5,$fn=100);
-		translate([78,10,2]) color("blue") cylinder(h=10,d=screw5hd,$fn=100);
-		translate([14,4.5,1]) printchar("M-Max",5,12);
+		translate([7,10,2]) color("blue") cylinder(h=10,d=screw5hd,$fn=100);
+		translate([73,10,-5]) color("blue") cylinder(h=10,d=screw5,$fn=100);
+		translate([73,10,2]) color("red") cylinder(h=10,d=screw5hd,$fn=100);
 	}	
+	translate([14,4.5,0]) printchar("M-Max",5,12);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 module printchar(String,TxtHeight=1,TxtSize=3.5) { // print something
-	color("darkgray") linear_extrude(height = TxtHeight) text(String, font = "Old English Text MT:style=Regular",size=TxtSize);
+	color("darkgray") linear_extrude(height = TxtHeight) text(String, font = "StarTrek Film BT:style=Regular",size=TxtSize);
 }
 
 

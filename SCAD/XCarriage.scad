@@ -13,7 +13,7 @@
 // uses http://www.thingiverse.com/thing:211344 for the y belt
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
-include <Brassinserts.scad>
+include <inc/Brassinserts.scad>
 use <ybeltclamp.scad>
 use <Single-Titan-E3DV6.scad>
 use <HorizontalXBeltDrive.scad>
@@ -33,14 +33,14 @@ HorizontallCarriageHeight=20;
 //Carriage(); // front; Titan=0,Tshift=0,Rear=0
 //Carriage(0,0,0,0,0,1); // rear
 //XCarriageWithExtruder(1,1);
-XCarriageFullAssembly(1);
+XCarriageFullAssembly(1,1,0);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module XCarriageFullAssembly(Titan) {
+module XCarriageFullAssembly(Titan,ExtruderMountType=1,Stiffner=0) {
 	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,1); // front
-	translate([37.5,-31,0]) Extruder(2,5,1,0);
-	translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connector
+	translate([37.25,-31,0]) Extruder(ExtruderMountType,5,1,0);
+	if(Stiffner) translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connect extruder top to xcarriage
 	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1); // rear
 	difference() {
 		union() {
@@ -53,8 +53,10 @@ module XCarriageFullAssembly(Titan) {
 		translate([16,-10,70]) color("khaki") rotate([0,-45,0]) cubeX([10,55,25],2);
 		translate([52,-10,78]) color("gray") rotate([0,45,0]) cubeX([10,55,25],2);
 	}
+	// make rear xcarriage bottom level with front
 	translate([0,33.3,-4]) color("black") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
-	translate([0,-wall,-4]) color("white") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
+	// neaten up exterude mount to xcarriage
+	translate([0.25,-wall,-4]) color("white") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

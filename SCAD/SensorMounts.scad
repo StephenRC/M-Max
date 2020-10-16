@@ -2,13 +2,14 @@
 // SensorMounts.scad
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // created: 6/2/1019
-// last update: 8/30/20
+// last update: 10/13/20
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // 6/2/19	- Separated from single_titan_extruder_mount.scad
 // 4/12/20	- Made the mount to extruder plate the same for Proximity & BLTouch
 // 8/4/20	- Adjsuted the sensor mount holes to the extruder platform
 // 8/17/20	- Copied and edited from M-Max and added an adjustable mount for dc42's ir sensor
 // 8/30/20	- Added an adjustable BLTouch mount
+// 10/13/20	- Finished adding use of brass inserts
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
 use <inc/corner-tools.scad>
@@ -44,7 +45,7 @@ Spacing=17;
 
 //ProximityMount(6); // arg is shift up/down (min:2)
 //BLTouchMount(0,15,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v3.1 BLTouch thru mount
-BLTouchMount(2,20,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v3.1 BLTouch underneath
+BLTouchMount(2,20,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v3.1 BLTouch underneath (add 5mm)
 //BLTouchMount(0,14,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v1 BLTouch (metal pin)
 //BLTouchMount(2,19,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v1 BLTouch (metal pin)
 //BLTouchMount(0,10);	// 1st arg:type; 2nd: shift -- Titan w/E3Dv6

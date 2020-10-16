@@ -18,7 +18,7 @@ include <mmax_h.scad>
 include <inc/NEMA17.scad>
 use <inc/cubeX.scad>
 use <yBeltClamp.scad>
-include <brassinserts.scad>
+include <inc/brassinserts.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
 Use3mmInsert=1;

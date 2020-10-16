@@ -6,13 +6,14 @@
 // 1/12/16	- added bevel on rear carriage for x-stop switch to ride up on
 // 5/30/20	- Added ability to use a Titan Aero on mirrored version
 // 6/4/20	- Removed some unecessary code
+// 10/13/20	- Changed width of base to allow 42mm long stepper motor
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
 use <ybeltclamp.scad>	// modified https://www.thingiverse.com/thing:863408
 use <inc/corner-tools.scad>
 use <SensorMounts.scad>
 use <DrillGuidefor2020AndBedFrame.scad>
-include <brassinserts.scad>
+include <inc/brassinserts.scad>
 //-------------------------------------------------------------------------------------------------------------
 Use3mmInsert=1; // set to 1 to use 3mm brass inserts
 Use5mmInsert=1;
@@ -108,7 +109,7 @@ module TitanExtruderPlatform(recess=2,InnerSupport=0,MountingHoles=1,Aero=0) {
 	difference() {
 		union() {
 			translate([-37.5+17,-37,-wall/2])
-				color("cyan") cubeX([HorizontallCarriageWidth+ShiftHotend2/1.3-15,heightE+8,wall],2); // extruder side
+				color("cyan") cubeX([HorizontallCarriageWidth+ShiftHotend2/1.3-12,heightE+8,wall],2); // extruder side
 			translate([14,24,-wall/2]) color("plum") cubeX([23,wall-1,wall],2);
 			translate([-38,23,-wall/2]) color("blue") cubeX([25,wall,wall],2);
 		}
