@@ -21,11 +21,13 @@ use <HorizontalXBeltDrive.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Use3mmInsert=1;
 Use5mmInsert=1;
+LargeInsert=1;
 //Tshift=0;	// shift titan knob clearance notch
 BeltShift=10; // move belt holder up/down
 BeltHoleShift=5; // move belt holder up/down
 VerticalCarriageWidth=37.2;
 HorizontallCarriageHeight=20;
+LayerThickness=0.3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //xcar(0,1);
@@ -36,7 +38,7 @@ HorizontallCarriageHeight=20;
 //XCarriageWithExtruder(1,1);
 //XCarriageFullAssemblySingle(1,1,0);
 //XCarriageFullAssemblyDual(1,1,0);
-XCarriageFullAssemblyNoExtruder(1,1,0);
+XCarriageFullAssemblyNoExtruder(1,1,0,1);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,6 +58,7 @@ module XCarriageFullAssemblySingle(Titan,ExtruderMountType=1,Stiffner=0) {
 		translate([16,-10,70]) color("khaki") rotate([0,-45,0]) cubeX([10,55,25],2);
 		translate([52,-10,78]) color("gray") rotate([0,45,0]) cubeX([10,55,25],2);
 	}
+	translate([15,0,90]) color("gray") cube([40,40,LayerThickness]);
 	// make rear xcarriage bottom level with front
 	translate([0,33.3,-4]) color("black") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
 	// neaten up exterude mount to xcarriage
@@ -64,8 +67,8 @@ module XCarriageFullAssemblySingle(Titan,ExtruderMountType=1,Stiffner=0) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module XCarriageFullAssemblyNoExtruder(Titan,ExtruderMountType=1,Stiffner=0) {
-	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,1,1); // front
+module XCarriageFullAssemblyNoExtruder(Titan,ExtruderMountType=1,Stiffner=0,DoTab=0) {
+	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0,1); // front
 	//translate([31,-43,0]) rotate([0,0,90]) TitanSingle(0);
 	if(Stiffner) translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connect extruder top to xcarriage
 	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1); // rear
@@ -80,16 +83,25 @@ module XCarriageFullAssemblyNoExtruder(Titan,ExtruderMountType=1,Stiffner=0) {
 		translate([16,-10,70]) color("khaki") rotate([0,-45,0]) cubeX([10,55,25],2);
 		translate([52,-10,78]) color("gray") rotate([0,45,0]) cubeX([10,55,25],2);
 	}
-	// make rear xcarriage bottom level with front
-	//translate([0,33.3,-4]) color("black") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
-	// neaten up exterude mount to xcarriage
-	//translate([0.25,-wall,-4]) color("white") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
+	if(DoTab) {
+		difference() {
+			union() {
+				translate([2,-4,1]) color("gray") cylinder(h=LayerThickness,d=20);
+				translate([72,-3,1]) color("black") cylinder(h=LayerThickness,d=20);
+			}
+			translate([37,-4,30]) rotate([90,0,0]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
+		}
+		translate([2,37,1]) color("green") cylinder(h=LayerThickness,d=20);
+		translate([72,37,1]) color("plum") cylinder(h=LayerThickness,d=20);
+	}
+	translate([15,0,90]) color("gray") cube([40,40,LayerThickness]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module XCarriageFullAssemblyDual(Titan,ExtruderMountType=1,Stiffner=0) {
-	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,1); // front
+	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0); // front
+	//												Titan=0,Tshift=0,Rear=0,ExtMount=0
 	translate([53,-43,0]) rotate([0,0,90]) TitanDual(0);
 	if(Stiffner) translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connect extruder top to xcarriage
 	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1); // rear
@@ -185,11 +197,12 @@ module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0) { // extruder side
 		}
 		}
 		if(Rear) {
-			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue") cylinder(h = depth+10,d=Yes5mmInsert());
+			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue")
+				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
 			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("yellow")
-				cylinder(h = depth+10,d=Yes5mmInsert());
+				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
 			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("purple")
-				cylinder(h = depth+10,d=Yes5mmInsert());
+				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
 		} else {
 			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue") cylinder(h = depth+10,d=screw5);
 			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("yellow")

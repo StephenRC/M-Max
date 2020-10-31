@@ -4,8 +4,8 @@
 // created 9/7/2018
 // last update 9/13/20
 //////////////////////////////////////////////////////////////////////////////////////////////////
-// something to hold the zipties that support the wires and bowden tube going to the hotend on the
-// x axis.
+// something to hold the zipties that support the stuff going to the hotend on the
+// x carriage.
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // 5/15/19	- Made resizable, can now use M3, M4 and M5 for the mounting
 // 9/13/20	- Mde loop thicker, ablity to set quanity

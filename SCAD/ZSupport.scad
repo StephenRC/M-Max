@@ -16,8 +16,7 @@ include <inc/corner-tools.scad>
 // https://www.myminifactory.com/it/object/3d-print-tools-for-fillets-and-chamfers-on-edges-and-corners-straight-and-or-round-45862
 // by Ewald Ikemann
 use <inc/cubex.scad>
-Use5mmInsert=1;
-include <brassfunctions.scad>
+include <inc/brassinserts.scad>
 ////////////////////////////////////////////////////////////////////////////////////////
 zrod = 10;			// z rod size
 extr20 = 20.5;		// size of 2020 plus some clearance
@@ -27,11 +26,12 @@ width = 12;			// clamp width
 thickness = 9;		// z clamp thickness
 /////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
+Use5mmInsert=1;
 /////////////////////////////////////////////////////////////////////////////////////////
 
 //top();
-bottom();
-//two(1); // 0 = bottom; 1 = top
+//bottom();
+two(0); // 0 = bottom; 1 = top
 //Clamps(2);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,14 +57,13 @@ module two(Top=0) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 	
-module top() // top z support
-{
+module top() { // top z support
 	translate([-47,0,0]) {
 		difference() {
-			color("white") import("original stl/Z ROD MOUNT BOTTOM.stl", convexity=5);
+			color("gray") import("original stl/Z ROD MOUNT BOTTOM.stl", convexity=5);
 			translate([45,-26,25]) newrod(); // resize rod notch
 		}
-		replace_nuts(Yes5mmInsert());
+		replace_nuts(Yes5mmInsert(Use5mmInsert));
 		topbracket(); // add mount for a brace between left & right tops
 		translate([28,-50,25.9]) rotate([90,0,0]) clamp_v2();
 	}
@@ -85,7 +84,7 @@ module filloldnuts() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module replace_nuts(Screw=Yes5mmInsert()) {
+module replace_nuts(Screw=Yes5mmInsert(Use5mmInsert)) {
 	difference() {
 		filloldnuts();
 		if(Screw==screw5) {
@@ -108,7 +107,7 @@ module nuts() { // resize nut holes for 5mm
 module bottom() { // bottom z support
 	translate([45,0,0]) {
 		difference() {
-			color("white") import("original stl/Z ROD MOUNT BOTTOM.stl");
+			color("lightgray") import("original stl/Z ROD MOUNT BOTTOM.stl");
 			translate([45,-26,25]) newrod(); // resize rod notch
 			bottomhole(); // resize hole to allow a coupler to fit through
 			do_fillets(1); // round over where the new hole is

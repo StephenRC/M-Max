@@ -9,20 +9,22 @@ include <inc/screwsizes.scad>
 $fn=100;
 //////////////////////////////////////////////////////////////////////////
 
-top();
-translate([0,15,0]) top();
-translate([0,-15,0]) top();
+top(2);
 
 //////////////////////////////////////////////////////////////////////////
 
-module top() {
-	difference() {
-		color("cyan") cylinder(h=8,d=screw8+2);
-		translate([0,0,2]) color("red") cylinder(h=8,d=screw8-0.5); // make diameter small enough to fit tightly
-	}
-	color("black") hull() {
-		cylinder(h=2,d=screw8+2);
-		translate([10,0,0]) cylinder(h=2,d=screw2);
+module top(Qty=1) {
+	for(x=[0:Qty-1]) {
+		translate([0,x*15,0]) {
+			difference() {
+				color("cyan") cylinder(h=8,d=screw8+2);
+				translate([0,0,2]) color("red") cylinder(h=8,d=screw8-0.5); // make diameter small enough to fit tightly
+			}
+			color("black") hull() {
+				cylinder(h=2,d=screw8+2);
+				translate([10,0,0]) cylinder(h=2,d=screw2);
+			}
+		}
 	}
 }
 

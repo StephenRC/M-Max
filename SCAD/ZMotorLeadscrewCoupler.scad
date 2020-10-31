@@ -1,11 +1,11 @@
 // nice (and horribly long) variable names for Thingiverse Customizer
 // 12/17/18 (SRC) - edited to use in another scad file and added preview colors
 // 					Z-Motor-Leadscrew-Coupler.scad
-// 5/22/20 (SRC)  - Now uses 3mm inserts
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 10/22/20 (SRC) - Added use of brass inserts
+
+include <inc/brassinserts.scad>
 Use3mmInsert=1;
-include <brassfunctions.scad>
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // Height of the coupler, half for the motor shaft and half for the rod
 couplerHeight = 30;
 // External diameter of the coupler
@@ -77,13 +77,15 @@ module screw()
     // head
     translate([0,0,(screwThreadLength-nutThickness)/2])
         color("gold") cylinder(d=screwHeadDiameter, h=big);
-    // nut
-    //translate([0,0,-(screwThreadLength-nutThickness)/2])
-    //    rotate([180,0,30])
-    //       color("salmon") cylinder(d=nutWidth*2*tan(30), h=big, $fn=6);
-    translate([0,0,-(screwThreadLength-GetHoleLen3mm(Yes3mmInsert()))/2])
+	if(Use3mmInsert) {
+		translate([0,0,-(screwThreadLength-nutThickness)/2+3.5])
+			rotate([180,0,30])
+				color("gray") cylinder(d=Yes3mmInsert(Use3mmInsert), h=15);
+    } else { // nut
+    translate([0,0,-(screwThreadLength-nutThickness)/2])
         rotate([180,0,30])
-           color("salmon") cylinder(d=Yes3mmInsert(), h=big, $fn=100);
+            color("salmon") cylinder(d=nutWidth*2*tan(30), h=big, $fn=6);
+	}
 }
 
 coupler();

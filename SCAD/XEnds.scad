@@ -47,14 +47,13 @@
 include <inc/cubex.scad>
 include <inc/nema17.scad>
 include <inc/screwsizes.scad>
-Use3mmInsert=1;
-//Use4mmInsert=0; // set to 1 to use 4mm brass inserts
-//Use5mmInsert=0; // set to 1 to use 4mm brass inserts
-include <brassfunctions.scad>
+include <inc/brassinserts.scad>
 ///////////////////////////////////////////////////////////////////////////////////////////
 //vars
 ///////////////////////////////////////////////////////////////////////////////////////////
 $fn=100; // lower this to speed up rendering
+Use3mmInsert=1;
+LargeInsert=1;
 //------------------------------------------------------------
 // bearings, change them if you are using a different bearings
 AdjustCF = 0.1;	// adjust the clamping force
@@ -174,7 +173,7 @@ module clamp(Bearing=0,mks=0,mits=0,Full=0,Left=0) {  // this version is now bro
 			}
 			difference() {
 				translate([length/2-znutw/2-0.5,z_drv,0]) znutshell(mits,1);
-				translate([37,30,-10]) color("black") cylinder(h=10,d=YesInsert3mm());
+				translate([37,30,-10]) color("black") cylinder(h=10,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 				if(Left) rotate([0,180,0]) translate([-length/2-znutw/2-1,z_drv,0]) color("gray") znutscrew(mits);
 				else  translate([-length/2-znutw/2+74.5,z_drv,0]) znutscrew(mits);
 				if(!mits) {
@@ -273,7 +272,7 @@ module flange(mks,Bearing,mits,Left=0) {  // the part that holds it together
 				cylinder(h=1,d=screw3*2);
 				translate([0,0,-3]) cylinder(h=1,d=screw3*1.5);
 			}
-			translate([0,0,-5]) cylinder(h=10,d=YesInsert3mm());//screw3t);
+			translate([0,0,-5]) cylinder(h=10,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 		}
 	}
 }
@@ -330,7 +329,7 @@ module connectorflat(mks,mits) { // raised section between z rod and z nut
 				if(mks) {
 					difference() {
 						translate([(length/2-znutw/2),znutw/6-2,-znutt/2-0.9]) color("pink") cube([znutw,znutl,znutt+1.7]);
-						translate([37,30,-15]) cylinder(h=20,d=YesInsert3mm());
+						translate([37,30,-15]) cylinder(h=20,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 					}
 				} else
 					translate([(length/2-znutw/2),znutw/6-2,-znutt/2-0.9]) color("cyan") cube([znutw,znutl,znutt+1.5]);

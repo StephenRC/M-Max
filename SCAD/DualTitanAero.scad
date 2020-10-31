@@ -18,45 +18,30 @@ Use5mmInsert=1;
 LargeInsert=1;
 ExtruderThickness = wall;	// thickness of the extruder plate
 Spacing = 17; 			// ir sensor bracket mount hole spacing
+LayerThickness=0.3;
 //---------------------------------------------------------------------------------------------------------
 LEDLight=1; // print LED ring mounting with spacer
 LEDSpacer=0;//8;  // length need for titan is 8; length need for aero is 0
-//==================================================================================================
-//**** NOTE: heater blocker on a areo titan: heater side towards fan side
-//==================================================================================================
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//DualAero(1,1);	// arg1: extruderplatform type
-					//	1 - mirrored titan extruder platform
-					//	2 - titan extruder platform
-					// arg 2: 0 - titan; 1 - aero
-SingleAero(1,1);
+DualAero(1,1,0);
+//SingleAero(1,1,0);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-module DualAero(Extruder=1,Mounting=1) {
-	TitanDual(Mounting);
+module DualAero(Mounting=1,DoTab=1,DoNotch=0) {
+	TitanDual(Mounting,DoTab,DoNotch);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-module SingleAero(Extruder=1,Mounting=1) {
-	TitanSingle(Mounting);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module ExtruderPlatformNotch() {
-	color("blue") minkowski() {
-		cube([25,60,wall+5],true);
-		cylinder(h = 1,r = 5);
-	}
+module SingleAero(Mounting=1,DoTab=1,DoNotch=0) {
+	TitanSingle(Mounting,DoTab,DoNotch);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TitanDual(Mounting=1) {
+module TitanDual(Mounting=1,DoTab=1,DoNotch=0) {
 	// extruder platform for e3d titan with (0,1)BLTouch or (2)Proximity or (3)dc42's ir sensor
 	difference() {
 		union() {
@@ -83,20 +68,27 @@ module TitanDual(Mounting=1) {
 		translate([11,90,0]) SensorAnd1LCMounting(Yes3mmInsert(Use3mmInsert,LargeInsert)); // mounting holes for irsensor bracket
 		translate([-16,175,0]) SensorAnd1LCMounting(Yes3mmInsert(Use3mmInsert,LargeInsert)); // mounting holes for irsensor bracket
 		translate([11,175,0]) SensorAnd1LCMounting(Yes3mmInsert(Use3mmInsert,LargeInsert)); // mounting holes for irsensor bracket
-		color("blue") hull() {
-			translate([-22,33,55])cube([wall,10,1]); // cut out to allow motor be install after nount to xcarriage
-			translate([-22,30.5,35]) cube([wall,15,1]);
+		if(DoNotch) {
+			color("blue") hull() {
+				translate([-22,33,55])cube([wall,10,1]); // cut out to allow motor be install after nount to xcarriage
+				translate([-22,30.5,35]) cube([wall,15,1]);
+			}
+			color("green") hull() {
+				translate([-22,-11.5,55])cube([wall,10,1]); // cut out to allow motor be install after nount to xcarriage
+				translate([-22,-14.25,35]) cube([wall,15,1]);
+			}
 		}
-		color("green") hull() {
-			translate([-22,-11.5,55])cube([wall,10,1]); // cut out to allow motor be install after nount to xcarriage
-			translate([-22,-14.25,35]) cube([wall,15,1]);
-		}
+	}
+	if(DoTab) {
+		translate([-17,59,-4]) color("green") AddTab();
+		translate([-17,16,-4]) color("gray") AddTab();
+		translate([-17,-29,-4]) AddTab();
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TitanSingle(Mounting=1) {
+module TitanSingle(Mounting=1,DoTab=1,DoNotch=0) {
 	//single titan aero and should work with a titan with e3dv6
 	difference() {
 		union() {
@@ -115,11 +107,21 @@ module TitanSingle(Mounting=1) {
 	difference() {
 		translate([-0.5,-32,0]) rotate([90,0,90]) TitanMotorMountSingle();
 		SensorAnd1LCMountSingle();
-		color("green") hull() {
+		if(DoNotch) color("green") hull() {
 			translate([-22,-11.5,55])cube([wall,10,1]); // cut out to allow motor be install after nount to xcarriage
 			translate([-22,-14.25,35]) cube([wall,15,1]);
 		}
 	}
+	if(DoTab) {
+		translate([-17,16,-4]) color("gray") AddTab();
+		translate([-17,-29,-4]) AddTab();
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module AddTab() {
+	color("black") cylinder(h=LayerThickness,d=20);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

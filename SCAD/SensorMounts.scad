@@ -14,7 +14,7 @@
 include <MMAX_h.scad>
 use <inc/corner-tools.scad>
 use <fanduct_v3.scad>
-include <brassinserts.scad>
+include <inc/brassinserts.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // Fan mounts are for a 5150 blower fan
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,21 +43,14 @@ LayerThickness=0.3; // layer thickness
 Spacing=17;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//ProximityMount(6); // arg is shift up/down (min:2)
+//ProximityMount(6,1); // arg is shift up/down (min:2)
 //BLTouchMount(0,15,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v3.1 BLTouch thru mount
 BLTouchMount(2,20,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v3.1 BLTouch underneath (add 5mm)
 //BLTouchMount(0,14,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v1 BLTouch (metal pin)
 //BLTouchMount(2,19,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v1 BLTouch (metal pin)
 //BLTouchMount(0,10);	// 1st arg:type; 2nd: shift -- Titan w/E3Dv6
 //IRAdapter(0,0);
-// --- Titan with E3Dv6 ---
-//AdjustableBLTMount(10,2,1); //Shift=0 (add to 10),Type=2,DoBase= 0 (no) : 1 (yes)
-//AdjustableProximtyMount(20,1); //Shift=0,DoBase= 0 (no) : 1 (yes)
-//AdjustableIRMount(0); // arg is to change length
-// --- Titan Aero --- not tested
-//AdjustableBLTMount(0,2,1); //Shift=0 (add to 10),Type=2,DoBase= 0 (no) : 1 (yes)
-//AdjustableProximtyMount(5,0); //Shift=0,DoBase= 0 (no) : 1 (yes)
-//AdjustableIRMount(-25,1); // arg is to change length
+//IRAdapterAero(0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -78,6 +71,16 @@ module FanMountHoles(Screw=screw3,Left=1) {	// fan mounting holes
 	translate([-38.5,-44.5,52]) rotate([0,90,0]) color("blue") hull() {	// nut trap for fan
 		nut(nut3,2.55);
 		translate([0,8,0]) nut(nut3,2.5);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module IRAdapterAero(Taller=0) {  // ir sensor bracket stuff is from irsensorbracket.scad
+	difference() {
+		translate([0,0,0]) rotate([90,180,180])  SensorMount(0,0,0);
+		translate([0,-13,-32]) IRMountingHoles(Taller,Yes2p5mmInsert(Use2p5mmInsert));
+		translate([0,-13,-32.5]) color("blue") RecessIR(Taller);
 	}
 }
 
@@ -197,20 +200,20 @@ module ReduceIR(Taller=0) { // reduce plastic usage and gives somewhere for air 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module IRMountingHoles(Taller=0) { // mounting screw holes for the ir sensor
-	translate([hole1x+iroffset-1.5,irmounty+Taller,-5]) rotate([0,0,0]) color("black") cylinder(h=20,d=screw3);
-	translate([hole2x+iroffset-1.5,irmounty+Taller,-5]) rotate([0,0,0]) color("white") cylinder(h=20,d=screw3);
+module IRMountingHoles(Taller=0,Screw=Yes3mmInsert(Use3mmInsert,LargeInsert)) { // mounting screw holes for the ir sensor
+	translate([hole1x+iroffset-1.5,irmounty+Taller,-5]) rotate([0,0,0]) color("black") cylinder(h=20,d=Screw);
+	translate([hole2x+iroffset-1.5,irmounty+Taller,-5]) rotate([0,0,0]) color("white") cylinder(h=20,d=Screw);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ProximityMount(Shift=0) {
+module ProximityMount(Shift=0,DoTab=1) {
 	difference() {
 		translate([0,-2.5,0]) color("red") cubeX([32,32,8],2);
 		translate([16,12,-2]) color("olive") cylinder(h=wall*2,d=psensord); // proximity sensor hole
 		translate([16,12,4.5]) color("blue") cylinder(h=5,d=psensornut,$fn=6); // proximity nut
 	}
-	SensorMount(Shift);
+	SensorMount(Shift,0,DoTab);
 	ProximityAngleSupport();
 }
 

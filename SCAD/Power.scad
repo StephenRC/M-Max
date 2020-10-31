@@ -23,12 +23,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 use <inc/cubeX.scad>	// http://www.thingiverse.com/thing:112008
 include <inc/screwsizes.scad>
-Use3mmInsert=1;
-include <brassfunctions.scad>
-use <BABIND.TTF>	// true type font used for the label
+include <inc/brassinserts.scad>
 $fn = 50;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // vars
+Use3mmInsert=1;
+LargeInsert=1;
 SwitchSocketWidth = 40;	// socket hole width
 SwitchSocketHeight = 27;	// socket hole height
 SocketShiftLR = 0; // move socket left/right
@@ -48,13 +48,13 @@ SocketPlugWidth=SwitchSocketWidth;
 SocketPlugHeight=SwitchSocketHeight;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//all(0,19.5,13,2,1,2,1);// 1st arg: flip; next 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
+all(0,19.5,13,2,1,2,1);// 1st arg: flip; next 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
 //testfit();	// print part of it to test fit the socket & 2020
 //switch();		// 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
 //powersupply_cover();
 //powersupply_cover_v2();
 //pbar(1,2);
-housing(1,13,19.5);
+//housing(1,13,19.5);
 //cover();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ module all(flip=0,s_w=13,s_l=19.5,s_t=2,Makerslide=1,PBQuantiy=2,Version=0) {
 	translate([0,-12,0]) housing(Version,s_l,s_w);
 	translate([0,-5,45]) rotate([180,0,0]) cover();
 	translate([-50,-45,0]) switch(flip);		// 3 args: Width, length, clip Thickness; defaults to 13,19.5,2
-	translate([-30,60,0]) powersupply_cover();
+	//translate([-30,60,0]) powersupply_cover();
 	translate([-35,-10,0]) rotate([0,0,90]) pbar(Makerslide,PBQuantiy);
 }
 
@@ -160,15 +160,15 @@ module housing(Version=0,s_w=13,s_l=19.5) {
 	}
 	difference() {
 		translate([0,SwitchSocketHeight+35,0]) color("red") cubeX([SwitchSocketWidth+40,5,40],2); // top wall
-		cover_screw_holes(Yes3mmInsert());
+		cover_screw_holes(Yes3mmInsert(Use3mmInsert,LargeInsert));
 	}
 	difference() {
 		translate([0,19,0]) color("black") cubeX([5,SwitchSocketHeight+21,40],2); // left wall
-		cover_screw_holes(Yes3mmInsert());
+		cover_screw_holes(Yes3mmInsert(Use3mmInsert,LargeInsert));
 	}
 	difference() {
 		translate([SwitchSocketWidth+35,19,0]) color("white") cubeX([5,SwitchSocketHeight+21,40],2); // right wall
-		cover_screw_holes(Yes3mmInsert());
+		cover_screw_holes(Yes3mmInsert(Use3mmInsert,LargeInsert));
 	}
 	difference() { // right wing
 		translate([SwitchSocketWidth+35,19,0]) color("lightblue") cubeX([25,5,25],2); // wall
@@ -206,26 +206,26 @@ module coverscrewholes() {
 	difference() {
 		translate([5,40,20]) color("blue") cylinder(h=20,d=screw5); // left
 		translate([5,35,13]) rotate([0,-50,0]) color("red") cube([10,10,5]);
-		cover_screw_holes(Yes3mmInsert());
+		cover_screw_holes(Yes3mmInsert(Use3mmInsert,LargeInsert));
 	}
 	difference() {
 		translate([SwitchSocketWidth+35,40,20]) color("red") cylinder(h=20,d=screw5); // right
 		translate([SwitchSocketWidth+27,35,22]) rotate([0,50,0]) color("blue") cube([10,10,5]);
-		cover_screw_holes(Yes3mmInsert());
+		cover_screw_holes(Yes3mmInsert(Use3mmInsert,LargeInsert));
 	}
 	difference() {
 		translate([SwitchSocketWidth,62,20]) color("white") cylinder(h=20,d=screw5); // top screw hole
 		translate([SwitchSocketWidth-5,55,20]) rotate([-50,0,0]) color("green") cube([10,10,5]);
-		cover_screw_holes(Yes3mmInsert());
+		cover_screw_holes(Yes3mmInsert(Use3mmInsert,LargeInsert));
 	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module cover_screw_holes(Screw=Yes3mmInsert()) {
-	translate([5,40,33]) color("white") cylinder(h=GetHoleLen3mm(Yes3mmInsert()),d=Screw); // left
-	translate([SwitchSocketWidth+35,40,33]) color("gray") cylinder(h=GetHoleLen3mm(Yes3mmInsert()),d=Screw); // right
-	translate([SwitchSocketWidth,62,33]) color("hotpink") cylinder(h=GetHoleLen3mm(Yes3mmInsert()),d=Screw); // top screw hole
+module cover_screw_holes(Screw=Yes3mmInsert(Use3mmInsert,LargeInsert)) {
+	translate([5,40,33]) color("white") cylinder(h=20,d=Screw); // left
+	translate([SwitchSocketWidth+35,40,33]) color("gray") cylinder(h=20,d=Screw); // right
+	translate([SwitchSocketWidth,62,33]) color("hotpink") cylinder(h=20,d=Screw); // top screw hole
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

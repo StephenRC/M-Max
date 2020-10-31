@@ -9,7 +9,7 @@
 // 6/24/16	- made so that offset determines length
 // 9/2/18	- added color for preview
 // 6/4/20	- Remosed test() and renamed from drillguide() to ExtruderPlateDrillGuide()
-// 9/15/20	- Added use of brass inserts to make the 2020DrillGuide() last longer
+// 9/15/20	- Added use of brass inserts to make the 2020DrillGuide() last longer, if used, they need to drill to M5
 //////////////////////////////////////////////////////////////////////////////
 // A drill guide for 2020 to be able to eliminate the lower T-Max plastic brackets
 // on the base section.  It's stiffer than using the plastic printed parts.
@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////
 include <inc/cubex.scad>
 include <inc/screwsizes.scad>
-use <brassinserts.scad>
+use <inc/brassinserts.scad>
 $fn=100;
 ///////////////////////////////////////////////////////////////////////////////
 // vars
@@ -35,12 +35,12 @@ length = offset+bottom+15;	// total length of drill guide
 width = w2020+ 10;		// total width of drill guide
 ///////////////////////////////////////////////////////////////////////////////
 
-2020DrillGuide();
-//DrillClips(4); // used to hold the bed onto the 2020 to drill the adjusting mount holes
-				 // use #39 drill bit for all three holes, M3 tap the 2020, drill the bed holes 3mm and countersink
+//2020DrillGuide(screw5);
+BedDrillClips(4); // used to hold the bed onto the 2020 to drill the adjusting mount holes
+			   // use #39 drill bit for all three holes, M3 tap the 2020, drill the bed holes 3mm and countersink
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module DrillClips(Quanity=1) { // used to hold bed onto the 2020 to drill the adjusting mount holes
+module BedDrillClips(Quanity=1) { // used to hold bed onto the 2020 to drill the adjusting mount holes
 	for(x=[0:Quanity-1]) {
 		translate([x*23,0,0]) difference() {
 			union() {
@@ -54,13 +54,13 @@ module DrillClips(Quanity=1) { // used to hold bed onto the 2020 to drill the ad
 }
 /////////////////////////////////////////////////////////////////////////////////
 
-module 2020DrillGuide() { //2020 channel
-	Screw=Yes5mmInsert(Use5mmInsert);
+module 2020DrillGuide(Screw=Yes5mmInsert(Use5mmInsert)) { //2020 channel
+	
 	difference() {
 		color("red") cubeX([length,width,thickness+2],2);
 		translate([5,5,3]) color("blue") cube([length,w2020,thickness]);
-		translate([bottom+5,w2020/2+5,-5]) color("gray") cylinder(h=20,d=Screw);
-		translate([offset+bottom+5,w2020/2+5,-5]) color("black") cylinder(h=20,d=Screw);
+		translate([bottom+5,w2020/2+5,-5]) color("red") cylinder(h=20,d=Screw);
+		translate([offset+bottom+5,w2020/2+5,-5]) color("cyan") cylinder(h=20,d=Screw);
 	}
 }
 

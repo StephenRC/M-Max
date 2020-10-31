@@ -21,6 +21,7 @@ use <yBeltClamp.scad>
 include <inc/brassinserts.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
+Use2mmInsert=1;
 Use3mmInsert=1;
 Use5mmInsert=1;
 UseLarge3mmInsert=1; // got new inserts and the 3mm inserts are larger
@@ -45,16 +46,17 @@ HolderWidth=33;	// width of holder
 SwitchShift=6;	// move switch mounting holes along width
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XEndHorizontalBeltEnds();
+//XEndHorizontalBeltEnds();
 //AxisBrace(4); // arg is Quanity
 //AxisBrace(4,65,0); // arg is Quanity; args 2&3 are X,Y
 //XEndStop(10,0,8,screw2,8,0); // black microswitch inline mount
 //XEndStop(9.7,0,8,screw2,8,0); // green microswitch inline mount
 //XEndStop(22,10,8,Yes3mmInsert(UseLarge3mmInsert),screw5,11.5); // CN0097
-//YEndStop(9.7,0,8,screw2t,screw5,2.3,1); // green microswitch
-//YEndStop(10,0,8,screw2t,screw5,2.3,1); // Black microswitch
+//YEndStop(9.7,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // green microswitch
+//YEndStop(10,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // Black microswitch
 //YEndStop(22,10,8,Yes3mmInsert(UseLarge3mmInsert),screw5,11.5); // CN0097
-
+//BeltAttachment(1,0,1); //DoBelt=0,OnePiece=0,MountingScrewHoles=1
+BeltAttachment(0,0,1); //DoBelt=0,OnePiece=0,MountingScrewHoles=1
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module YEndStop(Sep,DiagOffset,Offset,ScrewS,ScrewM=screw5,Adjust,MS=0) {
@@ -170,8 +172,8 @@ module base(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module BeltAttachment(DoBelt=0,OnePiece=0,MountingScrewHoles=1) { // must print on side with supports from bed only
-	if(DoBelt>1 || DoBelt==0) CarriageMount(MountingScrewHoles);
 	if(DoBelt) BeltMount(OnePiece);
+	else CarriageMount(MountingScrewHoles);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,7 +195,7 @@ module CarriageMount(MountingScrewHoles=1) {
 				translate([30,24.75,-2]) cylinder(h=25,d=28);
 			}
 		}
-		translate([8,1,13.7]) color("black") cube([40,10,LayerThickness]);
+		translate([8,1,13.7]) color("black") cube([40,9,LayerThickness]);
 		translate([8,39,13.7]) color("white") cube([40,10,LayerThickness]);
 	}
 }

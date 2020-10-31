@@ -24,16 +24,16 @@ Thickness = 5;
 BaseThickness=3;
 /////////////////////////////////////////////////////////////////////////////////////////
 
-//ZMotorMount(2,0,0,47);	// 1st arg:Quanity (default is 2); 2nd arg: X position
-ZMotorMountExtended(1);	// 1st arg:Quanity (default is 2)
+ZMotorMount(2,0,0,47);	// 1st arg:Quanity; 2nd arg: X position
+//ZMotorMountExtended(1);	// 1st arg:Quanity)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ZMotorMount(Qty=2,X=0,Y=0,Z=0) {
+module ZMotorMount(Qty=1,X=0,Y=0,Z=0) {
 	for(x = [0 : Qty-1]) {
 		translate([x*100,0,0]) {
 			//OldMount();
-			base(X,Y,-Z-52.75,BaseThickness/10-1); // Z=-52.75 for original position
+			OriginalBase(X,Y,-Z-52.75,BaseThickness/10-1); // Z=-52.75 for original position
 		}
 	}
 }
@@ -52,7 +52,23 @@ module OldMount() {  // overlay old one to get the positions and sizes right
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module base(X=0,Y=0,Z=0,Z2=0) { // makes the motor mount holder
+module OriginalBase(X=0,Y=0,Z=0,Z2=0,BaseLength=100) { // makes the motor mount holder
+	difference() {
+		union() {
+			color("skyblue") cubeX([BaseWidth,BaseLength,Thickness-2],2);
+			OriginalSideBase(X,Y,Z,0,BaseLength);
+		}
+		BaseHoles();
+		translate([0,95,-2]) InnerHole();
+	}
+	union() {
+		NEMA_Holder(X,Y,Z);
+		OriginalSupports(X,Y,Z);
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module base(X=0,Y=0,Z=0,Z2=0,BaseLength=50) { // makes the motor mount holder
 	difference() {
 		union() {
 			color("skyblue") cubeX([BaseWidth,BaseLength,Thickness-2],2);
@@ -71,6 +87,13 @@ module base(X=0,Y=0,Z=0,Z2=0) { // makes the motor mount holder
 		NEMA_Holder(X,Y,Z);
 		Supports(X,Y,Z);
 	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module OriginalSideBase(X=0,Y=0,Z=0,Add=0,BaseLength) { // prevent the base from flexing in between the 2020 pieces
+	translate([X+14.5,Y+5,0]) color("firebrick") cubeX([Thickness,BaseLength-6+Add,21],2);
+	translate([X+BaseWidth-21.5,Y+5,0]) color("seashell") cubeX([Thickness,BaseLength-6+Add,21],2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,6 +162,22 @@ module SideSlots() { // notches left & right of mounting base
 			translate([BaseWidth+2,BaseLength-25,-Thickness/2]) cylinder(h=Thickness*2,d=10);
 			translate([BaseWidth-9,BaseLength-25,-Thickness/2]) cylinder(h=Thickness*2,d=10);
 		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module OriginalSupports(X=0,Y=0,Z=0) { // the angled supports for the Nema17
+	difference() {
+		translate([14.5,-Z-55,-10]) rotate([45,0,0]) color("gold") cubeX([Thickness,90,10],2);
+		translate([13,-Z-70,-25]) color("ivory") cube([Thickness*2,40,40]);
+		translate([12,-Z-3,26]) color("gray") cube([Thickness*2,20,40]);
+		
+	}
+	translate([BaseWidth-38,0,0]) difference() {
+		translate([16.5,-Z-55,-10]) rotate([45,0,0]) color("lightcoral") cubeX([Thickness,90,10],2);
+		translate([13.5,-Z-70,-25]) color("cyan") cube([Thickness*2,40,40]);
+		translate([12.5,-Z-3,26]) color("pink") cube([Thickness*2,20,40]);
 	}
 }
 
