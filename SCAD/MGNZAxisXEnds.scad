@@ -2,7 +2,7 @@
 // MGNMS2040XEnds.scad - use MGN rails for the Z axis and 2040 XEnds
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 5/21/2020
-// Last Update: 9/24/20
+// Last Update: 11/7/20
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 5/23/20	- Added X axis motor mount and idler mount that go at the ends of the makerslide
 // 5/23/20	- Added abilty to print more that one MotorMount and to print a left, right or both of the ZCarriage
@@ -24,12 +24,13 @@
 // 9/16/20	- Added var for no mounting screw holes in BeltAttachment()
 // 9/19/20	- Added holes in BedMount2020()
 // 9/24/20	- Moved the belt attachment and enstops to HorizontalXBeltDrive.scad
+// 11/7/20	- Stiffened up BedMount2020()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //=====================================================================================================
 // 2020x460mm with the 400mm MGN12 are to be connected to the middle and upper 2020 on the M-Max
 //=====================================================================================================
 include <mmax_h.scad>
-include <brassinserts.scad>
+include <inc/brassinserts.scad>
 include <inc/screwsizes.scad>
 //use <Z-Motor_Leadscrew-Coupler.scad> // coupler(motorShaftDiameter = 5,threadedRodDiameter = 5)
 include <inc/NEMA17.scad>
@@ -472,13 +473,16 @@ module BedMount2020(Qty=2) {
 			difference() {
 				union() {
 					color("cyan") cubeX([Bed1212Height,55,6],2);
-					translate([20,50,0]) color("red") cubeX([307-40,5,9],2);
+					translate([21,20,0]) color("green") cubeX([Bed1212Height-43,35,10],2);
+					translate([22.5,50,7]) color("red") cubeX([Bed1212Height-45,5,9],2);
+//					translate([20,37,0]) color("blue") cubeX([Bed1212Height-45,5,9],2);
+//					translate([20,17,0]) color("plum") cubeX([Bed1212Height-45,5,9],2);
 				}
 				translate([Bed1212Height/2-10,25,-2]) mgnscrewholes(screw3);
 				translate([Bed1212Height/2-10,25,4]) mgnscountersink(screw3hd);
 				AllBedScrewHoles2020(screw5);
-				translate([30,0,0]) Holes(4);
-				translate([185,0,0]) Holes(4);
+				translate([35,5,0]) Holes(4);
+				translate([185,5,0]) Holes(4);
 			}
 			//%translate([307/3,0,0]) cube([100,20,20]); // show a 2020
 		}
@@ -513,7 +517,7 @@ module AllBedScrewHoles2020(Screw=screw5) {
 
 module Holes(Quanity) {
 	for(x = [0 : Quanity-1]) {
-		translate([30*x,30,-2]) cylinder(h=10,d=20);
+		translate([30*x,30,-2]) cylinder(h=20,d=20);
 	}
 }
 

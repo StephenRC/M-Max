@@ -2,7 +2,7 @@
 // HorizontalXBeltDrive.scad - belt drive on top of the 2040
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 9/23/2020
-// Last Update: 9/23/20
+// Last Update: 11/3/20
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 5/23/20	- Added X axis motor mount and idler mount that go at the ends of the makerslide
 // 5/23/20	- Added abilty to print more that one MotorMount and to print a left, right or both of the ZCarriage
@@ -13,6 +13,7 @@
 // 8/1/20	- Added X endstop that mounts on the rail side of makerslide
 // 9/16/20	- Added var for no mounting screw holes in BeltAttachment()
 // 9/23/20	- Split from MGNMS2040XEndsEndstops.scad
+// 11/3/20	- Adjust the belt loops to fit better
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <mmax_h.scad>
 include <inc/NEMA17.scad>
@@ -26,12 +27,12 @@ Use3mmInsert=1;
 Use5mmInsert=1;
 UseLarge3mmInsert=1; // got new inserts and the 3mm inserts are larger
 //-------------------------------
-MGN12HHoleOffset=20;
-MGN12HLength=44;
-MGN12HWidth=26.8;
-Thickness=8;
-MountWidth=25;
-MotorOffset=9;
+//MGN12HHoleOffset=20;
+//MGN12HLength=44;
+//MGN12HWidth=26.8;
+//Thickness=8;
+//MountWidth=25;
+//MotorOffset=9;
 //------------------------------------------------------------
 StepperShaftOffset=15;
 StepperMountThickness=4;
@@ -55,8 +56,9 @@ SwitchShift=6;	// move switch mounting holes along width
 //YEndStop(9.7,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // green microswitch
 //YEndStop(10,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // Black microswitch
 //YEndStop(22,10,8,Yes3mmInsert(UseLarge3mmInsert),screw5,11.5); // CN0097
-//BeltAttachment(1,0,1); //DoBelt=0,OnePiece=0,MountingScrewHoles=1
-BeltAttachment(0,0,1); //DoBelt=0,OnePiece=0,MountingScrewHoles=1
+BeltCarriageMount(1); // arg 1: 0 no mounting holes; 1 mounting holes
+//BeltMount(0);
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module YEndStop(Sep,DiagOffset,Offset,ScrewS,ScrewM=screw5,Adjust,MS=0) {
@@ -117,7 +119,7 @@ module EndStopScrewHoles(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 
 module XEndHorizontalBeltEnds() {
 	translate([25,30,20]) rotate([-90,0,90]) MotorMountH();
-	translate([-12,28,20]) rotate([90,180,0]) XIdlerH();
+	translate([-12,8,20]) rotate([90,180,0]) XIdlerH();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,16 +171,9 @@ module base(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module BeltAttachment(DoBelt=0,OnePiece=0,MountingScrewHoles=1) { // must print on side with supports from bed only
-	if(DoBelt) BeltMount(OnePiece);
-	else CarriageMount(MountingScrewHoles);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module CarriageMount(MountingScrewHoles=1) {
+module BeltCarriageMount(MountingScrewHoles=1) {
 	rotate([180,0,0]) {
 		difference() {
 			color("cyan") cubeX([55,49.3,20],2);
@@ -218,6 +213,8 @@ module BeltMount(OnePiece=0) {
 		else {
 			translate([-22.25,17,20]) color("gray") cubeX([35,17,4],2); // individual pieces
 			translate([43,17,20]) color("plum") cubeX([35,17,4],2);
+			translate([10,34,22]) color("black") rotate([90,0,0]) cylinder(h=LayerThickness,d=20); // tab
+			translate([45,34,22]) color("white") rotate([90,0,0]) cylinder(h=LayerThickness,d=20); // tab
 		}
 		difference() {
 			translate([-22.25,17,16]) color("green") cubeX([22,17,8],2);
@@ -242,22 +239,28 @@ module BeltMountScrew() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module Loop1() {
+module Loop1() { // motor side
 	translate([0,0,35]) rotate([-90,0,0]) {
 		difference() {
 			translate([-19.25,15,0]) color("plum") cubeX([22,33,17],2);
-			translate([-20,34,0]) beltLoop();
+			translate([-20,35.5,0]) {
+				translate([0,0,-1]) beltLoop();
+				translate([0,0,2]) color("blue") beltLoop();
+			}
 		}
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module Loop2() {
+module Loop2() { // idler side
 	translate([0,0,35]) rotate([90,0,0]) {
 		difference() {
-			translate([52,-41,-17]) color("white") cubeX([23,28,17],2);
-			translate([75,-27,-12]) rotate([0,0,180]) beltLoop();
+			translate([52,-44,-17]) color("white") cubeX([23,33,17],2);
+			translate([75,-31.5,0]) {
+				translate([0,0,-11]) rotate([0,0,180]) beltLoop();
+				translate([0,0,-14]) rotate([0,0,180]) color("blue") beltLoop();
+			}
 		}
 	}
 }
@@ -283,17 +286,18 @@ module TopMountBeltHoles(Screw=Yes3mmInsert(Use3mmInsert,UseLarge3mmInsert),UseH
 
 module MotorMountH(Qty=1) {
 	translate([0,20-StepperMountThickness,-3]) difference() {
-		color("red") cubeX([55,StepperMountThickness,60],2);
-		translate([28,6,28]) color("blue") rotate([90,0,0]) NEMA17_parallel_holes(8,10);
+		union() {
+			color("red") cubeX([65,StepperMountThickness,60],2);
+			translate([0,-18,0]) color("blue") cubeX([StepperMountThickness,22,77],2);
+		}
+		translate([32,6,28]) color("blue") rotate([90,0,0]) NEMA17_parallel_holes(8,15);
+		translate([0,-8,32+StepperShaftOffset]) 2040ScrewHoles(screw5);
+		translate([-3,-14,StepperMountThickness+8]) color("gray") cubeX([12,13,26],2);
 	}
-	difference() {
-		translate([0,-2,-3]) color("blue") cubeX([StepperMountThickness,22,77],2);
-		translate([0,10.5,32+StepperShaftOffset]) 2040ScrewHoles(screw5);
-		translate([-3,3,StepperMountThickness+8]) color("gray") cubeX([12,13,26],2);
-	}
-	translate([1,0,-3]) color("green") rotate([0,0,19]) cubeX([50,StepperMountThickness,StepperMountThickness],2);
-	translate([1,0,53]) color("pink") rotate([0,0,19]) cubeX([50,StepperMountThickness,StepperMountThickness],2);
-	translate([1,16,69]) color("black") rotate([0,19,0]) cubeX([50,StepperMountThickness,StepperMountThickness],2);
+	translate([1,-2,-3]) color("green") rotate([0,0,20]) cubeX([54.5,StepperMountThickness,StepperMountThickness],2);
+	translate([1,-2,53]) color("pink") rotate([0,0,20]) cubeX([54.5,StepperMountThickness,StepperMountThickness],2);
+	translate([0,16,70]) color("black") rotate([0,20,0]) cubeX([54.5,StepperMountThickness,StepperMountThickness],2);
+	translate([1,20,72]) color("green") rotate([90,0,0]) cylinder(h=LayerThickness,d=25); // tab
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -312,17 +316,20 @@ module 2040ScrewHoles(Screw=screw5) {
 module XIdlerH(IdlerScrew=Yes5mmInsert(Use5mmInsert)) {
 	difference() {
 		union() {
-			translate([1,-2,0]) color("cyan") cubeX([47,22,StepperMountThickness],2);
-			translate([-24,20-StepperMountThickness,0]) color("plum")
-				cubeX([35,StepperMountThickness,20],2);
+			union() {
+				translate([1,-2,0]) color("cyan") cubeX([47,22,StepperMountThickness],2);
+				translate([5,20-StepperMountThickness,18.5]) color("green") rotate([0,25,0])
+					cubeX([45,StepperMountThickness,StepperMountThickness],2);
+				translate([1,StepperMountThickness-3.5,0]) color("black") rotate([46,0,0])
+					cubeX([StepperMountThickness,26,StepperMountThickness],2);
+				translate([45,20,2]) color("red") rotate([90,0,0]) cylinder(h=LayerThickness,d=25); // tab
+				translate([-24,20-StepperMountThickness,0]) color("plum")
+					cubeX([35,StepperMountThickness,23],2);
+			}
 		}
 		translate([30,10.5,0]) rotate([0,-90,0]) 2040ScrewHoles(screw5);
-		translate([-14,25,F625ZZ_dia/2+2]) rotate([90,0,0]) color("red") cylinder(h=20,d=IdlerScrew);
+		translate([-14,25,F625ZZ_dia/2+5]) rotate([90,0,0]) color("red") cylinder(h=20,d=IdlerScrew);
 	}
-	translate([5,20-StepperMountThickness,16.5]) color("green") rotate([0,22,0])
-		cubeX([45,StepperMountThickness,StepperMountThickness],2);
-	translate([1,StepperMountThickness-3.5,0]) color("black") rotate([43,0,0])
-		cubeX([StepperMountThickness,26,StepperMountThickness],2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////

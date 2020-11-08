@@ -171,7 +171,10 @@ module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0) { // extruder side
 			translate([VerticalCarriageWidth/2+2,12,0]) rotate([0,0,45]) color("red") cubeX([10,10,wall],1);
 			translate([VerticalCarriageWidth/2+35,12,0]) rotate([0,0,45]) color("yellow") cubeX([10,10,wall],1);
 		}
-		if(ExtMount) translate([37,42,wall/2]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
+		if(ExtMount) {
+			translate([37,42,wall/2]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
+			translate([28.5,42,wall/2]) ExtruderMountHolesFn4(Yes3mmInsert(Use3mmInsert),25);
+		}
 		// wheel holes
 		if(!Rear) { // top wheel hole, if rear, don't bevel it
 			translate([VerticalCarriageWidth,TopHoleSeperation+10,0]) color("red") hull() { // top wheel
@@ -413,13 +416,24 @@ module TopMountBeltHoles(Screw=Yes3mmInsert()) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ExtruderMountHolesFn(Screw=Yes3mmInsert(Use3mmInsert),Length=20,Fragments=100) {
+module ExtruderMountHolesFn(Screw=Yes3mmInsert(Use3mmInsert),Length=20) {
 		// screw holes to mount extruder plate
-		translate([0,-20,0]) rotate([90,0,0]) color("blue") cylinder(h = Length, d = Screw, $fn=Fragments);
-		translate([HorizontallCarriageWidth/2-5,-20,0]) rotate([90,0,0]) color("red") cylinder(h = Length, d = Screw, $fn=Fragments);
-		translate([-(HorizontallCarriageWidth/2-5),-20,0]) rotate([90,0,0]) color("black") cylinder(h = Length, d = Screw, $fn=Fragments);
-		translate([HorizontallCarriageWidth/4-2,-20,0]) rotate([90,0,0]) color("gray") cylinder(h = Length, d = Screw, $fn=Fragments);
-		translate([-(HorizontallCarriageWidth/4-2),-20,0]) rotate([90,0,0]) color("cyan") cylinder(h = Length, d = Screw, $fn=Fragments);
+		translate([0,-20,0]) rotate([90,0,0]) color("gray") cylinder(h = Length, d = Screw);
+		translate([HorizontallCarriageWidth/2-5,-20,0]) rotate([90,0,0]) color("green") cylinder(h = Length, d = Screw);
+		translate([-(HorizontallCarriageWidth/2-5),-20,0]) rotate([90,0,0]) color("khaki") cylinder(h = Length, d = Screw);
+		translate([HorizontallCarriageWidth/4-2,-20,0]) rotate([90,0,0]) color("lightgray") cylinder(h = Length, d = Screw);
+		translate([-(HorizontallCarriageWidth/4-2),-20,0]) rotate([90,0,0]) color("plum") cylinder(h = Length, d = Screw);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ExtruderMountHolesFn4(Screw=Yes3mmInsert(Use3mmInsert),Length=20,Fragments=100) {
+		// screw holes to mount extruder plate
+		translate([0,-20,0]) rotate([90,0,0]) color("indigo") cylinder(h = Length, d = Screw);
+		translate([HorizontallCarriageWidth/2-5,-20,0]) rotate([90,0,0]) color("red") cylinder(h = Length, d = Screw);
+		//translate([-(HorizontallCarriageWidth/2-5),-20,0]) rotate([90,0,0]) color("white") cylinder(h = Length, d = Screw);
+		translate([HorizontallCarriageWidth/4-2,-20,0]) rotate([90,0,0]) color("pink") cylinder(h = Length, d = Screw);
+		translate([-(HorizontallCarriageWidth/4-2),-20,0]) rotate([90,0,0]) color("cyan") cylinder(h = Length, d = Screw);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
