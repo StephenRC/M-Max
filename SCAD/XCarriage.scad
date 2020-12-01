@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // XCarriage - x carriage for M-Max using makerslide
 // created: 2/3/2014
-// last modified: 10/17/20
+// last modified: 11/15/20
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 9/2/18	- Original file modified for MMAX, extruder plate and top mounting belt removed
 // 12/10/18	- Changed to loop type bel holder on carraiage
@@ -10,6 +10,8 @@
 // 8/8/20	- Renamed Carriage_v2() to Carriage(), add use of 5mm insertes in Carriage()
 // 9/16/20	- Added a complete version of the xcarraige and extruder with the belt mount
 // 10/17/20	- Changed the extruder mount to allow dual titan aeros
+// 11/15/20	- Changed mounting holes to pick form Aero mount (4) and non Aero (5),
+//			  Adjusted m5 countersink on front carriage to clear Aero mount M3 brass inserts
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // uses http://www.thingiverse.com/thing:211344 for the y belt
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,20 +38,25 @@ LayerThickness=0.3;
 //Carriage(); // front; Titan=0,Tshift=0,Rear=0
 //Carriage(0,0,0,0,0,1); // rear
 //XCarriageWithExtruder(1,1);
-//XCarriageFullAssemblySingle(1,1,0);
-//XCarriageFullAssemblyDual(1,1,0);
-XCarriageFullAssemblyNoExtruder(1,1,0,1);
+XCarriageFullAssemblySingle(1,0,1,0,35);  // StepperLength 35 (pancake) or 45
+//XCarriageFullAssemblyDual(1,1,0,0,0);
+//XCarriageFullAssemblyNoExtruder(1,1,0,1,0);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module XCarriageFullAssemblySingle(Titan,ExtruderMountType=1,Stiffner=0) {
-	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,1); // front
-	translate([31,-43,0]) rotate([0,0,90]) TitanSingle(0);
+module XCarriageFullAssemblySingle(Titan,Stiffner=0,DoTab=0,AeroMount=0,StepperLength=45) {
+	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0,0,0,0); // front
+	// Titan=0,Tshift=0,Rear=0,ExtMount=0,AeroMount=0,TopBeltMount=1
+	if(StepperLength==35)
+		translate([31,StepperLength-65,0]) rotate([0,0,90]) SingleAero(0,1,1,StepperLength,0);
+	else if(StepperLength==45)
+		translate([31,StepperLength-86,0]) rotate([0,0,90]) SingleAero(0,1,1,StepperLength,0);
+	//														Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0
 	if(Stiffner) translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connect extruder top to xcarriage
-	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1); // rear
+	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1,0,0,0); // rear
 	difference() {
 		union() {
-			translate([9.5,-wall,80]) rotate([180,0,0]) BeltAttachment(0,0,0);
+			translate([9.5,-wall,80]) rotate([180,0,0]) BeltCarriageMount(0);
 			translate([12,-wall,80]) color("red") cubeX([10,wall,13],2);
 			translate([12,33.3,80]) color("pink") cubeX([10,wall,13],2);
 			translate([52,-wall,80]) color("blue") cubeX([10,wall,13],2);
@@ -62,19 +69,22 @@ module XCarriageFullAssemblySingle(Titan,ExtruderMountType=1,Stiffner=0) {
 	// make rear xcarriage bottom level with front
 	translate([0,33.3,-4]) color("black") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
 	// neaten up exterude mount to xcarriage
-	translate([0.25,-wall,-4]) color("white") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
+	translate([0.25,-wall,-4]) color("white") cubeX([VerticalCarriageWidth*2+0.6,wall,8.5],1);
+	if(DoTab) {
+		translate([0,37,-4]) color("green") cylinder(h=LayerThickness,d=20);
+		translate([75,37,-4]) color("plum") cylinder(h=LayerThickness,d=20);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module XCarriageFullAssemblyNoExtruder(Titan,ExtruderMountType=1,Stiffner=0,DoTab=0) {
-	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0,1); // front
-	//translate([31,-43,0]) rotate([0,0,90]) TitanSingle(0);
+module XCarriageFullAssemblyNoExtruder(Titan,ExtruderMountType=1,Stiffner=0,DoTab=0,AeroMount=0) {
+	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0,1,AeroMount,0); // front
 	if(Stiffner) translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connect extruder top to xcarriage
-	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1); // rear
+	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1,0,0,0); // rear
 	difference() {
 		union() {
-			translate([9.5,-wall,80]) rotate([180,0,0]) BeltAttachment(0,0,0);
+			translate([9.5,-wall,80]) rotate([180,0,0]) BeltCarriageMount(0);
 			translate([12,-wall,80]) color("red") cubeX([10,wall,13],2);
 			translate([12,33.3,80]) color("pink") cubeX([10,wall,13],2);
 			translate([52,-wall,80]) color("blue") cubeX([10,wall,13],2);
@@ -89,7 +99,10 @@ module XCarriageFullAssemblyNoExtruder(Titan,ExtruderMountType=1,Stiffner=0,DoTa
 				translate([2,-4,1]) color("gray") cylinder(h=LayerThickness,d=20);
 				translate([72,-3,1]) color("black") cylinder(h=LayerThickness,d=20);
 			}
-			translate([37,-4,30]) rotate([90,0,0]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
+			if(!AeroMount)
+				translate([37,-4,30]) rotate([90,0,0]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
+			else 
+				translate([29,-4,30]) rotate([90,0,0]) ExtruderMountHolesFn4(Yes3mmInsert(Use3mmInsert),25);
 		}
 		translate([2,37,1]) color("green") cylinder(h=LayerThickness,d=20);
 		translate([72,37,1]) color("plum") cylinder(h=LayerThickness,d=20);
@@ -107,7 +120,7 @@ module XCarriageFullAssemblyDual(Titan,ExtruderMountType=1,Stiffner=0) {
 	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1); // rear
 	difference() {
 		union() {
-			translate([9.5,-wall,80]) rotate([180,0,0]) BeltAttachment(0,0,0);
+			translate([9.5,-wall,80]) rotate([180,0,0]) BeltCarriageMount(0);
 			translate([12,-wall,80]) color("red") cubeX([10,wall,13],2);
 			translate([12,33.3,80]) color("pink") cubeX([10,wall,13],2);
 			translate([52,-wall,80]) color("blue") cubeX([10,wall,13],2);
@@ -163,7 +176,7 @@ module xcar(WhichOne=0,Titan=0) // makerslide version
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0) { // extruder side
+module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0,AeroMount=0,TopBeltMount=1) { // extruder side
 	difference() {
 		union() {
 			translate([VerticalCarriageWidth/2,0,0]) color("cyan") cubeX([VerticalCarriageWidth,height,wall],1);
@@ -172,8 +185,10 @@ module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0) { // extruder side
 			translate([VerticalCarriageWidth/2+35,12,0]) rotate([0,0,45]) color("yellow") cubeX([10,10,wall],1);
 		}
 		if(ExtMount) {
-			translate([37,42,wall/2]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
-			translate([28.5,42,wall/2]) ExtruderMountHolesFn4(Yes3mmInsert(Use3mmInsert),25);
+			if(AeroMount) 
+				translate([29.65,42,wall/2]) ExtruderMountHolesFn4(Yes3mmInsert(Use3mmInsert),25);
+			else
+				translate([37,42,wall/2]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
 		}
 		// wheel holes
 		if(!Rear) { // top wheel hole, if rear, don't bevel it
@@ -185,10 +200,10 @@ module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0) { // extruder side
 			// wheel adjuster
 			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue") cylinder(h = depth+10,r = adjuster/2);
 			// bottom hole clearance
-			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,3]) color("gray")
-				cylinder(h = depth+10,r = screw_hd/2);
-			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,3]) color("green")
-				cylinder(h = depth+10,r = screw_hd/2);
+			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,7]) color("gray")
+				cylinder(h = depth+10,d=screw_hd);
+			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,7]) color("green")
+				cylinder(h = depth+10,d=screw_hd);
 		} else { // rear carraige
 			if(!Use5mmInsert) { // nut holes
 				translate([VerticalCarriageWidth,TopHoleSeperation/2+42,3]) color("lightgray")
@@ -219,9 +234,9 @@ module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0) { // extruder side
 		}
 		//if(!Titan || Rear) translate([37.5,34,0]) CarriageMount(); // 4 mounting holes for an extruder
 		// screw holes to mount extruder plate
-		if(!Rear) translate([37.5,42,4]) ExtruderMountHolesFn(Yes3mmInsert(),25);
+		//if(!Rear) translate([37.5,42,4]) ExtruderMountHolesFn(Yes3mmInsert(),25);
 		// screw holes in top
-		translate([38,45,4]) TopMountBeltHoles(Yes3mmInsert());
+		if(TopBeltMount) translate([38,45,4]) TopMountBeltHoles(Yes3mmInsert());
 	}
 }
 

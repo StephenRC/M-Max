@@ -2,7 +2,7 @@
 // SensorMounts.scad
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // created: 6/2/1019
-// last update: 10/13/20
+// last update: 11/17/20
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // 6/2/19	- Separated from single_titan_extruder_mount.scad
 // 4/12/20	- Made the mount to extruder plate the same for Proximity & BLTouch
@@ -10,6 +10,8 @@
 // 8/17/20	- Copied and edited from M-Max and added an adjustable mount for dc42's ir sensor
 // 8/30/20	- Added an adjustable BLTouch mount
 // 10/13/20	- Finished adding use of brass inserts
+// 11/15/20	- Added a mirrored version of IRAdapterAero() to install on right side
+// 11/17/20	- Added a close version of it adapter
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
 use <inc/corner-tools.scad>
@@ -45,12 +47,14 @@ Spacing=17;
 
 //ProximityMount(6,1); // arg is shift up/down (min:2)
 //BLTouchMount(0,15,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v3.1 BLTouch thru mount
-BLTouchMount(2,20,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v3.1 BLTouch underneath (add 5mm)
+//BLTouchMount(2,20,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v3.1 BLTouch underneath (add 5mm)
 //BLTouchMount(0,14,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v1 BLTouch (metal pin)
 //BLTouchMount(2,19,1);	// 1st arg:type; 2nd: shift -- Titan Aero w/v1 BLTouch (metal pin)
 //BLTouchMount(0,10);	// 1st arg:type; 2nd: shift -- Titan w/E3Dv6
 //IRAdapter(0,0);
-//IRAdapterAero(0);
+//IRAdapterAero(0); // left side
+//mirror([1,0,0]) IRAdapterAero(0); // right side
+IRAdapterAeroClose(0,1);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -82,6 +86,51 @@ module IRAdapterAero(Taller=0) {  // ir sensor bracket stuff is from irsensorbra
 		translate([0,-13,-32]) IRMountingHoles(Taller,Yes2p5mmInsert(Use2p5mmInsert));
 		translate([0,-13,-32.5]) color("blue") RecessIR(Taller);
 	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module IRAdapterAeroClose(Taller=0,DoTab=0) {  // ir sensor bracket stuff is from irsensorbracket.scad
+	difference() {
+		translate([0,0,0]) SensorMountClose();
+		translate([23,-19,0]) IRMountingHoles(Taller,Yes2p5mmInsert(Use2p5mmInsert));
+		translate([23,-23,-2]) color("blue") RecessIR(0);
+	}
+	if(DoTab) {
+		translate([0,4,-2]) {
+			difference() {
+				color("gray") cylinder(h=LayerThickness,d=20);
+				translate([5,2,120]) rotate([90,0,0]) SensorMountHoles(screw3);
+			}
+			difference() {
+				translate([48,0,0]) color("lightgray") cylinder(h=LayerThickness,d=20);
+				translate([23,-23,0]) IRMountingHoles(0,Yes2p5mmInsert(Use2p5mmInsert));
+			}
+		}
+	}
+	IRSpacer(0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module IRSpacer(Thicker=0) {
+	difference() {
+		translate([24,0,0]) color("white") cubeX([25,wall,Thicker+4.5],1);
+		translate([23,-23,-2]) color("blue") RecessIR(0);
+		translate([23,-19,0]) IRMountingHoles(0,Yes2p5mmInsert(Use2p5mmInsert));
+		translate([5,5,125]) rotate([90,0,0]) SensorMountHoles(screw3hd);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module SensorMountClose(Tab=0) {
+	difference() {
+		color("cyan") cubeX([50,wall+1,2],2);
+		translate([5,6,120]) rotate([90,0,0]) SensorMountHoles(screw3);
+		translate([5,6,128])  rotate([90,0,0]) SensorMountHoles(screw3hd);
+	}
+	if(Tab) translate([58,28.5,0]) color("black") cylinder(h=LayerThickness,d=15);  // support tab
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
