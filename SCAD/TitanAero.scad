@@ -27,7 +27,27 @@ LEDSpacer=0;//8;  // length need for titan is 8; length need for aero is 0
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //DualAero(1,1,0,35,0); // 35 for e3d .9 degree short stepper
-SingleAero(1,1,0,45,0);
+SingleAero(1,0,0,35,0,1); // e3d short stepper motor .9 degree with heatsink on end
+translate([50,-38,0]) Brace(1);  // something to help with drooping over time
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module Brace(DoTab=0) {
+	difference() {
+		union() {
+			color("cyan") cubeX([55,4,5],1);
+			translate([0,59,0]) color("blue") cubeX([55,4,5],1);
+			color("red") cubeX([4,63,5],1);
+		}
+		translate([52,65,2.6]) color("plum") rotate([90,0,0]) cylinder(h=70,d=screw3);
+	}
+	if(DoTab) {
+		translate([52,59,0]) color("black") cylinder(h=LayerThickness,d=20);
+		translate([52,2,0]) color("gray") cylinder(h=LayerThickness,d=20);
+		translate([2,59,0]) color("green") cylinder(h=LayerThickness,d=20);
+		translate([2,2,0]) color("pink") cylinder(h=LayerThickness,d=20);
+	}
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,8 +57,8 @@ module DualAero(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0) {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-module SingleAero(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0) {
-	TitanSingle(Mounting,DoTab,DoNotch,StepperLength,ShowLength);
+module SingleAero(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0,BraceAttachment=0) {
+	TitanSingle(Mounting,DoTab,DoNotch,StepperLength,ShowLength,BraceAttachment);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,7 +131,7 @@ module DualExtruderAttachment(Mounting=1) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TitanSingle(Mounting=1,DoTab=1,StepperNotch=0,StepperLength=45,ShowLength=0) {
+module TitanSingle(Mounting=1,DoTab=1,StepperNotch=0,StepperLength=45,ShowLength=0,BraceAttachment=0) {
 	//single titan aero and should work with a titan with e3dv6
 	if(ShowLength) %translate([-17,0,wall/2]) cube([StepperLength,10,10]); // check for room for the StepperLength
 	difference() {
@@ -128,6 +148,20 @@ module TitanSingle(Mounting=1,DoTab=1,StepperNotch=0,StepperLength=45,ShowLength
 			translate([-22,-14.25,35]) cube([wall,15,1]);
 		}
 	}
+	if(BraceAttachment) {
+		translate([-14,21,52]) {
+			difference() {
+				color("blue") rotate([90,0,0]) cylinder(h=4,d=screw5hd+1);
+				translate([0,1,0]) color("pink") rotate([90,0,0]) cylinder(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+			}
+		}
+		translate([-14,-30,52]) {
+			difference() {
+				color("blue") rotate([90,0,0]) cylinder(h=4,d=screw5hd+1);
+				translate([0,1,0]) color("pink") rotate([90,0,0]) cylinder(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+			}
+		}
+	}
 	if(DoTab) {
 		translate([-17,16,-4]) color("gray") AddTab();
 		translate([-17,-29,-4]) AddTab();
@@ -139,8 +173,8 @@ module TitanSingle(Mounting=1,DoTab=1,StepperNotch=0,StepperLength=45,ShowLength
 module SingleBase(StepperLength=45,Mounting=1) {
 	union() {
 		translate([StepperLength-5,0,0]) ExtruderAttachment(Mounting);
-		translate([-21,-34,-wall/2]) color("gray") cubeX([45,10,wall],1); // extruder side
-		translate([-21,11,-wall/2]) color("black") cubeX([45,10,wall],1); // extruder side
+		translate([-21,-35,-wall/2]) color("gray") cubeX([45,10,wall],1); // extruder side
+		translate([-21,12,-wall/2]) color("black") cubeX([45,10,wall],1); // extruder side
 	}
 }
 
