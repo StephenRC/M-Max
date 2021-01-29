@@ -54,7 +54,22 @@ Spacing=17;
 //IRAdapter(0,0);
 //IRAdapterAero(0); // left side
 //mirror([1,0,0]) IRAdapterAero(0); // right side
-IRAdapterAeroClose(0,1);
+//IRAdapterAeroClose(0,1,1);
+Spacer(3,7,screw3+0.1,3);// bltouch fan mount spacer
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module Spacer(Qty=1,Thickness=3,Screw=screw3,BottomSize=3) {
+	for(x = [0:Qty-1]) {
+		translate([0,x*15,0]) difference() {
+			color("cyan") hull() {
+				cylinder(h=0.5,d=Screw*BottomSize);
+				translate([0,0,Thickness]) cylinder(h=1,d=Screw*2);
+			}
+			translate([0,0,-2]) color("plum") cylinder(h=Thickness+5,d=Screw);
+		}
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -90,11 +105,18 @@ module IRAdapterAero(Taller=0) {  // ir sensor bracket stuff is from irsensorbra
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module IRAdapterAeroClose(Taller=0,DoTab=0) {  // ir sensor bracket stuff is from irsensorbracket.scad
+module IRAdapterAeroClose(Taller=0,DoTab=0,ToolBoard=0) {  // ir sensor bracket stuff is from irsensorbracket.scad
 	difference() {
 		translate([0,0,0]) SensorMountClose();
-		translate([23,-19,0]) IRMountingHoles(Taller,Yes2p5mmInsert(Use2p5mmInsert));
+		translate([23,-20,0]) IRMountingHoles(Taller,Yes2p5mmInsert(Use2p5mmInsert));
 		translate([23,-23,-2]) color("blue") RecessIR(0);
+	}
+	if(ToolBoard) {
+		translate([5,6,-2]) Spacer(1,10,screw3+0.1,2);// bltouch fan mount spacer
+		difference() {
+			translate([22,6,-2]) Spacer(1,10,screw3+0.1,2);// bltouch fan mount spacer
+			translate([22,1,4.5]) color("red") cube([5,5,7]);
+		}
 	}
 	if(DoTab) {
 		translate([0,4,-2]) {
@@ -117,7 +139,7 @@ module IRSpacer(Thicker=0) {
 	difference() {
 		translate([24,0,0]) color("white") cubeX([25,wall,Thicker+4.5],1);
 		translate([23,-23,-2]) color("blue") RecessIR(0);
-		translate([23,-19,0]) IRMountingHoles(0,Yes2p5mmInsert(Use2p5mmInsert));
+		translate([23,-20,0]) IRMountingHoles(0,Yes2p5mmInsert(Use2p5mmInsert));
 		translate([5,5,125]) rotate([90,0,0]) SensorMountHoles(screw3hd);
 	}
 }

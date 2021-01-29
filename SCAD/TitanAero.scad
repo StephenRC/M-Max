@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // DualTitanAero - titan w/e3dv6 or titan aero
 // created: 10/14/2020
-// last modified: 11/15/20
+// last modified: 1/10/21
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 1/12/16	- added bevel on rear carriage for x-stop switch to ride up on
 // 5/30/20	- Added ability to use a Titan Aero on mirrored version
@@ -11,7 +11,10 @@
 // 10/14/20	- Converted to single to dual
 // 11/14/20	- Made SingleAero() adjustable for different stepper lengths
 // 11/15/20	- Made DualAero() adjustable for different stepper lengths
+// 1/10/21	- Added brace to dual titan aero
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//****NOTE: dual titan aero not tested
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
 include <inc/brassinserts.scad>
 //-------------------------------------------------------------------------------------------------------------
@@ -26,48 +29,71 @@ LEDLight=1; // print LED ring mounting with spacer
 LEDSpacer=0;//8;  // length need for titan is 8; length need for aero is 0
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//DualAero(1,1,0,35,0); // 35 for e3d .9 degree short stepper
-SingleAero(1,0,0,35,0,1); // e3d short stepper motor .9 degree with heatsink on end
-translate([50,-38,0]) Brace(1);  // something to help with drooping over time
+//Dual(1,35);
+Single(1,35);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module Dual(Brc=0,StepperLength=35) {
+	DualAero(1,1,0,StepperLength,0,1); // 35 for e3d .9 degree short stepper
+	if(Brc) translate([-90,37,0]) Brace(1,1);  // Dual Aero, something to help with drooping over time
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module Single(Brc=0,StepperLength=35) {
+	SingleAero(1,0,0,StepperLength,0,1); // e3d short stepper motor .9 degree with heatsink on end
+	if(Brc) translate([-90,-37,0]) Brace(1,0);  // Single Aero, something to help with drooping over time
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module Brace(DoTab=0) {
+module Brace(DoTab=0,Dual=0) {
 	difference() {
 		union() {
 			color("cyan") cubeX([55,4,5],1);
-			translate([0,59,0]) color("blue") cubeX([55,4,5],1);
-			color("red") cubeX([4,63,5],1);
+			if(Dual) {
+				color("red") cubeX([4,104,5],1);
+				translate([0,100,0]) color("blue") cubeX([55,4,5],1);
+			} else {
+				color("red") cubeX([4,63,5],1);
+				translate([0,59,0]) color("blue") cubeX([55,4,5],1);
+			}
 		}
-		translate([52,65,2.6]) color("plum") rotate([90,0,0]) cylinder(h=70,d=screw3);
+		translate([52,120,2.6]) color("plum") rotate([90,0,0]) cylinder(h=130,d=screw3);
 	}
 	if(DoTab) {
-		translate([52,59,0]) color("black") cylinder(h=LayerThickness,d=20);
+		if(Dual) {
+			translate([52,102,0]) color("black") cylinder(h=LayerThickness,d=20);
+			translate([2,102,0]) color("green") cylinder(h=LayerThickness,d=20);
+		} else {
+			translate([52,61,0]) color("black") cylinder(h=LayerThickness,d=20);
+			translate([2,61,0]) color("green") cylinder(h=LayerThickness,d=20);
+		}
 		translate([52,2,0]) color("gray") cylinder(h=LayerThickness,d=20);
-		translate([2,59,0]) color("green") cylinder(h=LayerThickness,d=20);
 		translate([2,2,0]) color("pink") cylinder(h=LayerThickness,d=20);
 	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-module DualAero(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0) {
-	TitanDual(Mounting,DoTab,DoNotch,StepperLength,ShowLength);
+module DualAero(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0,BraceAttachment=1) {
+	TitanDual(Mounting,DoTab,DoNotch,StepperLength,ShowLength,BraceAttachment);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-module SingleAero(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0,BraceAttachment=0) {
+module SingleAero(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0,BraceAttachment=1) {
 	TitanSingle(Mounting,DoTab,DoNotch,StepperLength,ShowLength,BraceAttachment);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TitanDual(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0) {
+module TitanDual(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0,BraceAttachment=0) {
 	// extruder platform for e3d titan with (0,1)BLTouch or (2)Proximity or (3)dc42's ir sensor
 	if(ShowLength) %translate([-15,0,wall/2]) cube([StepperLength,10,10]); // check for room for the StepperLength
 	difference() {
-		DualBase(StepperLength);
+		DualBase(StepperLength,Mounting);
 		SensorAnd1LCMountDual();
 	}
 	if(LEDLight && LEDSpacer) translate([0,40,-4]) LED_Spacer(LEDSpacer,screw5);
@@ -84,6 +110,20 @@ module TitanDual(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0) {
 			color("green") hull() {
 				translate([-22,-11.5,55])cube([wall,10,1]); // cut out to allow motor be install after nount to xcarriage
 				translate([-22,-14.25,35]) cube([wall,15,1]);
+			}
+		}
+	}
+	if(BraceAttachment) {
+		translate([-14,63,52]) {
+			difference() {
+				color("blue") rotate([90,0,0]) cylinder(h=4,d=screw5hd+1);
+				translate([0,1,0]) color("pink") rotate([90,0,0]) cylinder(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+			}
+		}
+		translate([-14,-29,52]) {
+			difference() {
+				color("pink") rotate([90,0,0]) cylinder(h=4,d=screw5hd+1);
+				translate([0,1,0]) color("blue") rotate([90,0,0]) cylinder(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 			}
 		}
 	}
@@ -105,9 +145,9 @@ module SensorAnd1LCMountDual() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module DualBase(StepperLength=45) {
+module DualBase(StepperLength=45,Mounting=1) {
 	union() {
-		translate([StepperLength-5,0,0]) DualExtruderAttachment(Mounting=1);
+		translate([StepperLength-5,0,0]) DualExtruderAttachment(Mounting);
 		translate([-21,-33,-wall/2]) color("blue") cubeX([45,10,wall],1);
 		translate([-21,10,-wall/2]) color("cyan") cubeX([45,10,wall],1); // middle
 		translate([-21,54,-wall/2]) color("green") cubeX([45,10,wall],1);

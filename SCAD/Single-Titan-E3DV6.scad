@@ -12,7 +12,7 @@ include <MMAX_h.scad>
 use <ybeltclamp.scad>	// modified https://www.thingiverse.com/thing:863408
 use <inc/corner-tools.scad>
 use <SensorMounts.scad>
-use <DrillGuidefor2020AndBedFrame.scad>
+use <DrillGuidefor2020.scad>
 include <inc/brassinserts.scad>
 //-------------------------------------------------------------------------------------------------------------
 Use3mmInsert=1; // set to 1 to use 3mm brass inserts

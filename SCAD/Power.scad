@@ -48,7 +48,7 @@ SocketPlugWidth=SwitchSocketWidth;
 SocketPlugHeight=SwitchSocketHeight;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-all(0,19.5,13,2,1,2,1);// 1st arg: flip; next 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
+//all(0,19.5,13,2,1,2,1);// 1st arg: flip; next 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
 //testfit();	// print part of it to test fit the socket & 2020
 //switch();		// 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
 //powersupply_cover();
@@ -56,6 +56,37 @@ all(0,19.5,13,2,1,2,1);// 1st arg: flip; next 4 args: flip label, Width, length,
 //pbar(1,2);
 //housing(1,13,19.5);
 //cover();
+MeanWellRS_15_5(); // Mean Well 5vdc power supply
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module MeanWellRS_15_5() {
+	difference() {
+		color("cyan") cubeX([63,52+40,5],2);
+		translate([9.8-1.5,27.4-1.5+20,-5]) {
+			color("red") cylinder(h=Thickness*3,d=screw3);
+			translate([0,0,3]) color("blue") cylinder(h=5,d=screw3hd);
+			translate([41.7-3.5,0,0]) color("blue") cylinder(h=Thickness*3,d=screw3);
+			translate([41.7-3.5,0,3]) color("red") cylinder(h=5,d=screw3hd);
+		}
+		translate([63/4+5,10,-5]) {
+			color("green") cylinder(h=Thickness*3,d=screw5);
+			translate([0,0,9]) color("plum") cylinder(h=5,d=screw5hd);
+			translate([0,52+20,0]) color("plum") cylinder(h=Thickness*3,d=screw5);
+			translate([0,52+20,9]) color("green") cylinder(h=5,d=screw5hd);
+		}
+		translate([63/4+25,10,-5]) {
+			color("green") cylinder(h=Thickness*3,d=screw5);
+			translate([0,0,9]) color("plum") cylinder(h=5,d=screw5hd);
+			translate([0,52+20,0]) color("plum") cylinder(h=Thickness*3,d=screw5);
+			translate([0,52+20,9]) color("green") cylinder(h=5,d=screw5hd);
+		}
+	}
+	translate([9.8-1.5,27.4-1.5+20,3]) {
+		color("pink") cylinder(h=LayerThickness,d=screw3hd);
+		translate([41.7-3,0,0]) color("white") cylinder(h=LayerThickness,d=screw3hd);
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MGNMS2040XEnds.scad - use MGN rails for the Z axis and 2040 XEnds
+// MGNMS2040XEndsAndBedMount.scad - use MGN rails for the Z axis and 2040 XEnds
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 5/21/2020
-// Last Update: 11/7/20
+// Last Update: 12/28/20
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 5/23/20	- Added X axis motor mount and idler mount that go at the ends of the makerslide
 // 5/23/20	- Added abilty to print more that one MotorMount and to print a left, right or both of the ZCarriage
@@ -87,9 +87,15 @@ Bed1212Width=310;
 //XCarriageForMGN(1);  // changed to 1 for Single E3DV6 extruder setup
 //Spacer(8,10,screw5);
 //FatSpacer(8,20,screw3+0.5);
-BedMount2020(2);
+BedMount2020(1,0);
 //BedMount(2);
 ///////////////////////////////////////////////////////////////////////
+
+module Show2020() {
+	#cubeX([20,60,20],2);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module Spacer(Quanity=1,Thickness,Screw=screw3,) { // spacer to move pc board off platform, use translate() when you call it
 	for(a=[0:Quanity-1]) {
@@ -467,26 +473,41 @@ module BedMount(Qty=2) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module BedMount2020(Qty=2) {
+module BedMount2020(Qty=2,Show=0) {
 	for(x = [0 : Qty-1]) {
 		translate([0,x*75,0]) {
 			difference() {
 				union() {
 					color("cyan") cubeX([Bed1212Height,55,6],2);
-					translate([21,20,0]) color("green") cubeX([Bed1212Height-43,35,10],2);
-					translate([22.5,50,7]) color("red") cubeX([Bed1212Height-45,5,9],2);
-//					translate([20,37,0]) color("blue") cubeX([Bed1212Height-45,5,9],2);
-//					translate([20,17,0]) color("plum") cubeX([Bed1212Height-45,5,9],2);
+					translate([21.5,20,0]) color("green") cubeX([Bed1212Height-44,35,10],2);
+					translate([21,50,5]) color("red") cubeX([Bed1212Height-44,5,10],2);
 				}
 				translate([Bed1212Height/2-10,25,-2]) mgnscrewholes(screw3);
 				translate([Bed1212Height/2-10,25,4]) mgnscountersink(screw3hd);
 				AllBedScrewHoles2020(screw5);
+				BedScrewClearanceHoles(screw5);
 				translate([35,5,0]) Holes(4);
 				translate([185,5,0]) Holes(4);
 			}
-			//%translate([307/3,0,0]) cube([100,20,20]); // show a 2020
+			if(Show) {
+				Show2020();
+				translate([Bed1212Height-21,0,0]) Show2020();
+				translate([180,0,0]) rotate([0,0,90]) Show2020();
+			}
 		}
-		//translate([Bed1212Height/2-16,22,3]) MGNHoleSupport();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BedScrewClearanceHoles(Screw) {
+	translate([10,14.5,-2]) color("pink") hull() {
+		cylinder(h=10,d=Screw);
+		translate([0,24,0]) cylinder(h=10,d=Screw);	
+	}
+	translate([298,14.5,-2]) color("purple") hull() {
+		cylinder(h=10,d=Screw);
+		translate([0,24,0]) cylinder(h=10,d=Screw);	
 	}
 }
 
@@ -502,15 +523,15 @@ module MGNHoleSupport() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module AllBedScrewHoles2020(Screw=screw5) {
-	translate([10,45,0]) BedScrewHoles2020(Screw,0); // side left end
-	translate([10,7,0]) BedScrewHoles2020(Screw,0); // side end lft
-	translate([Bed1212Height/2-50,7,0]) BedScrewHoles2020(Screw,0); // side
-	translate([Bed1212Height/2,7,0]) BedScrewHoles2020(Screw,0); // side center
-	translate([Bed1212Height/2-100,7,0]) BedScrewHoles2020(Screw,0); // side
-	translate([Bed1212Height-13,45.5,0]) BedScrewHoles2020(Screw,0); // side right end
-	translate([Bed1212Height-13.5,7.5,0]) BedScrewHoles2020(Screw,0); // side end right
-	translate([Bed1212Height/2+50,7,0]) BedScrewHoles2020(Screw,0); // side
-	translate([Bed1212Height/2+100,7,0]) BedScrewHoles2020(Screw,0); // side
+	translate([10,45,0]) color("red") BedScrewHoles2020(Screw,0); // side left end
+	translate([10,7,0]) color("black") BedScrewHoles2020(Screw,0); // side end lft
+	translate([Bed1212Height/2-50,7,0]) color("blue") BedScrewHoles2020(Screw,0); // side
+	translate([Bed1212Height/2,7,0]) color("gray") BedScrewHoles2020(Screw,0); // side center
+	translate([Bed1212Height/2-100,7,0]) color("white") BedScrewHoles2020(Screw,0); // side
+	translate([Bed1212Height-12,45.5,0]) color("lightgray") BedScrewHoles2020(Screw,0); // side right end
+	translate([Bed1212Height-12,7.5,0]) color("purple") BedScrewHoles2020(Screw,0); // side end right
+	translate([Bed1212Height/2+50,7,0]) color("pink") BedScrewHoles2020(Screw,0); // side
+	translate([Bed1212Height/2+100,7,0]) color("plum") BedScrewHoles2020(Screw,0); // side
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

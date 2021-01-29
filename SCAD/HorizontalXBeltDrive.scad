@@ -50,125 +50,14 @@ SwitchShift=6;	// move switch mounting holes along width
 //XEndHorizontalBeltEnds();
 //AxisBrace(4); // arg is Quanity
 //AxisBrace(4,65,0); // arg is Quanity; args 2&3 are X,Y
-//XEndStop(10,0,8,screw2,8,0); // black microswitch inline mount
-//XEndStop(9.7,0,8,screw2,8,0); // green microswitch inline mount
-//XEndStop(22,10,8,Yes3mmInsert(UseLarge3mmInsert),screw5,11.5); // CN0097
-//YEndStop(9.7,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // green microswitch
-//YEndStop(10,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // Black microswitch
-//YEndStop(22,10,8,Yes3mmInsert(UseLarge3mmInsert),screw5,11.5); // CN0097
 BeltCarriageMount(1); // arg 1: 0 no mounting holes; 1 mounting holes
 //BeltMount(0);
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module YEndStop(Sep,DiagOffset,Offset,ScrewS,ScrewM=screw5,Adjust,MS=0) {
-	if(ScrewS==screw2t) {
-		difference() {
-			union() {
-				color("red") cubeX([22,33,5],2);
-				color("purple") cubeX([5,20,17+Adjust],2);
-			}
-			YEndStopExtrusionMountingHole(Sep,DiagOffset,Offset,ScrewS,ScrewM,Adjust);
-			if(MS) translate([-10,-2,0]) rotate([0,45,0]) color("black") cube([10,40,10]);
-		}
-	}
-	if(ScrewS==Yes3mmInsert(UseLarge3mmInsert)) {
-		difference() {
-			union() {
-				color("blue") cubeX([22,33,5],2);
-				color("cyan") cubeX([5,33,18+Adjust],2);
-			}
-			YEndStopExtrusionMountingHole(Sep,DiagOffset,Offset,ScrewS,ScrewM,Adjust);
-		}
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module YEndStopExtrusionMountingHole(Sep,DiagOffset,Offset,ScrewS,ScrewM,Adjust) {
-	translate([12,8,-2]) color("white") cylinder(h=10,d=ScrewM);
-	translate([0,-1,0]) EndStopScrewHoles(Sep,DiagOffset,Offset,ScrewS,Adjust);
-	translate([12,23,-2]) color("cyan") cylinder(h=10,d=ScrewM);
-	translate([0,-1,0]) EndStopScrewHoles(Sep,DiagOffset,Offset,ScrewS,Adjust);
-	if(ScrewM==screw5) {
-		translate([12,8,4]) color("cyan") cylinder(h=8,d=screw5hd);
-		translate([12,23,4]) color("pink") cylinder(h=8,d=screw5hd);
-	}
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module EndStopScrewHoles(Sep,DiagOffset,Offset,ScrewT,Adjust) {
-	// screw holes for switch
-	translate([0,0,Adjust]) {
-		rotate([0,90,0]) {		
-			translate([-(Switch_ht-Offset), SwitchShift, -2]) {
-				color("purple") cylinder(h = 11, r = ScrewT/2, center = false, $fn=100);
-			}
-		}
-		rotate([0,90,0]) {
-			translate(v = [-(Switch_ht-Offset)+DiagOffset, SwitchShift+Sep, -2]) {
-				color("black") cylinder(h = 11, r = ScrewT/2, center = false, $fn=100);
-			}
-		}
-	}
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module XEndHorizontalBeltEnds() {
 	translate([25,30,20]) rotate([-90,0,90]) MotorMountH();
 	translate([-12,8,20]) rotate([90,180,0]) XIdlerH();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module XEndStop(EndStopType=0,Side=0) {
-	if(EndStopType==0) translate([17,-62,0]) XEndStop(22,10,8,Yes3mmInsert(UseLarge3mmInsert),8,Side);
-	else if(EndStopType==1) translate([17,-62,0]) XEndStop(10,0,8,screw2,8,Side); // black microswitch inline mount
-	else if(EndStopType==2) translate([17,-62,0]) XEndStop(9.7,0,8,screw2,8,Side); // black microswitch inline mount
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-module XEndStop(Sep,DiagOffset,Offset,ScrewS,Adjust,Side) {
-	base(Sep,DiagOffset,Offset,ScrewS,Adjust);
-	mount(screw5,Side);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-module mount(Screw=screw5,Side=0) {
-	difference() {
-		union() {
-			color("cyan") cubeX([22,HolderWidth,Switch_thk2],1);
-			if(Side==0) translate([Screw/2-3,23,Switch_thk2-1]) color("red") cubeX([22,6,2],1); // slot align
-			if(Side==1) translate([Screw/2-3,3,Switch_thk2-1]) color("blue") cubeX([22,6,2],1); // slot align
-		}
-		translate([10,6,-1])  color("red") cylinder(h=Switch_thk2*2,d=Screw);
-		translate([10,26,-1])  color("green") cylinder(h=Switch_thk2*2,d=Screw);
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-module base(Sep,DiagOffset,Offset,ScrewT,Adjust) {
-	rotate([0,-90,0]) difference() {
-		difference() {
-			translate([0,0,-4]) color("yellow") cubeX([Switch_thk,HolderWidth,Switch_ht+Offset-Adjust],1);
-			// screw holes for switch
-			rotate([0,90,0]) {		
-				translate([-(Switch_ht-Offset)-0.5, SwitchShift, -1]) {
-					color("purple") cylinder(h = 11, d=ScrewT);
-				}
-			}
-			rotate([0,90,0]) {
-				translate(v = [-(Switch_ht-Offset)-0.5+DiagOffset, SwitchShift+Sep, -1]) {
-					color("black") cylinder(h = 11, d=ScrewT);
-				}
-			}
-		}
-	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -18,6 +18,7 @@
 // Not printed as of 8/23/18
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad> // http://github.com/prusajr/PrusaMendel, which also uses functions.scad & metric.scad
+include <inc/brassinserts.scad>
 $fn=50; // Compiling does take a while at 100, even with a 1950X, 32GB & 1080ti
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // variables
@@ -29,17 +30,51 @@ AdjustE3DV6_UD = 0; // move the e3dv groove mounts in opposite directions for th
 IR_Adapter_Length = 10;	// set position of dc42's ir adapter
 Shift_BL_Touch = 10;	// move bl_touch up/down
 Shift_Proximity = 10;	// move proximity up/down
+Use4mmInsert=1;
+Use3mmInsert=1;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DualTitan(3,1);	// dual hotends that are closer together than the other
+//DualTitan(3,1);	// dual hotends that are closer together than the other
 				// 1st arg is for sensor (0-ir,1=blt,2=blt recessed,3=proximity,4=none
 				// 2nd arg: 0=no titan extruder mounts,1=titan extruder mounts
 //bowden_titan(screw5);  // Titan extruder frame mount
 //blt_mount(1);
+SingleE3DV6();
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+module SingleE3DV6() {
+	singleE3DV6Bowden(0,0,0);
+}
 
-module DualTitan(Sensor=0,Extruders=0) {
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+module singleE3DV6Bowden(Adjust=0,Sensor=0,Type=0) {
+	difference() {
+		translate([-11,puck_w/2-e3dv6_total/2+50,0]) rotate([90,0,0]) bowden_mount(-Adjust);
+		translate([-20,40,-4]) color("red") cube([80,20,20]);
+		translate([-79,34,0]) bowden_bottom_fan_mount_hole(0,Yes3mmInsert(Use3mmInsert));
+		translate([-38,34,0]) bowden_bottom_fan_mount_hole(0,Yes3mmInsert(Use3mmInsert));
+	}
+	difference() {
+		rotate([180,90,90]) mountingblock(1,-55,15,-45,0);
+		translate([-11,70,0]) rotate([90,0,0]) bowden_screws(Yes4mmInsert(Use4mmInsert));
+		translate([-11,63,0]) rotate([90,0,0]) bowden_nuts();
+	}
+	difference() {
+		translate([-45,43,0]) bowden_fan(Yes3mmInsert(Use3mmInsert));
+		translate([-20,40,-1]) cube([80,20,20]);
+	}
+	difference() {
+		translate([-80,43,0]) bowden_fan(Yes3mmInsert(Use3mmInsert));
+		translate([-20,40,-1]) cube([80,20,20]);
+	}
+	translate([55,0,0]) rotate([0,0,90]) bowden_clamp(-Adjust);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module DualTitan(Sensor=4,Extruders=0) {
 	if($preview) %translate([-100,-100,-5]) cube([200,200,5]);
 	translate([33,30,5]) rotate([0,-90,0]) dualmountingblock(Sensor,Extruders);
 }
@@ -82,7 +117,7 @@ module dualmountingblock(Sensor,Extruders) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module BracketMount(TMountholes=0) {
+module BracketMount(TMountholes=0,Screw=Yes4mmInsert(Use4mmInsert)) {
 	difference() {
 		color("cyan") cubeX([60,80,8],2);
 		if(TMountholes) {
@@ -100,9 +135,11 @@ module BracketMount(TMountholes=0) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module bowden_hotend_mount() {
-	translate([8,-25,31]) rotate([0,0,90]) bowden_newnuts();
-	translate([8,-25,20]) rotate([0,0,90]) bowden_screws();
+module bowden_hotend_mount(Single=0) {
+	if(!Single) {
+		translate([8,-25,31]) rotate([0,0,90]) bowden_newnuts();
+		translate([8,-25,20]) rotate([0,0,90]) bowden_screws();
+	}
 	translate([8,-3,31]) rotate([0,0,90]) bowden_newnuts();
 	translate([8,-3,20]) rotate([0,0,90]) bowden_screws();
 }
@@ -123,21 +160,25 @@ module bracketmount(TMountholes) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module CarriageMount() { // four mounting holes
+module CarriageMount(Screw=Yes4mmInsert(Use4mmInsert)) { // four mounting holes
 	// lower
-	translate([mount_bolt_seperation/2,0,-5]) color("pink") cylinder(h = 18, r = screw4/2);
-	translate([mount_bolt_seperation/2,0,6]) color("white") nut(m3_nut_diameter,14);
-	translate([-mount_bolt_seperation/2,0,-5]) color("black") cylinder(h = 18, r = screw4/2);
-	translate([-mount_bolt_seperation/2,0,6]) color("white") nut(m3_nut_diameter,14);
+	translate([mount_bolt_seperation/2,0,-5]) color("pink") cylinder(h = 18,d=Screw);
+	translate([-mount_bolt_seperation/2,0,-5]) color("black") cylinder(h = 18,d=Screw);
+	if(!Use4mmInsert) {
+		translate([mount_bolt_seperation/2,0,6]) color("white") nut(m3_nut_diameter,14);
+		translate([-mount_bolt_seperation/2,0,6]) color("white") nut(m3_nut_diameter,14);
+	}
 	// upper
-	translate([mount_bolt_seperation/2,mount_bolt_seperation,-5]) color("red") cylinder(h = 18, r = screw4/2);
-	translate([mount_bolt_seperation/2,mount_bolt_seperation,6]) color("white") nut(m3_nut_diameter,14);
-	translate([-mount_bolt_seperation/2,mount_bolt_seperation,-5]) color("blue") cylinder(h = 18, r = screw4/2);
-	translate([-mount_bolt_seperation/2,mount_bolt_seperation,6]) color("white") nut(m3_nut_diameter,14);
+	translate([mount_bolt_seperation/2,mount_bolt_seperation,-5]) color("red") cylinder(h = 18,d=Screw);
+	translate([-mount_bolt_seperation/2,mount_bolt_seperation,-5]) color("blue") cylinder(h = 18,d=Screw);
+	if(!Use4mmInsert) {
+		translate([mount_bolt_seperation/2,mount_bolt_seperation,6]) color("white") nut(m3_nut_diameter,14);
+		translate([-mount_bolt_seperation/2,mount_bolt_seperation,6]) color("white") nut(m3_nut_diameter,14);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 module CarriageMount() { // four mounting holes
 	// lower
 	translate([mount_bolt_seperation/2,0,-5]) color("pink") cylinder(h = 18, r = screw4/2);
@@ -150,7 +191,7 @@ module CarriageMount() { // four mounting holes
 	translate([-mount_bolt_seperation/2,mount_bolt_seperation,-5]) color("blue") cylinder(h = 18, r = screw4/2);
 	translate([-mount_bolt_seperation/2,mount_bolt_seperation,6]) color("white") nut(m3_nut_diameter,14);
 }
-
+*/
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module fanduct(Qty) {
@@ -160,7 +201,7 @@ module fanduct(Qty) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TitanBowden(Dual=2,Sensor=0,Extruders) { // defaults to two bowden hotends
+module TitanBowden(Dual=2,Sensor=0,Extruders=1) { // defaults to two bowden hotends
 	if(Dual == 2) { // two bowden hotends
 		if(Extruders) {
 			translate([-5,-100,20]) rotate([0,90,0]) bowden_titan(screw5);  // Titan extruder frame mount
@@ -284,7 +325,7 @@ module e3dv6_bowden_single(Sensor=0) {
 		translate([-(hole1x+iroffset-1.5-fan_spacing),irmounty,14]) rotate([90,0,0]) color("yellow")
 			cylinder(h=100,r=screw3t/2,$fn=50);  // put a mounting hole at fan_spacing
 	}
-	translate([-83,10,0]) bowden_fan(); // bowden_fan();
+	translate([-83,1,0]) bowden_fan(); // bowden_fan();
 	difference() {
 		translate([-45,8,0]) bowden_fan();
 		translate([0,6,0]) cube([80,20,20]);
@@ -313,9 +354,9 @@ module bowden_mount(Adjust=0) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module bowden_screws() {
-	translate([12.5,puck_w/2-e3dv6_total/2-0.5,0]) color("red") cylinder(h=50,d=screw4);
-	translate([35,puck_w/2-e3dv6_total/2-0.5,0]) color("blue") cylinder(h=50,d=screw4);
+module bowden_screws(Screw=screw4) {
+	translate([12.5,puck_w/2-e3dv6_total/2-0.5,0]) color("red") cylinder(h=50,d=Screw);
+	translate([35,puck_w/2-e3dv6_total/2-0.5,0]) color("blue") cylinder(h=50,d=Screw);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -328,8 +369,10 @@ module bowden_newnuts() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module bowden_nuts(Len=20) {
-	translate([35,puck_w/2-e3dv6_total/2-0.5,0]) color("red") cylinder(h=Len,d=nut4,$fn=6);
-	translate([12.5,puck_w/2-e3dv6_total/2-0.5,0]) color("blue") cylinder(h=Len,d=nut4,$fn=6);
+	if(!Use4mmInsert) {
+		translate([35,puck_w/2-e3dv6_total/2-0.5,0]) color("red") cylinder(h=Len,d=nut4,$fn=6);
+		translate([12.5,puck_w/2-e3dv6_total/2-0.5,0]) color("blue") cylinder(h=Len,d=nut4,$fn=6);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -440,7 +483,7 @@ module e3dv6() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module bowden_ir() {
+module bowden_ir(x=0) {
 		translate([hole2x+shift_ir_bowden,14,6.5]) rotate([90,0,0]) color("red") cylinder(h=15,d=screw3t);
 		bowden_bottom_ir_mount_hole();
 }
@@ -464,18 +507,18 @@ module bowden_fan2() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module bowden_fan() {
+module bowden_fan(Screw=Yes3mmInsert(Use3mmInsert)) {
 		difference() {
 			translate([73,-46,0]) color("cyan") cubeX([5,fan_spacing+20,7]);
-			translate([69,-(fan_spacing+9.5),5]) rotate([0,90,0]) color("red") cylinder(h=10,d=screw3t);
-			bowden_bottom_fan_mount_hole(9.5);
+			translate([69,-(fan_spacing+9.5),3.5]) rotate([0,90,0]) color("red") cylinder(h=10,d=Yes3mmInsert(Use3mmInsert));
+			bowden_bottom_fan_mount_hole(9.5,Screw);
 		}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module bowden_bottom_fan_mount_hole(X=0) {
-	translate([64,-X,5]) rotate([0,90,0]) color("blue") cylinder(h=15,d=screw3t);
+module bowden_bottom_fan_mount_hole(X=0,Screw=Yes3mmInsert(Use3mmInsert)) {
+	translate([64,-X,3.5]) rotate([0,90,0]) color("blue") cylinder(h=15,d=Screw);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
