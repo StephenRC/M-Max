@@ -2,9 +2,10 @@
 //	XWirechain.scad
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // created 1/7/2021
-// last update 1/9/21
+// last update 2/11/21
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 1/9/21	- Added vertical wirechain - length need adjusting when the wirechain for the vertical has arrived
+// 2/11/21	- Added supoorts for the wirechain
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <inc/screwsizes.scad>
 include <inc/brassinserts.scad>
@@ -29,6 +30,7 @@ module WCXBottomZ() {
 		union() {
 			color("cyan") cubeX([21,20,Thickness],2);
 			color("pink") cubeX([Thickness,20,65],2);
+			translate([0,-40,45]) color("red") cubeX([Thickness,50,20],2);
 		}
 		translate([11,10,-5]) color("red") cylinder(h=Thickness*3,d=screw5);
 		translate([11,10,4]) color("blue") cylinder(h=Thickness,d=screw5hd);
@@ -40,8 +42,8 @@ module WCXBottomZ() {
 
 module XWirechain() {
 	WCXCarriage();
-	translate([-20,0,Thickness]) rotate([-90,0,0]) WCXEnd();
-	translate([0,20,0]) rotate([0,-90,-90]) WCXBottomZ();
+	translate([-60,0,Thickness*3]) rotate([-90,90,0]) WCXEnd();
+	translate([45,45,0]) rotate([0,-90,-90]) WCXBottomZ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -55,23 +57,23 @@ module MakerslideNotch() {
 module WCXEnd() {
 	difference() {
 		union() {
-			color("cyan") cubeX([15,Thickness,95],2);
-			translate([-5,-45,90]) color("gray") cubeX([20,50,Thickness],2);
-			translate([-5,-55,55]) color("lightgray") cubeX([20,60,Thickness],2);
-			translate([-5,-55,75]) color("black") cubeX([20,60,Thickness],2);
-			translate([-5,-45,75]) color("green") cubeX([20,Thickness,20],2);
-			translate([-5,-55,55]) color("blue") cubeX([20,Thickness,25],2);
+			color("cyan") cubeX([20,Thickness,95],2);
+			translate([0,-45,90]) color("gray") cubeX([20,50,Thickness],2);
+			translate([0,-55,55]) color("lightgray") cubeX([20,60,Thickness],2);
+			translate([0,-55,75]) color("black") cubeX([20,60,Thickness],2);
+			translate([0,-45,75]) color("green") cubeX([20,Thickness,50],2);
+			translate([0,-55,55]) color("blue") cubeX([20,Thickness,25],2);
 	
 		}
-		translate([7,10,10]) rotate([90,0,0]) color("white") cylinder(h=Thickness*3,d=screw5);
-		translate([7,0.5,10]) rotate([90,0,0]) color("black") cylinder(h=Thickness,d=screw5hd);
-		translate([0,9,33]) MakerslideNotch();
-		translate([1,-35,88]) rotate([90,0,0]) WCEndMount();
-		translate([5,-45,74]) rotate([90,90,0]) WCEndMount();
+		translate([10,10,10]) rotate([90,0,0]) color("white") cylinder(h=Thickness*3,d=screw5);
+		translate([10,0.5,10]) rotate([90,0,0]) color("black") cylinder(h=Thickness,d=screw5hd);
+		translate([-5,9,33]) MakerslideNotch();
+		translate([6,-35,88]) rotate([90,0,0]) WCEndMount();
+		translate([10,-45,74]) rotate([90,90,0]) WCEndMount();
 	}
 	difference() {
-		translate([1.5,3,40]) color("red") rotate([0,90,0]) cylinder(h=12,d=10);
-		translate([0,2,33]) color("gray") cube([15,15,15]);
+		translate([1,3,40]) color("red") rotate([0,90,0]) cylinder(h=17,d=10);
+		translate([0,2,33]) color("gray") cube([25,15,15]);
 	}
 }
 
@@ -82,6 +84,8 @@ module WCXCarriage() {
 		union() {
 			color("cyan") cubeX([50,15,Thickness],2);
 			translate([15,0,0]) color("gray") cubeX([20,Thickness,15],2);
+			translate([15,10,0]) color("blue") cubeX([20,75,Thickness],2);
+			translate([15,80,0]) color("red") cubeX([20,Thickness,15],2);
 		}
 		translate([20.5,7,10]) rotate([90,0,0]) WCEndMount();
 		translate([10,7,-5]) BracketMount();
