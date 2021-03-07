@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // XCarriage - x carriage for M-Max using makerslide
 // created: 2/3/2014
-// last modified: 1/9/21
+// last modified: 2/21/21
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 9/2/18	- Original file modified for MMAX, extruder plate and top mounting belt removed
 // 12/10/18	- Changed to loop type bel holder on carraiage
@@ -13,6 +13,7 @@
 // 11/15/20	- Changed mounting holes to pick form Aero mount (4) and non Aero (5),
 //			  Adjusted m5 countersink on front carriage to clear Aero mount M3 brass inserts
 // 1/9/21	- Added mount holes on top for a wirechain
+// 2/21/21	- Added two M4 holes into carriage for mounting of the exoslide BMG adapter
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // uses http://www.thingiverse.com/thing:211344 for the y belt
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23,6 +24,7 @@ use <TitanAero.scad>
 use <HorizontalXBeltDrive.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Use3mmInsert=1;
+Use4mmInsert=1;
 Use5mmInsert=1;
 LargeInsert=1;
 //Tshift=0;	// shift titan knob clearance notch
@@ -42,6 +44,7 @@ LayerThickness=0.3;
 //XCarriageFullAssemblySingle(1,0,1,0,35);  // StepperLength 35 (pancake) or 45
 //XCarriageFullAssemblyDual(1,1,0,35);
 XCarriageFullAssemblyNoExtruder(1,1,0,1,1);
+//Carriage(1,0,0,1,1,0);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -229,6 +232,10 @@ module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0,AeroMount=0,TopBeltMount=1) {
 		}
 		// wheel holes
 		if(!Rear) { // top wheel hole, if rear, don't bevel it
+			translate([28,20,0]) { // exoslide BMG bracket
+				translate([0,0,-5]) color("purple") cylinder(h=15,d=Yes4mmInsert(Use4mmInsert));
+				translate([20,0,-5]) color("lavender") cylinder(h=15,d=Yes4mmInsert(Use4mmInsert));
+			}
 			translate([VerticalCarriageWidth,TopHoleSeperation+10,0]) color("red") hull() { // top wheel
 				// bevel the countersink to get easier access to adjuster
 				translate([0,0,3]) cylinder(h = depth+10,d = screw5hd/2);
@@ -241,7 +248,18 @@ module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0,AeroMount=0,TopBeltMount=1) {
 				cylinder(h = depth+10,d=screw_hd);
 			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,7]) color("green")
 				cylinder(h = depth+10,d=screw_hd);
+			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue") cylinder(h = depth+10,d=screw5);
+			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("yellow")
+				cylinder(h = depth+10,d=screw5);
+			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("purple")
+				cylinder(h = depth+10,d=screw5);
 		} else { // rear carraige
+			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue")
+				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
+			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("yellow")
+				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
+			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("purple")
+				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
 			if(!Use5mmInsert) { // nut holes
 				translate([VerticalCarriageWidth,TopHoleSeperation/2+42,3]) color("lightgray")
 					cylinder(h = depth+10,d=screw5hd,$fn=6);
@@ -249,21 +267,7 @@ module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0,AeroMount=0,TopBeltMount=1) {
 					cylinder(h = depth+10,r = screw_hd/2,$fn=6);
 				translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,3]) color("green")
 					cylinder(h = depth+10,r = screw_hd/2,$fn=6);
-		}
-		}
-		if(Rear) {
-			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue")
-				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
-			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("yellow")
-				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
-			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("purple")
-				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
-		} else {
-			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue") cylinder(h = depth+10,d=screw5);
-			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("yellow")
-				cylinder(h = depth+10,d=screw5);
-			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("purple")
-				cylinder(h = depth+10,d=screw5);
+			}
 		}
 		translate([38,height/2+8,-wall/2]) color("gray") hull() { // reduce usage of filament
 			cylinder(h = wall+10, r = 6);

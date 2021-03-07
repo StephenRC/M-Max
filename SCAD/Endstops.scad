@@ -2,9 +2,10 @@
 // Endstops.scad
 //////////////////////////////////////////////////////////////////////////////////////////
 // created 12/10/20
-// last update 12/10/20
+// last update 2/20/21
 //////////////////////////////////////////////////////////////////////////////////////////////
 // 12/10/20	- Put endstops into a seperate file
+// 2/20/21	- Added a 2020 X endstop mount
 /////////////////////////////////////////////////////////////////////////////////////////////
 include <mmax_h.scad>
 include <inc/NEMA17.scad>
@@ -29,14 +30,30 @@ LayerThickness=0.3;
 //XEndStop(10,0,8,Yes2mmInsert(Use2mmInsert),8,0); // black microswitch inline mount
 //XEndStop(9.7,0,8,Yes2mmInsert(Use2mmInsert),8,0); // green microswitch inline mount
 //XEndStop(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert),screw5,11.5); // CN0097
-XEndStopV2(9.7,0,0,Yes2mmInsert(Use2mmInsert),8,0); // green microswitch inline mount
+//XEndStopV2(9.7,0,0,Yes2mmInsert(Use2mmInsert),8,0); // green microswitch inline mount
 //XEndStopV2(10,0,8,screw2,8,0); // black microswitch inline mount
+XEndStop2020(9.7,0,8,Yes2mmInsert(Use2mmInsert)); // green microswitch inline mount
+//XEndStop2020(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert)); // CN0097
+//XEndStop2020(10,0,8,Yes2mmInsert(Use2mmInsert)); // black microswitch inline mount
 //XEndStopV2(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert),8,0); // CN0097
 //YEndStop(9.7,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // green microswitch
 //YEndStop(10,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // Black microswitch
 //YEndStop(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert),screw5,11.5); // CN0097
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module XEndStop2020(Sep,DiagOffset,Offset,ScrewS,Adjust=0,Thickness=Switch_thk2) {
+	difference() {
+		if(Sep>20) color("cyan") cubeX([20,32,Switch_thk2],1);
+		else color("cyan") cubeX([20,20,Switch_thk2],1);
+		translate([10,10,-1])  color("red") cylinder(h=Thickness*2,d=screw5);
+		translate([10,10,Thickness-3])  color("green") cylinder(h=5,d=screw5hd);
+		translate([4, SwitchShift-1,-1]) color("purple") cylinder(h = 11, d=ScrewS);
+		translate([4+DiagOffset, SwitchShift+Sep-1,-1]) color("black") cylinder(h = 11, d=ScrewS);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module YEndStop(Sep,DiagOffset,Offset,ScrewS,ScrewM=screw5,Adjust,MS=0) {
 	difference() {

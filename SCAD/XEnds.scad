@@ -2,9 +2,9 @@
 // MMAX-X-Ends.scad - http://creativecommons.org/licenses/by-sa/3.0/
 //////////////////////////////////////////////////////////////////////////////////////////
 // created 3/1/16
-// last update 4/14/2020
+// last update 3/1/21
 //////////////////////////////////////////////////////////////////////////////////////////
-// 3/1/16	- SCAD version of zClamp_4off.stl & x-bracket_1off.stl
+// 3/1/16	- SCAD version of zXEnd_4off.stl & x-bracket_1off.stl
 //			  at http://www.thingiverse.com/thing:12609
 //			  Not quite identical, but functionally the same
 // 3/12/16	- Added guide bars to the makerslide version to help align them
@@ -12,12 +12,12 @@
 // 6/10/16	- Moved nema17 mount down 1mm and added info on screws & bearings used
 // 8/28/18	- Colorized the preview, added reference bed, ability to  clamping pressure
 // 9/3/18	- Removed lm8uu version
-// 9/15/18	- Added a full part which both sides of the clamp as one piece and snap in MTSS for makerslide,
+// 9/15/18	- Added a full part which both sides of the XEnd as one piece and snap in MTSS for makerslide,
 //			- two piece version is still available, no lm#uu version
 //			- leadscrew hex nut version, the slot is longer than the thickness of the nut
-// 9/27/18	- Made left/right versions of clamps, left the third hole to allow motor on either side
+// 9/27/18	- Made left/right versions of XEnds, left the third hole to allow motor on either side
 // 9/28/18	- Finally found where the extra plastic was coming from in the MTSSR8 slot (connector flange cube)
-// 9/30/18	- Added a screw clamp to hold the MTSSR8 in the socket, hole sized for 3mm screw with a tight fit.
+// 9/30/18	- Added a screw XEnd to hold the MTSSR8 in the socket, hole sized for 3mm screw with a tight fit.
 // 12/10/18	- Change motor mount to slotted for belt adjustment
 // 12/15/18	- Removed znut notch, the MTSSR8 now slides in
 // 12/21/18	- Began TR8 leadscrew version
@@ -27,10 +27,11 @@
 // 5/27/19	- Fixed TR8 version and made the motor mount to mount on left side only, see Line 284, comment out the
 //			  if(!Left) to allow either side
 // 4/14/20	- Added ability to use brass inserts
+// 3.2.21	- Added ability to have 2020 & 2020 at each mounting hole, no longer left/right versions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Notes:
-// Print full_clamps with a brim
-// Clamps can be made with PLA
+// Print full_XEnds with a brim
+// XEnds can be made with PLA
 // Motormount should be ABS or better, since the X-motor can get hot
 // Set zrodd to the diameter of the smooth rod used for the z-axis
 //--------------------------------------------------------------------
@@ -64,7 +65,6 @@ sabb_l = 10 + sabbC;		// self-aligning bronze bearing dimensions
 sabb_d_clearance = 0.5;		// clearance needed to fit the self-aligning bearing in the pla hole
 sabb_d = 16.3 + sabb_d_clearance;	// I used: http://shop.sdp-si.com/catalog/product/?id=A_7Z41MPSB10M
 sabb_id = 10;
-// exterior zClamp
 length = 74;
 shellt = 3;			// thickness of shell
 bolt_w = 17; 		// width of flat to bolt together
@@ -96,39 +96,33 @@ TR8_flange_thickness=4;
 TR8_mounting_holes_offset=16;
 /////////////////////////////////////////////////////////////////////
 
-//split_clamp(0,1,1,1);
-full_clamp(1,0,1);	// arg 1: 0-one clamp (left),1-two clamps,2-right clamp; arg2: 0-no motor mount,1-motor mount,
+//split_XEnd(0,1,1,1);
+full_XEnd(1);	// arg 1: 0-one XEnd (left),1-two XEnds,2-right XEnd; arg2: 0-no motor mount,1-motor mount,
 					// 3rd arg: 1-MTSSR8 nut, 0-TR8 flange nut
 //motormount();
-// 2-to test the fit of the motor mount to clamp
+// 2-to test the fit of the motor mount to XEnd
 //difference() {
 //	TR8_nut();
 //	TR8_mounting_holes();
 //}
-//clamp(0,1,1,1,0); // Bearing=0,mks=0,mits=0,Full=0,Left=0
+//XEnd(0,1,1,1,0); // Bearing=0,mks=0,mits=0,Full=0,Left=0
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-module full_clamp(Clamp=0,Mount=0,mits=0) {
-	if($preview) %translate([-70,-75,-16]) cube([200,200,5]);
-	if(Clamp == 0) rotate([90,0,0]) clamp(0,1,mits,1,0); 			// left side
-	if(Clamp == 1) { 											// both sides
-		rotate([90,0,0]) clamp(0,1,mits,1,0);	// Bearing=0,mks=0,mits=0,Full=0,Left=0
-		translate([0,30,0]) rotate([90,0,0]) clamp(0,1,mits,1,1);
-	}
-	if(Clamp == 2) rotate([90,0,0]) clamp(0,1,mits,1,1);			// right side
-	if(Mount == 1) translate([0,45,-10]) motormount();
-	if(Mount == 2) translate([0,40,-10]) testmotormount();
+module full_XEnd(mits=0) {
+	//if($preview) %translate([-70,-75,-16]) cube([200,200,5]);
+		rotate([90,0,0]) XEnd(0,1,mits,1,0);
+		translate([0,25,0]) rotate([90,0,0]) XEnd(0,1,mits,1,1);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-module split_clamp(Bearing=0,mks=1,mits=1,Mount=1) {
+module split_XEnd(Bearing=0,mks=1,mits=1,Mount=1) {
 	if($preview) %translate([-30,-90,-5]) cube([200,200,5]);
-	clamp(Bearing,mks,mits,0,0);  // mks_spacers
-	translate([0,-52,0]) clamp(Bearing,mks,mits,0,1);  //mks_spacers
-	translate([78,-52,0]) clamp(Bearing,0,mits,0);  // no mks_spacers
-	translate([78,0,0]) clamp(Bearing,0,mits,0);  // no mks_spacers
+	XEnd(Bearing,mks,mits,0,0);  // mks_spacers
+	translate([0,-52,0]) XEnd(Bearing,mks,mits,0,1);  //mks_spacers
+	translate([78,-52,0]) XEnd(Bearing,0,mits,0);  // no mks_spacers
+	translate([78,0,0]) XEnd(Bearing,0,mits,0);  // no mks_spacers
 	if(Mount == 1) translate([0,45,0]) motormount();
 	if(Mount == 2) translate([0,45,0]) testmotormount();
 }
@@ -136,7 +130,7 @@ module split_clamp(Bearing=0,mks=1,mits=1,Mount=1) {
 /////////////////////////////////////////////////////////////////////////////
 
 module testmotormount() {	// for making a test print of the motormount section that
-	difference() {			// mounts against the clamp
+	difference() {			// mounts against the XEnd
 		motormount();
 		translate([25,-30,-5]) cube([100,100,100]);
 	}
@@ -155,7 +149,7 @@ module motormount(mks=0) { // this holds the stepper motor
 
 //////////////////////////////////////////////////////////////////////
 
-module mmslot(mks) { // add mount to simpleVX clamp (removes the area the clamp fits into)
+module mmslot(mks) { // add mount to simpleVX XEnd (removes the area the XEnd fits into)
 	//translate([znutw,-(mmwidth*4)/2+1,0]) rotate([0,0,90]) screwholes(mks);
 	translate([z_drv*2-35,mmwidth+1,mmthickness+4.5]) rotate([90,0,0]) color("gray")
 		cylinder(h=mmwidth+4,r=(shellt+X_Motor_Bearing_clearance)/2);
@@ -163,7 +157,7 @@ module mmslot(mks) { // add mount to simpleVX clamp (removes the area the clamp 
 }
 
 //////////////////////////////////////////////////////////////////////
-module clamp(Bearing=0,mks=0,mits=0,Full=0,Left=0) {  // this version is now broken; simpleVX clamp;
+module XEnd(Bearing=0,mks=0,mits=0,Full=0,Left=0) {  // this version is now broken; simpleVX XEnd;
 	difference() {
 		union() {
 			difference() { // z rod section
@@ -203,7 +197,7 @@ msw=screw5-0.1;	//    ""
 mst=2;			//    ""
 mss = 4.4; 		// spacer thickness
 
-module spacers(Left=0,mks=0,Bearing=0,mits=0) { // spacers for the makerslide side, so the clamps sit flat
+module spacers(Left=0,mks=0,Bearing=0,mits=0) { // spacers for the makerslide side, so the XEnds sit flat
 	if(Left) {
 		difference() {
 			color("yellow") hull() {
@@ -214,6 +208,15 @@ module spacers(Left=0,mks=0,Bearing=0,mits=0) { // spacers for the makerslide si
 			translate([-1,0,0]) rotate([0,90,0]) sabb();
 			translate([mks_slot-3,bolt_w/1.1,-znutdt/2]) cylinder(h=thickness*5,r=screw5/2);
 			translate([length/2-znutw/2,z_drv,0]) color("white") znutscrew(mits);
+		}
+		translate([40,0,0]) difference() {
+			color("lightgray") hull() {
+				translate([mks_slot-3,bolt_w/1.1,mss-1]) cylinder(h=thickness+1.5,r=(screw5+6)/2);
+				translate([mks_slot-3,bolt_w/1.1-10,mss-1]) cylinder(h=thickness+1.5,r=(screw5+6)/2);
+			}
+			translate([-40,0,0]) zrodhole();
+			translate([-1,0,0]) rotate([0,90,0]) sabb();
+			translate([mks_slot-3,bolt_w/1.1,-znutdt/2]) cylinder(h=thickness*5,r=screw5/2);
 		}
 	} else {
 		difference() {
@@ -226,6 +229,16 @@ module spacers(Left=0,mks=0,Bearing=0,mits=0) { // spacers for the makerslide si
 			translate([mks_slot*3-3,bolt_w/1.1,-znutdt/2]) cylinder(h=thickness*5,r=screw5/2);
 			rotate([0,180,0]) translate([-length/2-znutw/2,z_drv,0]) color("gray") znutscrew(mits);
 		}
+		translate([-40,0,0]) difference() {
+			color("purple")	hull() {
+				translate([mks_slot*3-3,bolt_w/1.1,mss-1]) cylinder(h=thickness+1.4,r=(screw5+6)/2);
+				translate([mks_slot*3-3,bolt_w/1.1-10,mss-1]) cylinder(h=thickness+1.4,r=(screw5+6)/2);
+			}
+			translate([40,0,0]) zrodhole();
+			//translate([length-sabb_l+40,0,0]) rotate([0,90,0]) sabb();
+			translate([mks_slot*3-3,bolt_w/1.1,-znutdt/2]) cylinder(h=thickness*5,r=screw5/2);
+			//rotate([0,180,0]) translate([-length/2-znutw/2,z_drv,0]) color("gray") znutscrew(mits);
+		}
 	}
 	// guide slot for makerslide
 	difference() {
@@ -235,14 +248,22 @@ module spacers(Left=0,mks=0,Bearing=0,mits=0) { // spacers for the makerslide si
 	}
 	if(Left) {
 		difference() {
-			translate([mks_slot-screw5-0.2,bolt_w/1.6-10,9]) color("blue") cube([msw,msl-13,mst]);
+			union() {
+				translate([mks_slot-screw5,bolt_w/1.6-10,9]) color("blue") cube([msw,msl-13,mst]);
+				translate([mks_slot-screw5+40,bolt_w/1.6-10,9]) color("white") cube([msw,msl-13,mst]);
+			}
 			translate([mks_slot-screw5-1.2,bolt_w/1.6-15,4]) rotate([45,0,0]) color("gold") cube([msw+2,msl,mst]);
+			//translate([mks_slot-screw5-1.2,bolt_w/1.6-15,4]) rotate([45,0,0]) color("gold") cube([msw+2,msl,mst]);
 			screwholes(1,Left);
 		}
 	} else {
 		difference() {
-			translate([mks_slot*3-screw5-0.2,bolt_w/1.6-10,9]) color("red") cube([msw,msl-13,mst]);
-			translate([mks_slot*3-screw5-1.2,bolt_w/1.6-15,4]) rotate([45,0,0]) color("brown") cube([msw+2,msl,mst]);
+			union() {
+				translate([mks_slot*3-screw5,bolt_w/1.6-10,9]) color("red") cube([msw,msl-13,mst]);
+				translate([mks_slot*3-screw5-40,bolt_w/1.6-10,9]) color("green") cube([msw,msl-13,mst]);
+			}
+			translate([mks_slot*3-screw5-1.2,bolt_w/1.6-15,4]) rotate([45,0,0]) color("white") cube([msw+2,msl,mst]);
+			translate([mks_slot*3-screw5-40.5,bolt_w/1.6-15,4]) rotate([45,0,0]) color("plum") cube([msw+2,msl,mst]);
 			screwholes(1,Left);
 		}
 	}
@@ -293,10 +314,11 @@ module motormountscrewholes() {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-module screwholes(mks=1,Left=0) { // screw holes for makerslide or the round rod clamps
+module screwholes(mks=1,Left=0) { // screw holes for makerslide or the round rod XEnds
 	translate([mks_slot-3,bolt_w/1.1,-znutt/2-5]) color("gray") cylinder(h=thickness*6,r=screw5/2);
 	translate([(mks_slot*2)-3,bolt_w/1.1,-znutt/2-5]) color("lightblue") cylinder(h=thickness*6,r=screw5/2);
-	if(!Left) translate([mks_slot*3-3,bolt_w/1.1,-znutt/2-5]) color("plum") cylinder(h=thickness*6,r=screw5/2);
+	//if(!Left)
+	translate([mks_slot*3-3,bolt_w/1.1,-znutt/2-5]) color("plum") cylinder(h=thickness*6,r=screw5/2);
 }
 
 ///////////////////////////////////////////////////////////////////////

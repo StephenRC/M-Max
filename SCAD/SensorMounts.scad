@@ -2,7 +2,7 @@
 // SensorMounts.scad
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // created: 6/2/1019
-// last update: 11/17/20
+// last update: 3/2/21
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // 6/2/19	- Separated from single_titan_extruder_mount.scad
 // 4/12/20	- Made the mount to extruder plate the same for Proximity & BLTouch
@@ -12,6 +12,7 @@
 // 10/13/20	- Finished adding use of brass inserts
 // 11/15/20	- Added a mirrored version of IRAdapterAero() to install on right side
 // 11/17/20	- Added a close version of it adapter
+// 3/2/21	- Added EXOSlide BLTMount that mounts on rear of the EXOSlide
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
 use <inc/corner-tools.scad>
@@ -55,7 +56,37 @@ Spacing=17;
 //IRAdapterAero(0); // left side
 //mirror([1,0,0]) IRAdapterAero(0); // right side
 //IRAdapterAeroClose(0,1,1);
-Spacer(3,7,screw3+0.1,3);// bltouch fan mount spacer
+//Spacer(3,7,screw3+0.1,3);// bltouch fan mount spacer
+//BLTouchEXO(8.5); // rear mount
+BLTouchEXO(8.5,28); // front mount
+//SpacerV2(2,10,screw4+0.1,7,7);// exoslide spacer, don't have right size of M4
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BLTouchEXO(UpDown=5,DistanceFromMount=12.5) {
+	difference() {
+		color("cyan") cubeX([20,35,4],2);
+		translate([10,7,-3]) {
+			color("red") cylinder(h=10,d=screw4);
+			translate([0,20,0]) color("blue") cylinder(h=10,d=screw4);
+		}
+		translate([10,7,1.5]) {
+			color("blue") cylinder(h=5,d=screw4hd);
+			translate([0,20,0]) color("red") cylinder(h=5,d=screw4hd);
+		}
+	}
+	translate([3,17,3]) color("green") sphere(d=screw3); // this side down
+	difference() {
+		translate([UpDown,0,0]) difference() {
+			translate([0,9.5,0]) color("purple") cubeX([4,15,DistanceFromMount+17],2);
+			translate([0,1,DistanceFromMount+4]) rotate([90,90,90]) BLTouch_Holes(2);
+		}
+		translate([10,7,0]) {
+			color("blue") cylinder(h=15,d=screw4hd);
+			translate([0,20,0]) color("red") cylinder(h=15,d=screw4hd);
+		}
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -65,6 +96,20 @@ module Spacer(Qty=1,Thickness=3,Screw=screw3,BottomSize=3) {
 			color("cyan") hull() {
 				cylinder(h=0.5,d=Screw*BottomSize);
 				translate([0,0,Thickness]) cylinder(h=1,d=Screw*2);
+			}
+			translate([0,0,-2]) color("plum") cylinder(h=Thickness+5,d=Screw);
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module SpacerV2(Qty=1,Thickness=3,Screw=screw3,TopSize=3,BottomSize=3) {
+	for(x = [0:Qty-1]) {
+		translate([0,x*15,0]) difference() {
+			color("cyan") hull() {
+				cylinder(h=0.5,d=BottomSize);
+				translate([0,0,Thickness]) cylinder(h=1,d=TopSize);
 			}
 			translate([0,0,-2]) color("plum") cylinder(h=Thickness+5,d=Screw);
 		}
@@ -354,7 +399,7 @@ module BLTouch_Holes(recess=0,Screw=Yes2p5mmInsert(Use2p5mmInsert)) {
 	if(recess == 2) {	// mounting screw holes only
 		translate([bltouch/2,16,-10]) color("pink") cylinder(h=25,d=Screw);
 		translate([-bltouch/2,16,-10]) color("black") cylinder(h=25,d=Screw);
-		translate([bltouch/2-9,16,-10]) color("black") cylinder(h=25,d=screw5); // adjuster access
+		translate([bltouch/2-9,16,-10]) color("white") cylinder(h=25,d=screw5); // adjuster access
 	}
 	if(recess == 1) {	// dependent on the hotend, for mounting under the extruder plate
 		translate([-bltl/2,bltw/2,bltdepth-6]) color("cyan") { // depression for BLTouch

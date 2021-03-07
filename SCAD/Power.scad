@@ -16,7 +16,7 @@
 // 7/24/19	- Adjusted cover() screw holes
 // 10/31/20	- Added a mount for a Mean Well RS 15 5 power supply
 // 2/11/21	- Simplfied the power housing mount and changed power socket to same as on the CXY-MSv1, added coountersinks
-//			  to poweri inlet conver for M3 countersunk screws
+//			  to poweri inlet conver for M3 countersunk screws, added meanwell 5vdc mout to all()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // If the socket hole size changes, then the size & postions of the walls & socket may need adjusting
 // The power socket uses 3mm screws and brass inserts to mount
@@ -56,12 +56,12 @@ SocketPlugHeight=SwitchSocketHeight;
 //switch();		// 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
 //powersupply_cover();
 //powersupply_cover_v2();
-//pbar(1,2);
+//PowerSupply(1,2);
 //PowerInlet(1);
 //PowerInlet(0);
 //PowerInletCover();
-//MeanWellRS_15_5(); // Mean Well 5vdc power supply
-PowerInletSet(0);
+MeanWellRS_15_5(); // Mean Well 5vdc power supply
+//PowerInletSet(0);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -75,26 +75,26 @@ module PowerInletSet(Version=0) {
 module MeanWellRS_15_5() {
 	difference() {
 		color("cyan") cubeX([63,52+40,5],2);
-		translate([9.8-1.5,27.4-1.5+20,-5]) {
+		translate([12,27.4-1.5+20,-5]) {
 			color("red") cylinder(h=Thickness*3,d=screw3);
 			translate([0,0,3]) color("blue") cylinder(h=5,d=screw3hd);
 			translate([41.7-3.5,0,0]) color("blue") cylinder(h=Thickness*3,d=screw3);
 			translate([41.7-3.5,0,3]) color("red") cylinder(h=5,d=screw3hd);
 		}
-		translate([63/4+5,10,-5]) {
+		translate([63/4-5,10,-5]) {
 			color("green") cylinder(h=Thickness*3,d=screw5);
-			translate([0,0,9]) color("plum") cylinder(h=5,d=screw5hd);
-			translate([0,52+20,0]) color("plum") cylinder(h=Thickness*3,d=screw5);
-			translate([0,52+20,9]) color("green") cylinder(h=5,d=screw5hd);
+			translate([0,0,9]) color("lightgray") cylinder(h=5,d=screw5hd);
+			translate([0,52+20,0]) color("red") cylinder(h=Thickness*3,d=screw5);
+			translate([0,52+20,9]) color("blue") cylinder(h=5,d=screw5hd);
 		}
-		translate([63/4+25,10,-5]) {
-			color("green") cylinder(h=Thickness*3,d=screw5);
+		translate([63/4+20,10,-5]) {
+			color("blue") cylinder(h=Thickness*3,d=screw5);
 			translate([0,0,9]) color("plum") cylinder(h=5,d=screw5hd);
-			translate([0,52+20,0]) color("plum") cylinder(h=Thickness*3,d=screw5);
+			translate([0,52+20,0]) color("blue") cylinder(h=Thickness*3,d=screw5);
 			translate([0,52+20,9]) color("green") cylinder(h=5,d=screw5hd);
 		}
 	}
-	translate([9.8-1.5,27.4-1.5+20,3]) {
+	translate([12,27.4-1.5+20,3]) {
 		color("pink") cylinder(h=LayerThickness,d=screw3hd);
 		translate([41.7-3,0,0]) color("white") cylinder(h=LayerThickness,d=screw3hd);
 	}
@@ -106,9 +106,10 @@ module all(flip=0,s_w=13,s_l=19.5,s_t=2,Makerslide=1,PBQuantiy=2,Version=0) {
 	//if($preview) %translate([25,20,0]) cube([200,200,2],center=true); // show the 200x200 bed
 	translate([0,-12,0]) PowerInlet(Version);
 	translate([0,-5,45]) rotate([180,0,0]) PowerInletCover();
-	translate([-50,-45,0]) switch(flip);		// 3 args: Width, length, clip Thickness; defaults to 13,19.5,2
+	translate([-40,-45,0]) switch(flip);		// 3 args: Width, length, clip Thickness; defaults to 13,19.5,2
 	//translate([-30,60,0]) powersupply_cover();
-	translate([-35,-10,0]) rotate([0,0,90]) pbar(Makerslide,PBQuantiy);
+	translate([-10,-10,0]) rotate([0,0,90]) PowerSupply(Makerslide,PBQuantiy);
+	translate([-110,-10,0]) MeanWellRS_15_5();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,16 +291,16 @@ module PowerInletCover() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CoverScrewSounterSink(Screw=screw3) {
-	translate([5,40,45]) color("white") hull() {  // left
-		cylinder(h=0.5,d=Screw+2.3);
+	translate([5,40,44.5]) color("hotpink") hull() {  // left
+		cylinder(h=0.5,d=Screw+2.4);
 		translate([0,0,-2]) cylinder(h=0.5,d=Screw);
 	}
-	translate([SwitchSocketWidth+35,40,45]) color("gray") hull()  { // right
-		cylinder(h=0.5,d=Screw+2.3); // right
+	translate([SwitchSocketWidth+35,40,44.5]) color("white") hull()  { // right
+		cylinder(h=0.5,d=Screw+2.4); // right
 		translate([0,0,-2]) cylinder(h=0.5,d=Screw);
 	}
-	translate([SwitchSocketWidth,62,45]) color("hotpink") hull() {// top screw hole
-		cylinder(h=0.5,d=Screw+2.3);
+	translate([SwitchSocketWidth,62,44.5]) color("white") hull() {// top screw hole
+		cylinder(h=0.5,d=Screw+2.4);
 		translate([0,0,-2]) cylinder(h=0.5,d=Screw);
 	}
 }
@@ -350,14 +351,14 @@ module printchar(String,Height=1.5,Size=4) { // print something
 
 ///////////////////////////////////////////////////////////////////////////
 
-module pbar(Makerslide=0,Quanity=1) {
+module PowerSupply(Makerslide=0,Quanity=1) {
 	for(b=[0:Quanity-1])
-		translate([1,b*(Width+3),0]) bar(Makerslide); // two needed to mount p/s
+		translate([1,b*(Width+3),0]) PowerSupplySingleMount(Makerslide); // two needed to mount p/s
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module bar(mks=1) {
+module PowerSupplySingleMount(mks=1) {
 	difference() {
 		color("cyan") cubeX([Length,Width,Thickness]);
 		// p/s mounting holes
@@ -377,7 +378,17 @@ module bar(mks=1) {
 		translate([5,Width+2,Thickness/2]) rotate([90,0,0]) color("salmon") cylinder(h=Thickness*2,r=screw5/2);
 		translate([Length-5,Width+2,Thickness/2]) rotate([90,0,0]) color("blue") cylinder(h=Thickness*2,r=screw5/2);
 	}
-	mks_mount_support(mks);
+	Support4mmHoles();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+module Support4mmHoles() {
+	translate([31.5,Width/2,6]) color("blue") cylinder(h=LayerThickness,d=screw4hd);
+	translate([0,Width/2,6]) color("green") hull() {
+		translate([82.5,0,0]) cylinder(h=LayerThickness,d=screw4hd);
+		translate([80.5,0,0]) cylinder(h=LayerThickness,d=screw4hd);
+	}
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

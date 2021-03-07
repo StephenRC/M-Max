@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// CXY-MSv1 Nameplate - nameplate for the printer
+// M-Max Nameplate - nameplate for the printer
 // created: 7/11/2018
 // last modified: 9/22/20
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18,13 +18,13 @@ plate();
 
 module plate() {
 	difference() {
-		color("cyan") cubeX([81,20,3]);
+		color("cyan") cubeX([81,20,4],2);
 		translate([7,10,-5]) color("red") cylinder(h=10,d=screw5,$fn=100);
-		translate([7,10,2]) color("blue") cylinder(h=10,d=screw5hd,$fn=100);
+		translate([7,10,3]) color("blue") cylinder(h=10,d=screw5hd,$fn=100);
 		translate([73,10,-5]) color("blue") cylinder(h=10,d=screw5,$fn=100);
-		translate([73,10,2]) color("red") cylinder(h=10,d=screw5hd,$fn=100);
+		translate([73,10,3]) color("red") cylinder(h=10,d=screw5hd,$fn=100);
 	}	
-	translate([14,4.5,0]) printchar("M-Max",5,12);
+	translate([14,4.5,1]) printchar("M-Max",5,12);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
