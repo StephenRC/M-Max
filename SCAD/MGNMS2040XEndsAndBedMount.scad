@@ -34,7 +34,6 @@ include <inc/brassinserts.scad>
 include <inc/screwsizes.scad>
 //use <Z-Motor_Leadscrew-Coupler.scad> // coupler(motorShaftDiameter = 5,threadedRodDiameter = 5)
 include <inc/NEMA17.scad>
-use <inc/cubeX.scad>
 use <Single-Titan-E3DV6.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
@@ -89,6 +88,13 @@ Bed1212Width=310;
 //FatSpacer(8,20,screw3+0.5);
 BedMount2020(1,0);
 //BedMount(2);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module cubeX(size,Rounding) { // temp module
+	cuboid(size,rounding=Rounding,p1=[0,0]);
+}
+
 ///////////////////////////////////////////////////////////////////////
 
 module Show2020() {

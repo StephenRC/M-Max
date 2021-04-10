@@ -45,7 +45,7 @@
 // Each side uses two self-aligning bearings each on the z axis rods.
 // Currently set to use Misumi MTSSR8 nuts and SDI/SP #A 7Z41MPSB10M bronze bearings on 10mm z rods.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-include <inc/cubex.scad>
+include <bosl2/std.scad>
 include <inc/nema17.scad>
 include <inc/screwsizes.scad>
 include <inc/brassinserts.scad>
@@ -106,6 +106,12 @@ full_XEnd(1);	// arg 1: 0-one XEnd (left),1-two XEnds,2-right XEnd; arg2: 0-no m
 //	TR8_mounting_holes();
 //}
 //XEnd(0,1,1,1,0); // Bearing=0,mks=0,mits=0,Full=0,Left=0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module cubeX(size,Rounding) { // temp module
+	cuboid(size,rounding=Rounding,p1=[0,0]);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 

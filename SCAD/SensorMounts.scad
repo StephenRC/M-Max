@@ -57,25 +57,31 @@ Spacing=17;
 //mirror([1,0,0]) IRAdapterAero(0); // right side
 //IRAdapterAeroClose(0,1,1);
 //Spacer(3,7,screw3+0.1,3);// bltouch fan mount spacer
-//BLTouchEXO(8.5); // rear mount
-BLTouchEXO(8.5,28); // front mount
+//BLTouchEXO(7); // rear mount
+BLTouchEXO(7,27); // front mount
 //SpacerV2(2,10,screw4+0.1,7,7);// exoslide spacer, don't have right size of M4
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module cubeX(size,Rounding) { // temp module
+	cuboid(size,rounding=Rounding,p1=[0,0]);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module BLTouchEXO(UpDown=5,DistanceFromMount=12.5) {
 	difference() {
-		color("cyan") cubeX([20,35,4],2);
+		color("cyan") cubeX([20,35,2],1);
 		translate([10,7,-3]) {
 			color("red") cylinder(h=10,d=screw4);
 			translate([0,20,0]) color("blue") cylinder(h=10,d=screw4);
 		}
-		translate([10,7,1.5]) {
+		translate([10,7,2.5]) {
 			color("blue") cylinder(h=5,d=screw4hd);
 			translate([0,20,0]) color("red") cylinder(h=5,d=screw4hd);
 		}
 	}
-	translate([3,17,3]) color("green") sphere(d=screw3); // this side down
+	translate([3,17,2]) color("green") sphere(d=screw3); // this side down
 	difference() {
 		translate([UpDown,0,0]) difference() {
 			translate([0,9.5,0]) color("purple") cubeX([4,15,DistanceFromMount+17],2);

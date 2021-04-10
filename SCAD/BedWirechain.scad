@@ -2,9 +2,11 @@
 // BedWirechain.scad
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created 11/15/20
-// Last update 11/15/20
+// Last update 4/6/21
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-include <inc/cubex.scad>
+// 4/6/21	- Converted to BOSL2
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+include <BOSL2/std.scad>
 include <inc/brassinserts.scad>
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
@@ -13,7 +15,7 @@ Use4mmInsert=1;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 BedSide();
-translate([25,0,0])
+translate([40,0,0])
 	FrameSide();
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,11 +23,11 @@ translate([25,0,0])
 module BedSide() {
 	difference() {
 		union() {
-			color("cyan") cubeX([20,30,Thickness],2);
-			color("blue") cubeX([Thickness,30,20],2);
+			color("cyan") cuboid([20,30,Thickness],rounding=2);
+			translate([7.5,0,8]) color("blue") cuboid([Thickness,30,20],rounding=2);
 		}
-		translate([12,9,-3]) WirechainMounting();
-		translate([-3,15,12]) ExtrusionMount();
+		translate([-3,-5,-9]) WirechainMounting();
+		translate([0,0,10]) ExtrusionMount();
 	}
 }
 
@@ -33,9 +35,9 @@ module BedSide() {
 
 module FrameSide(Height=45) {
 	difference() {
-		color("cyan") cubeX([Height,20,Thickness],2);
-		translate([Height-8,10,-2]) rotate([0,0,90]) WirechainMounting();
-		translate([10,10,15]) rotate([0,90,0]) ExtrusionMount();
+		color("cyan") cuboid([Height,20,Thickness],rounding=2);
+		translate([-3,0,-8]) rotate([0,0,90]) WirechainMounting();
+		translate([13,0,12]) rotate([0,90,0]) ExtrusionMount();
 	}
 }
 

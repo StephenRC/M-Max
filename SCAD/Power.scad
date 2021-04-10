@@ -21,7 +21,7 @@
 // If the socket hole size changes, then the size & postions of the walls & socket may need adjusting
 // The power socket uses 3mm screws and brass inserts to mount
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-use <inc/cubeX.scad>	// http://www.thingiverse.com/thing:112008
+include <bosl2/std.scad>
 include <inc/screwsizes.scad>
 include <inc/brassinserts.scad>
 $fn = 50;
@@ -62,6 +62,12 @@ SocketPlugHeight=SwitchSocketHeight;
 //PowerInletCover();
 MeanWellRS_15_5(); // Mean Well 5vdc power supply
 //PowerInletSet(0);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module cubeX(size,Rounding) { // temp module
+	cuboid(size,rounding=Rounding,p1=[0,0]);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

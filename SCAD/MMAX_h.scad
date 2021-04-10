@@ -1,13 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MMAX_h.scad - variable file for the MMAX
 // created: 8/19/2018
-// last modified: 8/19/18
+// last modified: 4/9/21
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 8/19/18	 - Created to have only one file for all the common variables
+// 8/19/18	- Created to have only one file for all the common variables
+// 3/27/21	- Began conversion to BOSL2 library
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <inc/configuration.scad> // http://github.com/prusajr/PrusaMendel, which also uses functions.scad & metric.scad
 include <inc/screwsizes.scad>
-use <inc/cubeX.scad>	// http://www.thingiverse.com/thing:112008
+include <BOSL2/std.scad>	// 
+include <BOSL2/std.scad> // https://github.com/revarbat/BOSL2
 use <inc/Nema17.scad>	// https://github.com/mtu-most/most-scad-libraries
 include <inc/configuration.scad> // http://github.com/prusajr/PrusaMendel, which also uses functions.scad & metric.scad
 use <inc/corner-tools.scad> // got from https://www.myminifactory.com/it/object/3d-print-tools-for-fillets-and-chamfers-on-edges-and-corners-straight-and-or-round-45862 by Ewald Ikemann

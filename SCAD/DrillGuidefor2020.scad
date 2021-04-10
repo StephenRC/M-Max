@@ -17,7 +17,7 @@
 // one hole at the top for the front to back 2020.
 // ** The 5mm brass inserts will need to be drilled out to 5mm **
 //////////////////////////////////////////////////////////////////////////////
-include <inc/cubex.scad>
+include <bosl2/std.scad>
 include <inc/screwsizes.scad>
 use <inc/brassinserts.scad>
 $fn=100;
@@ -38,6 +38,13 @@ width = w2020+ 10;		// total width of drill guide
 //2020DrillGuide(screw5);
 BedDrillClips(4); // used to hold the bed onto the 2020 to drill the adjusting mount holes
 			   // use #39 drill bit for all three holes, M3 tap the 2020, drill the bed holes 3mm and countersink
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module cubeX(size,Rounding) { // temp module
+	cuboid(size,rounding=Rounding,p1=[0,0]);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module BedDrillClips(Quanity=1) { // used to hold bed onto the 2020 to drill the adjusting mount holes

@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // XCarriage - x carriage for M-Max using makerslide
 // created: 2/3/2014
-// last modified: 2/21/21
+// last modified: 4/6/21
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 9/2/18	- Original file modified for MMAX, extruder plate and top mounting belt removed
 // 12/10/18	- Changed to loop type bel holder on carraiage
@@ -14,10 +14,12 @@
 //			  Adjusted m5 countersink on front carriage to clear Aero mount M3 brass inserts
 // 1/9/21	- Added mount holes on top for a wirechain
 // 2/21/21	- Added two M4 holes into carriage for mounting of the exoslide BMG adapter
+// 4/6/21	- Began BOSL2 conversion
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // uses http://www.thingiverse.com/thing:211344 for the y belt
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
+include <BOSL2/std.scad>
 include <inc/Brassinserts.scad>
 use <ybeltclamp.scad>
 use <TitanAero.scad>
@@ -35,7 +37,7 @@ HorizontallCarriageHeight=20;
 LayerThickness=0.3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//xcar(0,1);
+xcar(1,1,1);
 //cableholder();
 //Belt_Holder();
 //Carriage(); // front; Titan=0,Tshift=0,Rear=0
@@ -43,14 +45,20 @@ LayerThickness=0.3;
 //XCarriageWithExtruder(1,1);
 //XCarriageFullAssemblySingle(1,0,1,0,35);  // StepperLength 35 (pancake) or 45
 //XCarriageFullAssemblyDual(1,1,0,35);
-XCarriageFullAssemblyNoExtruder(1,1,0,1,1);
+//XCarriageFullAssemblyNoExtruder(1,1,0,1,1);
 //Carriage(1,0,0,1,1,0);
+
+///////////////
+// temp holder - remove when cubeX is no longer used
+module cubeX( size, radius=1, rounded=true, center=false ) {
+	cuboid(size,rounding=radius);//p1=[0,0]
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module XCarriageFullAssemblySingle(Titan,Stiffner=0,DoTab=0,AeroMount=0,StepperLength=45) {
 	difference() {
-		translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0,0,0,0); // front
+//		translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0,0,0,0); // front
 		translate([23,0,90]) WirechainMount();
 	}
 	// Titan=0,Tshift=0,Rear=0,ExtMount=0,AeroMount=0,TopBeltMount=1
@@ -100,40 +108,37 @@ module WirechainMount(Screw=screw5) {
 module XCarriageFullAssemblyNoExtruder(Titan,ExtruderMountType=1,Stiffner=0,DoTab=0,AeroMount=0) {
 	difference() {	
 		translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0,1,AeroMount,0); // front
-		translate([23,0,85]) WirechainMount();
+		translate([-16,1.5,77]) WirechainMount();
 	}
 	if(Stiffner) translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connect extruder top to xcarriage
 	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1,0,0,0); // rear
 	difference() {
 		union() {
-			translate([9.5,-wall,80]) rotate([180,0,0]) BeltCarriageMount(0);
-			translate([12,-wall,80]) color("red") cubeX([10,wall,13],2);
-			translate([12,33.3,80]) color("pink") cubeX([10,wall,13],2);
-			translate([52,-wall,80]) color("blue") cubeX([10,wall,13],2);
-			translate([52,33.3,80]) color("green") cubeX([10,wall,13],2);
+			translate([0,20.65,85]) rotate([180,0,0]) BeltCarriageMount(0);
+			translate([-19,0,86]) color("red") cubeX([10,wall,13],2);
+			translate([-19,41.3,86.5]) color("pink") cubeX([10,wall,13],2);
+			translate([19,0,86]) color("blue") cubeX([10,wall,13],2);
+			translate([19,41.3,86]) color("green") cubeX([10,wall,13],2);
 		}
-		translate([16,-10,70]) color("khaki") rotate([0,-45,0]) cubeX([10,55,25],2);
-		translate([52,-10,78]) color("gray") rotate([0,45,0]) cubeX([10,55,25],2);
-		translate([23,0,85]) WirechainMount();
+		translate([-25,20,80]) color("khaki") rotate([0,-45,0]) cubeX([10,55,25],2);
+		translate([25,20,80]) color("gray") rotate([0,45,0]) cubeX([10,55,25],2);
+		translate([-16,1.5,80]) WirechainMount();
 	}
 	if(DoTab) {
-		difference() {
+		translate([-37,3.5,-10]) difference() {
 			union() {
 				translate([2,-4,1]) color("gray") cylinder(h=LayerThickness,d=20);
 				translate([72,-3,1]) color("black") cylinder(h=LayerThickness,d=20);
 			}
 			if(!AeroMount)
-				translate([37,-4,30]) rotate([90,0,0]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
+				translate([37,-3.5,30]) rotate([90,0,0]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
 			else 
-				translate([29,-4,30]) rotate([90,0,0]) ExtruderMountHolesFn4(Yes3mmInsert(Use3mmInsert),25);
+				translate([29,-3.5,30]) rotate([90,0,0]) ExtruderMountHolesFn4(Yes3mmInsert(Use3mmInsert),25);
 		}
-		translate([2,37,1]) color("green") cylinder(h=LayerThickness,d=20);
-		translate([72,37,1]) color("plum") cylinder(h=LayerThickness,d=20);
+		translate([-38,41,-9]) color("green") cylinder(h=LayerThickness,d=20);
+		translate([35,41,-9]) color("plum") cylinder(h=LayerThickness,d=20);
 	}
-	//difference() {
-		translate([16,-1,90]) color("gray") cube([40,40,LayerThickness]);
-	//	translate([23,0,90]) WirechainMount();
-	//}
+	translate([-20,-2,84.5]) color("gray") cube([40,40,LayerThickness]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,85 +204,87 @@ module XCarriageWithExtruder(Titan,DoRear=1) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module xcar(WhichOne=0,Titan=0) // makerslide version
+module xcar(WhichOne=0,Titan=0,Aero=0) // makerslide version
 {
-	if($preview) %translate([-100,-100,-5]) cube([200,200,5]);
+	//if($preview) %translate([-100,-100,-5]) cube([200,200,5]);
 	if(WhichOne==0) { // front,rear,beltholder
-		translate([-10,-90,0]) Carriage(Titan,0,0); // rear
-		rotate([0,0,180]) Carriage(Titan,0,1); // front
-		translate([-60,20,]) Belt_Holder();
+		translate([80,0,0]) Carriage(Titan,0,1,0); // rear
+		Carriage(Titan,0,0,1,Aero,1);//Titan,0,1,1); // front
+		//translate([-60,20,]) Belt_Holder();
 	} else if(WhichOne==1) { // front
-		Carriage(Titan,0,0); // front
+		Carriage(Titan,0,0,1,Aero,1); // front
 	} else if(WhichOne==2) { // rear,beltholder
 		translate([-10,-90,0]) Carriage(0,0,1); // rear
-		translate([15,20,]) Belt_Holder();
+		//translate([15,20,]) Belt_Holder();
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0,AeroMount=0,TopBeltMount=1) { // extruder side
+	echo("ExtMount:",ExtMount);
 	difference() {
 		union() {
-			translate([VerticalCarriageWidth/2,0,0]) color("cyan") cubeX([VerticalCarriageWidth,height,wall],1);
-			color("blue") cubeX([HorizontallCarriageWidth,HorizontallCarriageHeight,wall],1);
-			translate([VerticalCarriageWidth/2+2,12,0]) rotate([0,0,45]) color("red") cubeX([10,10,wall],1);
-			translate([VerticalCarriageWidth/2+35,12,0]) rotate([0,0,45]) color("yellow") cubeX([10,10,wall],1);
+			translate([0,40,0]) color("cyan") cuboid([VerticalCarriageWidth,height+2,wall],rounding=2,except_edges=BACK);
+			if(!Rear) {
+				color("blue") cuboid([HorizontallCarriageWidth,HorizontallCarriageHeight,wall],rounding=2,except_edges=FRONT);
+			} else {
+				color("blue") cuboid([HorizontallCarriageWidth,HorizontallCarriageHeight,wall],rounding=2);
+			}
+			translate([VerticalCarriageWidth/2-2,8,0]) rotate([0,0,45]) color("red") cuboid([10,10,wall],rounding=2);
+			translate([VerticalCarriageWidth/2-36,8,0]) rotate([0,0,45]) color("yellow") cuboid([10,10,wall],rounding=2);
 		}
 		if(ExtMount) {
 			if(AeroMount) 
-				translate([29.65,42,wall/2]) ExtruderMountHolesFn4(Yes3mmInsert(Use3mmInsert),25);
+				translate([-8,30,0]) ExtruderMountHolesFn4(Yes3mmInsert(Use3mmInsert),25);
 			else
-				translate([37,42,wall/2]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
+				translate([0,30,0]) ExtruderMountHolesFn(Yes3mmInsert(Use3mmInsert),25);
 		}
 		// wheel holes
 		if(!Rear) { // top wheel hole, if rear, don't bevel it
-			translate([28,20,0]) { // exoslide BMG bracket
+			translate([-10,10,0]) { // exoslide BMG bracket
 				translate([0,0,-5]) color("purple") cylinder(h=15,d=Yes4mmInsert(Use4mmInsert));
 				translate([20,0,-5]) color("lavender") cylinder(h=15,d=Yes4mmInsert(Use4mmInsert));
 			}
-			translate([VerticalCarriageWidth,TopHoleSeperation+10,0]) color("red") hull() { // top wheel
+			translate([0,TopHoleSeperation,-5]) color("red") hull() { // top wheel
 				// bevel the countersink to get easier access to adjuster
 				translate([0,0,3]) cylinder(h = depth+10,d = screw5hd/2);
 				translate([0,0,10]) cylinder(h = depth,d = screw5hd+20);
 			}
 			// wheel adjuster
-			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue") cylinder(h = depth+10,r = adjuster/2);
+			translate([0,TopHoleSeperation,-10]) color("blue") cylinder(h = depth+10,d=adjuster);
 			// bottom hole clearance
-			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,7]) color("gray")
-				cylinder(h = depth+10,d=screw_hd);
-			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,7]) color("green")
-				cylinder(h = depth+10,d=screw_hd);
-			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue") cylinder(h = depth+10,d=screw5);
-			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("yellow")
-				cylinder(h = depth+10,d=screw5);
-			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("purple")
-				cylinder(h = depth+10,d=screw5);
+			translate([-37,-10,-10]) {
+				translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,12.5])
+					color("gray") cylinder(h = depth+10,d=screw_hd);
+				translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,12.5])
+					color("green") cylinder(h = depth+10,d=screw_hd);
+				//translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue") cylinder(h = depth+10,d=screw5);
+				translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10])
+					color("yellow") cylinder(h = depth+20,d=screw5);
+				translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10])
+					color("purple") cylinder(h = depth+20,d=screw5);
+			}
 		} else { // rear carraige
-			translate([VerticalCarriageWidth,TopHoleSeperation/2+42,-10]) color("blue")
-				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
-			translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("yellow")
-				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
-			translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10]) color("purple")
-				cylinder(h = depth+10,d=Yes5mmInsert(Use5mmInsert));
-			if(!Use5mmInsert) { // nut holes
-				translate([VerticalCarriageWidth,TopHoleSeperation/2+42,3]) color("lightgray")
-					cylinder(h = depth+10,d=screw5hd,$fn=6);
-				translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,3]) color("gray")
-					cylinder(h = depth+10,r = screw_hd/2,$fn=6);
-				translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,3]) color("green")
-					cylinder(h = depth+10,r = screw_hd/2,$fn=6);
+			// top whell hole
+			translate([0,TopHoleSeperation+10,-10]) color("blue") cylinder(h = depth+10,d=screw5);
+			// bottom hole clearance
+			translate([-37,-10,-10]) {
+				translate([BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10])
+					color("yellow") cylinder(h = depth+20,d=screw5);
+				translate([-BottomTwoHolesSeperation/2+HorizontallCarriageWidth/2,-TopHoleSeperation/2+42,-10])
+					color("purple") cylinder(h = depth+20,d=screw5);
 			}
 		}
-		translate([38,height/2+8,-wall/2]) color("gray") hull() { // reduce usage of filament
+		translate([0,height/2-5,-wall]) color("gray") hull() { // reduce usage of filament
 			cylinder(h = wall+10, r = 6);
-			translate([0,-40,0]) cylinder(h = wall+10, r = 6);
+			translate([0,-35,0]) cylinder(h = wall+10, r = 6);
 		}
 		//if(!Titan || Rear) translate([37.5,34,0]) CarriageMount(); // 4 mounting holes for an extruder
 		// screw holes to mount extruder plate
 		//if(!Rear) translate([37.5,42,4]) ExtruderMountHolesFn(Yes3mmInsert(),25);
 		// screw holes in top
-		if(TopBeltMount) translate([38,45,4]) TopMountBeltHoles(Yes3mmInsert());
+		if(TopBeltMount) translate([0,40,0]) TopMountBeltHoles(Yes3mmInsert());
 	}
 }
 
@@ -294,13 +301,13 @@ module Belt_Holder() {
 	union() {
 		difference() {
 			translate([-8,-15,0]) color("plum") cubeX([40.5,50,5],1);
-			translate([12,16,0]) Belt_Mount_Holes();
-			translate([12,16,9.5]) BeltHeads();
+			translate([-7,-7,0]) Belt_Mount_Holes();
+			translate([-7,-7,4.5]) BeltHeads();
 		}
 		difference() {
-			translate([-7,-BeltShift,4.5]) beltClamp();
-			translate([12,16,7]) Belt_Mount_Holes();
-			translate([12,16,9.5]) BeltHeads();
+			translate([-26.5,-BeltShift,1.5]) beltClamp();
+			translate([-7,16,0]) Belt_Mount_Holes();
+			translate([-7,16,1]) BeltHeads();
 		}
 	}
 }

@@ -51,6 +51,13 @@ Extruder(2,5,1,1);	// arg1: extruderplatform type
 					//	4 - all sensors, except for the ExtruderPlatform()
 					//	5 or higher - none
 					// arg 3: 0 - titan; 1 - aero
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module cubeX(size,Rounding) { // temp module
+	cuboid(size,rounding=Rounding,p1=[0,0]);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 module Extruder(Extruder=0,Sensor=0,Aero=0,ExtruderMountHoles=1) {

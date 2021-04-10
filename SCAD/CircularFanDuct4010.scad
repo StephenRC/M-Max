@@ -2,7 +2,7 @@
 // FanDuct4010.scad
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created 8/10/2019
-// last upate 10/1/20
+// last upate 4/11/21
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 8/10/19	- Created fan duct of my own design
 // 8/12/19	- Added ability to set length
@@ -13,8 +13,9 @@
 // 8/1/20	- Made angle adjustable on CircularDuct() and cleaned up unused code
 // 8/7/20	- Removed more partial blockages inside and adjust the inside of the duct extensions
 // 10/1/20	- Added a tab to the CircularFanBase() to help prevent lifting
+// 4/10/21	- Converted to BOSL2
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-use </inc/cubex.scad>
+include <BOSL2/std.scad>
 include <inc/screwsizes.scad>
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
@@ -93,7 +94,7 @@ module MainDuct() {
 module Blower4010Output() { // the output conector for the blower
 	difference() {
 		translate([0,-21,0]) color("cyan") rotate([90,0,0]) cube([27,15,8]);
-		translate([0.5,-28.5,1]) color("red") cubeX([26,7,20],2);
+		translate([0.5,-28.5,1]) color("red") cuboid([26,7,20],rounding=2,p1=[0,0]);
 		translate([1.5,-25,1]) color("white") cube([25,15,8]);
 	}
 }
@@ -106,8 +107,8 @@ module CircularFanBase(Height=55,ScrewHZ=0,ShiftLR,Angle=0) {
 	difference() {
 		rotate([Angle,0,0])  difference() {
 			union() {
-				translate([-5,-16.15,10]) color("purple") cubeX([61,Height,5],2);
-				translate([33-ShiftLR,-16.15,10]) color("red") cubeX([7,53,5],2);
+				translate([-5,-16.15,10]) color("purple") cuboid([61,Height,5],rounding=2,p1=[0,0]);
+				translate([33-ShiftLR,-16.15,10]) color("red") cuboid([7,53,5],rounding=2,p1=[0,0]);
 			}
 			translate([2-ShiftLR,0.5,9]) FanMountHoles(-4,screw2t);
 			translate([2-ShiftLR,0.5,9]) FanMountHoles(-4,screw2t);
@@ -125,10 +126,10 @@ module CircularFanBaseV2(Height=55,ScrewHZ=0,ShiftLR,Angle=0) {
 		rotate([Angle,0,0])  difference() {
 			union() {
 				color("plum") hull() {
-					translate([-3,-16,10]) /*color("cyan")*/ cubeX([40,Height,5],2);
-					translate([52,9,10]) /*color("red")*/ cubeX([1,Height/2,5],2);
+					translate([-3,-16,10])cuboid([40,Height,5],rounding=2,p1=[0,0]);
+					translate([52,9,10]) cuboid([1,Height/2,5],rounding=2,p1=[0,0]);
 				}
-				translate([33-ShiftLR,-16.15,10]) color("red") cubeX([7,53,5],2);
+				translate([33-ShiftLR,-16.15,10]) color("red") cuboid([7,53,5],rounding=2,p1=[0,0]);
 			}
 			translate([2-ShiftLR,0.5,9]) FanMountHoles(-4,screw2t);
 			translate([2-ShiftLR,0.5,9]) FanMountHoles(-4,screw2t);

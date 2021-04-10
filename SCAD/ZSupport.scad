@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 // MMAX-Z-Support.scad - modifiy the TMAX Z supports
 // created: 2/16/14
-// last modified: 6/29/20
+// last modified: 4/10/21
 /////////////////////////////////////////////////////////////////////////////////////////
 // 8/29/18	- Added make two top or bottom
 // 4/4/19	- Removed notch under connecting extrusion mount, replaced minkowski() with cubeX()
@@ -9,13 +9,12 @@
 // 4/6/19	- Rotated clamps to print on their side, new clamp_v2() using cubeX()
 // 4/27/19	- fixed nut holes in bottom()
 // 6/29/20	- Can now use 5mm brass inserts
+// 4/10/21	- Converted to BOSL2
 ////////////////////////////////////////////////////////////////////////////////////////
 include <inc/configuration.scad>
 include <inc/screwsizes.scad>
-include <inc/corner-tools.scad>
-// https://www.myminifactory.com/it/object/3d-print-tools-for-fillets-and-chamfers-on-edges-and-corners-straight-and-or-round-45862
-// by Ewald Ikemann
-use <inc/cubex.scad>
+include <inc/corner-tools.scad> // https://www.myminifactory.com/it/object/3d-print-tools-for-fillets-and-chamfers-on-edges-and-corners-straight-and-or-round-45862 by Ewald Ikemann
+include <bosl2/std.scad>
 include <inc/brassinserts.scad>
 ////////////////////////////////////////////////////////////////////////////////////////
 ZRodDiameter = 10;			// z rod size
@@ -44,11 +43,11 @@ module Clamps(Qty=1,Screw=screw5) {
 
 module two(Top=0,Screw=Yes5mmInsert(Use5mmInsert)) {
 	if(Top) {
-		if($preview) %translate([-100,-100,20.75]) cube([200,200,5]);
+		if($preview) %translate([-100,-100,20.75]) cuboid([200,200,5],p1=[0,0]);
 		translate([-35,-2.5,0]) top(Screw);
 		translate([35,2.5,0]) rotate([0,0,180]) top();
 	} else {
-		if($preview) %translate([-90,-100,20.75]) cube([200,200,5]);
+		if($preview) %translate([-90,-100,20.75]) cuboid([200,200,5],p1=[0,0]);
 		translate([-45,-2.5,0]) bottom(Screw);
 		translate([60,2.5,0]) rotate([0,0,180]) bottom();;
 	}
@@ -161,8 +160,8 @@ module do_fillets(JustInner=0) { // round over the new hole
 module topbracket()  // for top horizontal brace between left & right sides
 {
 	difference() {
-		translate([30.5,38.5,26]) color("pink") cubeX([extr20+7,extr20,1.5*extr20],2);
-		translate([44.3,52,2*extr20]) color("red") cube([extr20,extr20,2.5*extr20],true);
+		translate([30.5,38.5,26]) color("pink") cuboid([extr20+7,extr20,1.5*extr20],rounding=2,p1=[0,0]);
+		translate([44.3,52,2*extr20]) color("red") cuboid([extr20,extr20,2.5*extr20]);
 		translate([25,49,44]) rotate([0,90,0]) color("black") cylinder(h = 2*extr20, r = screw5/2, $fn = 50);
 	}
 
@@ -198,7 +197,7 @@ module clamp() { // clamp to z rod
 
 module clamp_v2(Screw=screw5) { // clamp to z rod
 	difference() {
-		color("white") cubeX([length,width,thickness],2);
+		color("white") cuboid([length,width,thickness],rounding=2,p1=[0,0]);
 		// mounting screws
 		translate([length/2-screw_dist/2,width/2,-1]) color("red") cylinder(h=thickness+3,d=Screw);
 		translate([length/2+screw_dist/2,width/2,-1]) color("blue") cylinder(h=thickness+3,d=Screw);
@@ -206,7 +205,7 @@ module clamp_v2(Screw=screw5) { // clamp to z rod
 		translate([length/2,width+5,-0.5]) rotate([90,0,0]) color("plum") cylinder(h=width+10,d=ZRodDiameter);
 		// countersinks for screws
 		if(Screw==screw5) {
-			translate([length/2-screw_dist/2,width/2,thickness-2]) color("gray") cylinder(h=thickness+3,d=crew5hd);
+			translate([length/2-screw_dist/2,width/2,thickness-2]) color("gray") cylinder(h=thickness+3,d=screw5hd);
 			translate([length/2+screw_dist/2,width/2,thickness-2]) color("black") cylinder(h=thickness+3,d=screw5hd);
 		}
 	}

@@ -14,7 +14,7 @@
 // 8/7/20	- Removed more partial blockages inside and adjust the inside of the duct extensions
 // 9/5/20	- Change the FanDuct4040.scad to use a 5015 blower - CircularFanDuct5015.scad
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-use </inc/cubex.scad>
+include <BOSL2/std.scad>
 include <inc/screwsizes.scad>
 use <inc/brassinserts.scad>
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,6 +39,13 @@ LayerHeight=0.3;
 //CircularDuct(1,0.9,-0.3,50,0); // Titan with an E3Dv6, with the extruder mount set up for a Titan Aero
 	// ShiftLR=0,Angle=0,ShiftBracketUD=0,ScrewHZ=0,Show=0
 CircularDuct(1,0.9,-0.3,25,0); // titan aero *** needs testing for fit ***
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module cubeX(size,Rounding) { // temp module
+	cuboid(size,rounding=Rounding,p1=[0,0]);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CircularDuct(ShiftLR=0,Angle=0,ShiftBracketUD=0,ScrewHZ=0,Show=0) {

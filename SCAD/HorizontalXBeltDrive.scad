@@ -2,7 +2,7 @@
 // HorizontalXBeltDrive.scad - belt drive on top of the 2040
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 9/23/2020
-// Last Update: 3/1/21
+// Last Update: 4/6/21
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 5/23/20	- Added X axis motor mount and idler mount that go at the ends of the makerslide
 // 5/23/20	- Added abilty to print more that one MotorMount and to print a left, right or both of the ZCarriage
@@ -16,10 +16,11 @@
 // 11/3/20	- Adjust the belt loops to fit better
 // 2/15/21	- Added X belt ends for 2020 and EXOSlide belt mount
 // 3/1/21	- Tweaked the MotorMountExo2020()
+// 4/6/21	- Began BOSL2 conversion
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <mmax_h.scad>
 include <inc/NEMA17.scad>
-use <inc/cubeX.scad>
+use <BOSL2/std.scad>
 use <yBeltClamp.scad>
 include <inc/brassinserts.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,10 +54,16 @@ ExoSlideThickness=12.8;
 //XEndHorizontalBeltEnds(); // makerslide
 //AxisBrace(4); // arg is Quanity
 //AxisBrace(4,65,0); // arg is Quanity; args 2&3 are X,Y
-//BeltCarriageMount(1); // arg 1: 0 no mounting holes; 1 mounting holes
+BeltCarriageMount(1); // arg 1: 0 no mounting holes; 1 mounting holes
 //BeltMount(0);
-BeltEndsExo2020(); // exoslide
+//BeltEndsExo2020(); // exoslide
 //BeltMountEXOSlide();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module cubeX(size,Rounding) { // temp module
+	cuboid(size,rounding=Rounding,p1=[0,0]);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -220,25 +227,28 @@ module XEndHorizontalBeltEnds() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module BeltCarriageMount(MountingScrewHoles=1) {
-	rotate([180,0,0]) {
+	//rotate([180,0,0]) {
 		difference() {
-			color("cyan") cubeX([55,49.3,20],2);
-			translate([8,-2,-1]) color("plum") cubeX([40,53,11],1);
-			if(MountingScrewHoles) {
-				translate([14,3.5,5]) TopMountBeltHoles(screw3); // mounting screw
-				translate([14,45.5,5]) TopMountBeltHoles(screw3); // mounting screw
-				translate([14,3.5,14]) TopMountBeltHoles(screw3hd); // countersink
-				translate([14,45.5,14]) TopMountBeltHoles(screw3hd); // countersink
-			}
-			translate([-35,26,14.5]) color("red") rotate([0,90,0]) cylinder(h=130,d=Yes5mmInsert(Use5mmInsert)); // belt mount screw
-			color("red") hull() { // plastic reduction
-				translate([26,24.75,-2]) cylinder(h=25,d=28);
-				translate([30,24.75,-2]) cylinder(h=25,d=28);
+			color("cyan") cuboid([55,49.3,20],rounding=2);
+			translate([0,0,8]) color("plum") cuboid([40,53,15],rounding=1);
+			translate([-27.5,-24.5,-20]) {
+				if(MountingScrewHoles) {
+					translate([14,3.5,5]) TopMountBeltHoles(screw3); // mounting screw
+					translate([14,45.5,5]) TopMountBeltHoles(screw3); // mounting screw
+					translate([14,3.5,-6]) TopMountBeltHoles(screw3hd); // countersink
+					translate([14,45.5,-6]) TopMountBeltHoles(screw3hd); // countersink
+				}
+				translate([-35,26,15.5]) color("red") rotate([0,90,0])
+					cylinder(h=130,d=Yes5mmInsert(Use5mmInsert)); // belt mount screw
+				color("red") hull() { // plastic reduction
+					translate([26,24.75,-2]) cylinder(h=25,d=28);
+					translate([30,24.75,-2]) cylinder(h=25,d=28);
+				}
 			}
 		}
-		translate([8,1,13.7]) color("black") cube([40,9,LayerThickness]);
-		translate([8,39,13.7]) color("white") cube([40,10,LayerThickness]);
-	}
+		translate([-20,15,-5.95]) color("black") cube([40,9,LayerThickness]);
+		translate([-20,-24,-5.95]) color("white") cube([40,10,LayerThickness]);
+	//}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

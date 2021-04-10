@@ -13,7 +13,7 @@
 // 6/1/20	- Added 24v relay module (FC-86) from Amazon
 // 6/5/20	- Added 24vdc to 12vdc convertor
 ///////////////////////////////////////////////////////////////////////////////
-use <inc/cubex.scad>
+include <bosl2/std.scad>
 include <inc/screwsizes.scad>
 include <inc/brassinserts.scad>
 $fn=50;
@@ -34,6 +34,12 @@ LargeInsert=1;
 RelayMount(2,21.2,43.1,6,6.3,3); // ebay buck convertor
 //RelayMount(2,33,49.9,6,3,3); // 24vdc relay module from Amazon
 //RelayMount(2,46.7,51.5,6,4,6); // 24vdc to 12vdc convertor
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module cubeX(size,Rounding) { // temp module
+	cuboid(size,rounding=Rounding,p1=[0,0]);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
