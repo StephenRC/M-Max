@@ -58,7 +58,7 @@ Spacing=17;
 //IRAdapterAeroClose(0,1,1);
 //Spacer(3,7,screw3+0.1,3);// bltouch fan mount spacer
 //BLTouchEXO(7); // rear mount
-BLTouchEXO(7,27); // front mount
+BLTouchEXO(9,27); // front mount
 //SpacerV2(2,10,screw4+0.1,7,7);// exoslide spacer, don't have right size of M4
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

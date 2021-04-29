@@ -18,8 +18,8 @@ Use3mmInsert=1;
 UseLarge3mmInsert=0;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-BerdAirBLTouchEXO(2,7,15); // rear mount
-//BerdAirEXORear(2,15); // rear mount
+//BerdAirBLTouchEXO(2,7,15); // rear mount
+BerdAirEXORear(2,15); // rear mount
 //difference() {
 //Hose6mmUTurn();
 //translate([0,-5,-5]) cube([10,60,20]);
@@ -138,7 +138,7 @@ module BerdAirBLTouchEXOCover(TubeDiameter=3) {
 		difference() {
 			translate([0,10,21]) color("lightgray") cuboid([15,5,30],rounding=2);
 			translate([-10,-13,0]) BerdAirCoverMountHoles(screw3);
-			translate([-17,10,27]) rotate([90,0,90]) color("gray") hull() {
+			translate([-17,13.5-TubeDiameter/2,27]) rotate([90,0,90]) color("blue") hull() {
 				cylinder(h=40,d=TubeDiameter);
 				translate([3,0,0])  cylinder(h=40,d=TubeDiameter);
 			}

@@ -2,7 +2,7 @@
 // Power.scad - uses a pc style power socket with switch
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // created 7/4/2016
-// last update 2/11/21
+// last update 4/18/21
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 8/4/16	- Added cover
 // 8/5/16	- adjusted cover & 2020 mounting holes
@@ -17,6 +17,7 @@
 // 10/31/20	- Added a mount for a Mean Well RS 15 5 power supply
 // 2/11/21	- Simplfied the power housing mount and changed power socket to same as on the CXY-MSv1, added coountersinks
 //			  to poweri inlet conver for M3 countersunk screws, added meanwell 5vdc mout to all()
+// 4/18/21	- Added a Power switch mouont for a toggle switch
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // If the socket hole size changes, then the size & postions of the walls & socket may need adjusting
 // The power socket uses 3mm screws and brass inserts to mount
@@ -45,9 +46,14 @@ PowerSupplySideMountingScrewSpacing=25;
 Length = 113;
 Width = 13;
 Thickness = 10;
-LayerThickness = 0.2;
+LayerThickness = 0.4;
 SocketPlugWidth=SwitchSocketWidth;
 SocketPlugHeight=SwitchSocketHeight;
+ToggleSwitchLength=30;
+TogglwSwitchWidth=16;
+ToggleSwitchHeight=26;
+ToggleOffsetHoleSize=22;
+Clearance=0.7;  // clearance for hole
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //all(0,PowerSwitchSocketWidth,PowerSwitchSocketHeight,2,1,2,0);
@@ -60,8 +66,9 @@ SocketPlugHeight=SwitchSocketHeight;
 //PowerInlet(1);
 //PowerInlet(0);
 //PowerInletCover();
-MeanWellRS_15_5(); // Mean Well 5vdc power supply
+//MeanWellRS_15_5(); // Mean Well 5vdc power supply
 //PowerInletSet(0);
+PowerToggleSwitch();
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -315,20 +322,51 @@ module CoverScrewSounterSink(Screw=screw3) {
 
 module switch(Flip=0,s_w=13,s_l=19.5,s_t=2) {
 	difference() {  // switch front and switch mounting hole
-		color("cyan") cubeX([s_l+15,s_w+15,5],2);
-		translate([s_l/2-2,s_w/2+1,-2]) color("pink") cube([s_l,s_w,8]);
-		translate([s_l/2-4,s_w/2+1,s_t]) color("red") cube([s_l+3,s_w,8]);
-		switch_label(Flip);
+        union() {
+            color("cyan") cubeX([s_l+15,s_w+15,5],2);
+            translate([0,-1,0]) color("blue") cubeX([5,s_l+9,s_w+18],2); // left wall
+            translate([s_l+10,-1,0]) color("salmon") cubeX([5,s_l+9,s_w+18],2); // right wall
+			translate([s_l-19.5,s_w+10,0]) color("tan") cubeX([s_l+15,5,s_w+18],2); // rear wall
+			translate([0,-22,0]) sw_mount(Flip,s_l+15);
+			translate([0,-1,26]) color("plum") cubeX([s_l+15,s_w+5,5],2); // rear cover
+		}
+	    translate([s_l/2-3.5,s_w/2+1,s_t-1.5]) color("red") cube([s_l+3,s_w,5]);
+		translate([s_l/2-2,s_w/2+1,-2]) color("pink") cube([s_l,s_w,15]);
+        switch_label(Flip);
 	}
-	translate([0,-1,0]) color("blue") cubeX([5,s_l+9,s_w+18],2); // left wall
-	translate([s_l+10,-1,0]) color("salmon") cubeX([5,s_l+9,s_w+18],2); // right wall
-	translate([s_l-19.5,s_w+10,0]) color("tan") cubeX([s_l+15,5,s_w+18],2); // rear wall
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module PowerToggleSwitch(Flip=0,HoleSize=12+Clearance) {
+	difference() {  // switch front and switch mounting hole
+        union() {
+            color("cyan") cuboid([ToggleSwitchLength+10,TogglwSwitchWidth+10,4],rounding=2,p1=[0,0],except_edges=TOP);
+			translate([0,0,0]) color("blue") cubeX([5,TogglwSwitchWidth+10,ToggleSwitchHeight+10],2); // left wall
+            translate([ToggleSwitchLength+5,0,0]) color("salmon")
+				cubeX([5,TogglwSwitchWidth+10,ToggleSwitchHeight+10],2); // right wall
+			translate([0,0,0]) color("tan") cubeX([ToggleSwitchLength+10,5,ToggleSwitchHeight+10],2); // rear wall
+			translate([0,TogglwSwitchWidth+5,0]) color("gray")
+				cubeX([ToggleSwitchLength+10,5,ToggleSwitchHeight+10],2); // rear wall
+			translate([0,-22,0]) ToggleSwitchExtrusionMount(Flip,ToggleSwitchLength+10);
+		}
+		translate([(ToggleSwitchLength+10)/2,(TogglwSwitchWidth+10)/2,-3]) color("red") cylinder(h=10,d=HoleSize);
+		translate([-3,-4,0]) switch_label(Flip,6);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ToggleSwitchExtrusionMount(Flip=0,Width) {
 	difference() {
-		translate([s_l-19,-2,0]) color("brown") cubeX([s_l+14.5,5,s_w+18],2); // top wall
-		translate([0,0,0]) switch_label(Flip);
+		color("green") cubeX([Width,27,5],2);
+		translate([10,10,-2]) color("red") cylinder(h=10,d=screw5);
+		translate([30,10,-2]) color("blue") cylinder(h=10,d=screw5);
+		//translate([10,10,-4]) color("red") cylinder(h=5,d=screw5hd);
+		//translate([30,10,-4]) color("blue") cylinder(h=5,d=screw5hd);
 	}
-	translate([0,-1,26]) color("plum") cubeX([s_l+15,s_w+5,5],2); // rear cover
-	translate([0,-22,0]) sw_mount(Flip,s_l+15);
+	//translate([10,10,1]) color("blue") cylinder(h=LayerThickness,d=screw5hd); // support
+	//translate([30,10,1]) color("red") cylinder(h=LayerThickness,d=screw5hd); // support
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -338,15 +376,15 @@ module sw_mount(Flip=0,Width) {
 		color("green") cubeX([Width,27,5],2);
 		translate([7,10,-2]) color("red") cylinder(h=10,d=screw5,$fn=100);
 		translate([26,10,-2]) color("blue") cylinder(h=10,d=screw5,$fn=100);
-		translate([-3,22,0]) switch_label(Flip);
+		//translate([-3,22,0]) switch_label(Flip);
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module switch_label(Flip=0) {
-	if(!Flip) translate([9,-1,1]) rotate([180,0,0]) printchar("POWER",2,4);
-	else translate([32,-4,1]) rotate([0,180,0]) printchar("POWER",2,4);
+module switch_label(Flip=0,Size=4) {
+	if(!Flip) translate([6.5,5,1]) rotate([180,0,0]) printchar("POWER",2,Size);
+	else translate([32,-4,1]) rotate([0,180,0]) printchar("POWER",2,Size);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

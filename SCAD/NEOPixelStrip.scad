@@ -34,39 +34,6 @@ Use2mmInsert=1;
 //translate([0,-1,10]) // test fit
 //translate([0,20,-1]) rotate([180,0,0]) // print with NEOPixelStripMount()
 //	NEOPixelCover(0);
-PlainLEDStripHolder();
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module PlainLEDStripHolder() {
-	difference() {
-		translate([0,-10,0]) color("cyan") cuboid([110,45,4],rounding=2);
-		translate([-20,15,0]) {
-			translate([0,-10,-3])color("red") cylinder(h=10,d=screw4);
-			translate([40,-10,-3]) color("blue") cylinder(h=10,d=screw4);
-			translate([0,-10,1.5])color("blue") cylinder(h=5,d=screw4hd);
-			translate([40,-10,1.5]) color("red") cylinder(h=5,d=screw4hd);
-		}
-		translate([0,10,0]) ZipTieHoleSlot();
-		translate([-50,10,0]) ZipTieHoleSlot();
-		translate([-100,10,0]) ZipTieHoleSlot();
-		translate([0,25,0]) {
-			ZipTieHoleSlot();
-			translate([-50,0,0]) ZipTieHoleSlot();
-			translate([-100,0,0]) ZipTieHoleSlot();
-		}
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module ZipTieHoleSlot(TwoStrips=0) { // the sticky back on the led strip doesn't hold very good
-	translate([-54,-40,0]) {
-		translate([105,11,-3]) color("black") cylinder(h=10,d=3.5);
-		translate([105,11-LEDStripWidth,-3]) color("gray") cylinder(h=10,d=3.5);
-		translate([105.11,6,-1.5]) color("lightgray") cuboid([5,14,4],rounding=2);
-	}
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
