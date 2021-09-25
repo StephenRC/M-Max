@@ -2,11 +2,12 @@
 //	BerdAirEXCOSLide.scad
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // created 2/25/2021
-// last update 3/27/21
+// last update 9/16/21
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 3/4/21	- Added a bltouch with berd air pipe holder
 // 3/6/21	- Added pip to show bltouch side
 // 3/27/21	- Changed to use BOSL2 library, added a u-turn fitting for the berd inline pump
+// 9/16/21	- Added a mount to go on teh top of a E3DV6 heatsink: E3DV6Mount()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
 include <inc/screwsizes.scad>
@@ -15,15 +16,52 @@ $fn=100;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Use2p5mmInsert=0;
 Use3mmInsert=1;
-UseLarge3mmInsert=0;
+LargeInsert=0;
+LayerThickness=0.3;
+Clearance=0.9;
+E3DV6diameter=16+Clearance; // diameter of section right above heat sink
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //BerdAirBLTouchEXO(2,7,15); // rear mount
-BerdAirEXORear(2,15); // rear mount
+//BerdAirEXORear(2,15); // rear mount
 //difference() {
 //Hose6mmUTurn();
 //translate([0,-5,-5]) cube([10,60,20]);
 //}
+E3DV6Mount(2,0);  // moount on the top section of the heatsink
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module E3DV6Mount(PipeSize=2,DoClamp=1) {
+	difference() {
+		color("cyan") hull() {
+			cylinder(h=5,d=E3DV6diameter*2-3);
+			translate([-30,-E3DV6diameter/2,0]) cuboid([3,E3DV6diameter,8],rounding=1.5,p1=[0,0]);
+		}
+		translate([-32,-4,4.5]) color("pink") rotate([0,90,0]) cylinder(h=15,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+		translate([-32,4,4.5]) color("pink") rotate([0,90,0]) cylinder(h=15,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+		translate([0,0,-5]) color("red") cylinder(h=20,d=E3DV6diameter);
+		translate([0,0,2.5]) rotate([0,90,0]) color("blue") cylinder(h=20,d=screw3t); // holding screw, tap plastic for M3
+	}
+	BAClamp(PipeSize);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BAClamp(PipeSize=2) {
+	translate([-39,0,32]) rotate([0,-90,0]) {
+		difference() { // clamp
+			union() {
+				translate([-32,-E3DV6diameter/2,0]) color("green") cuboid([3,E3DV6diameter,8],rounding=1.5,p1=[0,0]);
+				translate([-32,0,4]) rotate([0,90,0]) cylinder(h=LayerThickness,d=25);
+			}
+			translate([-33,-4,4.5]) color("blue") rotate([0,90,0]) cylinder(h=15,d=screw3);
+			translate([-33,4,4.5]) color("khaki") rotate([0,90,0]) cylinder(h=15,d=screw3);
+			translate([-29,0,-8]) color("gray") cylinder(h=20,d=PipeSize);
+		}
+	}
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

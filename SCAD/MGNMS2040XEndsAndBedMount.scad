@@ -28,6 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //=====================================================================================================
 // 2020x460mm with the 400mm MGN12 are to be connected to the middle and upper 2020 on the M-Max
+// Don't recommend the printable bed mount, it flexes and 20% fill, 3/16" aluminum doesn't
 //=====================================================================================================
 include <mmax_h.scad>
 include <inc/brassinserts.scad>
@@ -63,7 +64,7 @@ MTSSR8l = 21.5;	// length of MTSSR8
 StepperShaftOffset=15;
 StepperMountThickness=4;
 F625ZZ_dia=16;
-LayerThickness=0.3;
+LayerThickness=0.4;
 Nozzle=0.4;
 //---------------------------------------------
 Switch_ht=20;	// height of holder
@@ -484,9 +485,9 @@ module BedMount2020(Qty=2,Show=0) {
 		translate([0,x*75,0]) {
 			difference() {
 				union() {
-					color("cyan") cubeX([Bed1212Height,55,6],2);
-					translate([21.5,20,0]) color("green") cubeX([Bed1212Height-44,35,10],2);
-					translate([21,50,5]) color("red") cubeX([Bed1212Height-44,5,10],2);
+					color("cyan") cuboid([Bed1212Height,55,6],rounding=2,p1=[0,0]);
+					translate([21.5,20,0]) color("green") cuboid([Bed1212Height-44,35,10],rounding=2,p1=[0,0]);
+					translate([21,50,5]) color("red") cuboid([Bed1212Height-44,5,10],rounding=2,p1=[0,0]);
 				}
 				translate([Bed1212Height/2-10,25,-2]) mgnscrewholes(screw3);
 				translate([Bed1212Height/2-10,25,4]) mgnscountersink(screw3hd);
@@ -494,6 +495,10 @@ module BedMount2020(Qty=2,Show=0) {
 				BedScrewClearanceHoles(screw5);
 				translate([35,5,0]) Holes(4);
 				translate([185,5,0]) Holes(4);
+			}
+			difference() {
+				AllBedCounterSink2020(Screw=screw5);
+				BedScrewClearanceHoles(screw5);
 			}
 			if(Show) {
 				Show2020();
@@ -538,6 +543,40 @@ module AllBedScrewHoles2020(Screw=screw5) {
 	translate([Bed1212Height-12,7.5,0]) color("purple") BedScrewHoles2020(Screw,0); // side end right
 	translate([Bed1212Height/2+50,7,0]) color("pink") BedScrewHoles2020(Screw,0); // side
 	translate([Bed1212Height/2+100,7,0]) color("plum") BedScrewHoles2020(Screw,0); // side
+	translate([10,45,0]) color("red") BedScrewHoles2020(Screw,0); // side left end
+	translate([10,7,0]) color("black") BedScrewHoles2020(Screw,0); // side end lft
+	translate([Bed1212Height/2-50,7,0]) color("blue") BedScrewHoles2020(Screw,0); // side
+	translate([Bed1212Height/2,7,0]) color("gray") BedScrewHoles2020(Screw,0); // side center
+	translate([Bed1212Height/2-100,7,0]) color("white") BedScrewHoles2020(Screw,0); // side
+	translate([Bed1212Height-12,45.5,0]) color("lightgray") BedScrewHoles2020(Screw,0); // side right end
+	translate([Bed1212Height-12,7.5,0]) color("purple") BedScrewHoles2020(Screw,0); // side end right
+	translate([Bed1212Height/2+50,7,0]) color("pink") BedScrewHoles2020(Screw,0); // side
+	translate([Bed1212Height/2+100,7,0]) color("plum") BedScrewHoles2020(Screw,0); // side
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module AllBedCounterSink2020(Screw=screw5) {
+	if(Screw==screw5) {
+		translate([10,45,0]) BedCounterSinkSupport(); // side left end
+		translate([10,7,0]) BedCounterSinkSupport(); // side end lft
+		translate([Bed1212Height/2-50,7,0]) BedCounterSinkSupport(); // side
+		translate([Bed1212Height/2,7,0])  BedCounterSinkSupport(); // side center
+		translate([Bed1212Height/2-100,7,0]) BedCounterSinkSupport(); // side
+		translate([Bed1212Height-12,45.5,0]) BedCounterSinkSupport(); // side right end
+		translate([Bed1212Height-12,7.5,0]) BedCounterSinkSupport(); // side end right
+		translate([Bed1212Height/2+50,7,0]) BedCounterSinkSupport(); // side
+		translate([Bed1212Height/2+100,7,0]) BedCounterSinkSupport(); // side
+		translate([10,45,0]) BedCounterSinkSupport(); // side left end
+		translate([10,7,0]) BedCounterSinkSupport(); // side end lft
+		translate([Bed1212Height/2-50,7,0]) BedCounterSinkSupport(); // side
+		translate([Bed1212Height/2,7,0])  BedCounterSinkSupport(); // side center
+		translate([Bed1212Height/2-100,7,0]) BedCounterSinkSupport(); // side
+		translate([Bed1212Height-12,45.5,0])  BedCounterSinkSupport(); // side right end
+		translate([Bed1212Height-12,7.5,0]) BedCounterSinkSupport(); // side end right
+		translate([Bed1212Height/2+50,7,0]) BedCounterSinkSupport(); // side
+		translate([Bed1212Height/2+100,7,0])  BedCounterSinkSupport(); // side
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -561,10 +600,17 @@ module BedScrewHoles(Screw=Yes3mmInsert(Use3mmInsert,UseLarge3mmInsert)) {
 
 module BedScrewHoles2020(Screw=Yes5mmInsert(Use5mmInsert),Triple=1) {
 	translate([0,0,-2]) color("red") cylinder(h=20,d=Screw);
+	if(Screw==screw5) translate([0,0,-4]) color("blue") cylinder(h=5,d=screw5hd);
 	if(Triple) {
 		translate([0,28.7-4,-2]) color("gray") cylinder(h=20,d=Screw);
 		translate([0,55,-2]) color("white") cylinder(h=20,d=Screw);
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BedCounterSinkSupport() {
+	translate([0,0,1]) color("khaki") cylinder(h=LayerThickness,d=screw5hd);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

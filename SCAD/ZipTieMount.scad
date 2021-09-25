@@ -2,13 +2,14 @@
 // ZipTieMount.scad
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // created 9/7/2018
-// last update 9/13/20
+// last update 9/12/21
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // something to hold the zipties that support the stuff going to the hotend on the
 // x carriage.
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // 5/15/19	- Made resizable, can now use M3, M4 and M5 for the mounting
 // 9/13/20	- Mde loop thicker, ablity to set quanity
+// 9/12/21	- Added one that uses a zip tie to hold the wires
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 include <bosl2/std.scad>
 include <inc/screwsizes.scad>
@@ -18,6 +19,7 @@ include <inc/corner-tools.scad>
 $fn=100;
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+//Cylmount(1,screw5,15); // Quanity=1,Screw=screw5|screw4|screw3,HoleSize=10
 ZTmount(1,screw5,15); // Quanity=1,Screw=screw5|screw4|screw3,HoleSize=10
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,10 +30,21 @@ module cubeX(size,Rounding) { // temp module
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ZTmount(Quanity=1,Screw=screw5,HoleSize=10) {
+module Cylmount(Quanity=1,Screw=screw5,HoleSize=10) {
 	for(x = [0 : Quanity-1]) {
 		translate([x*25,0,0]) {
 			clip(HoleSize);
+			mount(Screw);
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ZTmount(Quanity=1,Screw=screw5,HoleSize=10) {
+	for(x = [0 : Quanity-1]) {
+		translate([x*25,0,0]) {
+			clipV2(HoleSize);
 			mount(Screw);
 		}
 	}
@@ -43,10 +56,8 @@ module mount(Screw) {
 	difference() {
 		translate([-10,-2,0]) color("cyan") cubeX([20,5,20],1); // base
 		translate([0,4,13]) rotate([90,0,0]) color("gray") cylinder(h=10,d=Screw); // screw mounting hole
-		// countersink for screw3, screw4 and screw5
-		if(Screw == screw3) translate([0,6,13]) rotate([90,0,0]) color("white") cylinder(h=5,d=screw3hd);
-		if(Screw == screw4) translate([0,6,13]) rotate([90,0,0]) color("white") cylinder(h=5,d=screw4hd);
-		if(Screw == screw5) translate([0,6,13]) rotate([90,0,0]) color("brown") cylinder(h=5,d=screw5hd);
+		// countersink
+		translate([0,7.5,13]) rotate([90,0,0]) color("brown") cylinder(h=5,d=screw5hd);
 	}
 }
 
@@ -64,4 +75,15 @@ module clip(HoleSize=10) {
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+module clipV2(HoleSize=10) {
+	difference() {
+		union() {
+			translate([-10,-2,0]) color("blue") cubeX([2,10,5],1); // side
+			translate([8,-2,0]) color("red") cubeX([2,10,5],1); // side
+		}
+		translate([-12,4,2.5]) rotate([0,90,0]) color("green") cylinder(h=25,d=3);
+	}
+}
 //////////////// end of Zip Tie Mount.scad ///////////////////////////////////////////////

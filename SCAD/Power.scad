@@ -56,19 +56,18 @@ ToggleOffsetHoleSize=22;
 Clearance=0.7;  // clearance for hole
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//all(0,PowerSwitchSocketWidth,PowerSwitchSocketHeight,2,1,2,0);
+all(0,PowerSwitchSocketWidth,PowerSwitchSocketHeight,2,1,2,0);
 // flip=0,s_w=13,s_l=19.5,s_t=2,Makerslide=1,PBQuantiy=2,Version=0
 //testfit();	// print part of it to test fit the socket & 2020
 //switch();		// 4 args: flip label, Width, length, clip Thickness; defaults to 0,13,19.5,2
-//powersupply_cover();
+//powersupply_cover(); // for cheap chinese power supply
 //powersupply_cover_v2();
-//PowerSupply(1,2);
 //PowerInlet(1);
 //PowerInlet(0);
 //PowerInletCover();
 //MeanWellRS_15_5(); // Mean Well 5vdc power supply
 //PowerInletSet(0);
-PowerToggleSwitch();
+//PowerToggleSwitch();
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -117,12 +116,11 @@ module MeanWellRS_15_5() {
 
 module all(flip=0,s_w=13,s_l=19.5,s_t=2,Makerslide=1,PBQuantiy=2,Version=0) {
 	//if($preview) %translate([25,20,0]) cube([200,200,2],center=true); // show the 200x200 bed
-	translate([0,-12,0]) PowerInlet(Version);
-	translate([0,-5,45]) rotate([180,0,0]) PowerInletCover();
+	translate([0,15,0]) PowerInlet(Version);
+	translate([0,20,45]) rotate([180,0,0]) PowerInletCover();
 	translate([-40,-45,0]) switch(flip);		// 3 args: Width, length, clip Thickness; defaults to 13,19.5,2
-	//translate([-30,60,0]) powersupply_cover();
-	translate([-10,-10,0]) rotate([0,0,90]) PowerSupply(Makerslide,PBQuantiy);
-	translate([-110,-10,0]) MeanWellRS_15_5();
+	//translate([-45,85,0]) powersupply_cover();
+	translate([-70,-10,0]) MeanWellRS_15_5();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,7 +197,6 @@ module pwr_supply_cover_vents(Qty=1) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module PowerInlet(Version=1,Screw=Yes3mmInsert(Use3mmInsert)) {
-	if($preview) %translate([-5,18,0]) cube([5,60,5]); // something to show max height
 	difference() {
 		color("blue") cubeX([SwitchSocketWidth+40,SwitchSocketHeight+40,5],2); // base
 		translate([SwitchSocketWidth-25,9,-2]) color("green") cylinder(h=10,r=screw5/2); // 2020 mounting hole
@@ -391,13 +388,6 @@ module switch_label(Flip=0,Size=4) {
 
 module printchar(String,Height=1.5,Size=4) { // print something
 	color("black") linear_extrude(height = Height) text(String, font = "Arial:style=Black",size=Size);
-}
-
-///////////////////////////////////////////////////////////////////////////
-
-module PowerSupply(Makerslide=0,Quanity=1) {
-	for(b=[0:Quanity-1])
-		translate([1,b*(Width+3),0]) PowerSupplySingleMount(Makerslide); // two needed to mount p/s
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////

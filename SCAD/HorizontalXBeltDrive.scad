@@ -2,7 +2,7 @@
 // HorizontalXBeltDrive.scad - belt drive on top of the 2040
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 9/23/2020
-// Last Update: 4/6/21
+// Last Update: 5/20/21
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 5/23/20	- Added X axis motor mount and idler mount that go at the ends of the makerslide
 // 5/23/20	- Added abilty to print more that one MotorMount and to print a left, right or both of the ZCarriage
@@ -17,6 +17,7 @@
 // 2/15/21	- Added X belt ends for 2020 and EXOSlide belt mount
 // 3/1/21	- Tweaked the MotorMountExo2020()
 // 4/6/21	- Began BOSL2 conversion
+// 5/20/21	- Added an adjustable idler mount
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <mmax_h.scad>
 include <inc/NEMA17.scad>
@@ -49,6 +50,8 @@ Switch_thk2=7;	// thickness of spacer
 HolderWidth=33;	// width of holder
 SwitchShift=6;	// move switch mounting holes along width
 ExoSlideThickness=12.8;
+Clearance=0.2;
+IdlerBearingThickess=11.7+Clearance;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //XEndHorizontalBeltEnds(); // makerslide
@@ -56,10 +59,90 @@ ExoSlideThickness=12.8;
 //AxisBrace(4,65,0); // arg is Quanity; args 2&3 are X,Y
 //BeltCarriageMount(1); // arg 1: 0 no mounting holes; 1 mounting holes
 //BeltMount(0);
-BeltEndsExo2020(); // exoslide
+//BeltEndsExo2020(); // exoslide
 //BeltMountEXOSlide();
 //XIdlerExo2020(Yes5mmInsert(Use5mmInsert),1);
 //MotorMountExo2020(1);
+TensionIdler();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module TensionIdler(IdlerScrew=Yes5mmInsert(Use5mmInsert),DoTab=1) {
+	%translate([-25,StepperMountThickness+12,10]) rotate([90,0,0])
+		cylinder(h=IdlerBearingThickess,d=IdlerBearingThickess+5); // fit idler
+	difference() {
+		union() {
+			translate([-5,-2,0]) color("blue") cubeX([29,22,StepperMountThickness],2);
+			translate([-5,StepperMountThickness-3.5,0]) color("darkgray") rotate([46,0,0])
+				cuboid([StepperMountThickness,28,StepperMountThickness],rounding=2,p1=[0,0]);
+			translate([20,StepperMountThickness-3.5,0]) color("white") rotate([46,0,0])
+				cuboid([StepperMountThickness,28,StepperMountThickness],rounding=2,p1=[0,0]);
+			translate([-38,24-(StepperMountThickness*2),0]) color("purple")
+				cuboid([62,StepperMountThickness,23],rounding=2,p1=[0,0]);
+			translate([20,-2,-19]) color("gray") cubeX([StepperMountThickness,22,23],2);
+			translate([-StepperMountThickness-1,-2,-19]) color("lightgray") cubeX([StepperMountThickness,22,23],2);
+			translate([-2,StepperMountThickness+16,-18]) color("pink") rotate([90,-60,0])
+				cubeX([StepperMountThickness,37,StepperMountThickness],2);
+			translate([-14.51,-1,0]) color("lightblue")
+				cuboid([13+StepperMountThickness,IdlerBearingThickess+(StepperMountThickness*2),StepperMountThickness]
+					,rounding=2,p1=[0,0]);
+			translate([-37.5,-1,19]) color("blue")
+				cuboid([24+StepperMountThickness,1.1+IdlerBearingThickess+(StepperMountThickness*2),StepperMountThickness+5]
+					,rounding=2,p1=[0,0]);
+			translate([-37.5,-13+IdlerBearingThickess,0]) color("plum")
+				cuboid([28,StepperMountThickness,23],rounding=2,p1=[0,0]);
+			translate([-14.5,-12+IdlerBearingThickess,0]) color("green")
+				cuboid([StepperMountThickness,20,23],rounding=2,p1=[0,0]);
+			translate([-36,19,1.5]) rotate([90,0,0]) color("red") cylinder(h=17,d=2);
+		}
+		translate([-25,StepperMountThickness+12,17]) rotate([90,0,0]) color("khaki") 
+			cylinder(h=IdlerBearingThickess+1.2,d=IdlerBearingThickess+7); // fit idler
+		translate([10,10.5,0]) rotate([0,-90,0]) 2040ScrewHolesExo(screw5,1);
+		color("red") hull() {
+			translate([-(ExoSlideThickness+4+F625ZZ_dia/2),25,F625ZZ_dia/2+6]) rotate([90,0,0])
+				cylinder(h=30,d=screw5);
+			translate([-(ExoSlideThickness+4+F625ZZ_dia/2),25,F625ZZ_dia/2-1]) rotate([90,0,0])
+				cylinder(h=30,d=screw5);
+		}
+		translate([-10,10,-8]) rotate([0,90,0]) color("gray") cylinder(h=20,d=screw5);
+		translate([22,10,-8]) rotate([0,90,0]) color("darkgray") cylinder(h=5,d=screw5hd);
+		translate([12,10,-8]) rotate([0,90,0]) color("plum") cylinder(h=20,d=screw5);
+		translate([-8,10,-8]) color("green") rotate([0,90,0]) cylinder(h=5,d=screw5hd);
+	}
+	translate([0,-1,0]) color("gray") hull() {
+		translate([-(ExoSlideThickness+4+F625ZZ_dia/2),StepperMountThickness-0.1,F625ZZ_dia/2+6]) rotate([90,0,0])
+			cylinder(h=LayerThickness,d=screw5hd);
+		translate([-(ExoSlideThickness+4+F625ZZ_dia/2),StepperMountThickness-0.1,F625ZZ_dia/2+1]) rotate([90,0,0])
+			cylinder(h=LayerThickness,d=screw5hd);
+	}
+	translate([25,20,20]) rotate([90,0,0]) AdjustingBracket(DoTab);
+	if(DoTab) {
+		translate([23,20,-19]) color("green") rotate([90,0,0]) cylinder(h=LayerThickness,d=15); // tab
+		translate([-3,20,-19]) color("plum") rotate([90,0,0]) cylinder(h=LayerThickness,d=15); // tab
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module AdjustingBracket(DoTab) {
+	difference() {
+		union() {
+			translate([-45,IdlerBearingThickess-1,0]) color("cyan")
+				cuboid([StepperMountThickness,21.1+StepperMountThickness*2,22],rounding=2,p1=[0,0]);
+			translate([-45,IdlerBearingThickess-1.1,0]) color("blue")
+				cuboid([27+StepperMountThickness*2,StepperMountThickness,22],rounding=2,p1=[0,0]);
+			translate([-45,24.4+IdlerBearingThickess,0]) color("gray")
+				cuboid([27+StepperMountThickness*2,StepperMountThickness,22],rounding=2,p1=[0,0]);
+		}
+		translate([-47,26,12]) color("blue") rotate([0,90,0]) cylinder(h=10,d=Yes5mmInsert(Use5mmInsert));
+		translate([-19,20,12]) color("black") rotate([90,0,0]) cylinder(h=10,d=screw5);
+		translate([-19,43,12]) color("green") rotate([90,0,0]) cylinder(h=10,d=Yes5mmInsert(Use5mmInsert));
+	}
+	if(DoTab) {
+		translate([-17,13,0]) color("darkgray") rotate([0,0,0]) cylinder(h=LayerThickness,d=15); // tab
+		translate([-17,37,0]) color("lightgray") rotate([0,0,0]) cylinder(h=LayerThickness,d=15); // tab
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -102,7 +185,7 @@ module EXOSlideMountHoles(Screw=screw4,AdjustableInner=0) {
 		color("red") cylinder(h=50,d=Screw);
 		translate([20,0,0]) cylinder(h=50,d=Screw);
 		translate([40,0,0]) color("lightgray") cylinder(h=50,d=Screw);
-		translate([60,0,0]) color("black") cylinder(h=50,d=Screw);
+		translate([60,0,0]) color("darkgray") cylinder(h=50,d=Screw);
 	}
 }
 
@@ -179,7 +262,7 @@ module MotorMountExo2020(DoTab=1) {
 	translate([1,-2,-15]) color("green") rotate([0,0,20]) cubeX([54.5,StepperMountThickness,StepperMountThickness],2);
 	translate([1,-2,55]) color("lightgray") rotate([0,0,20]) cubeX([54.5,StepperMountThickness,StepperMountThickness],2);
 	translate([0,16,-15]) color("red") rotate([0,-22,0]) cubeX([StepperMountThickness,StepperMountThickness,52],2);
-	translate([0,-5,-15]) color("black") rotate([0,-22,0]) cubeX([StepperMountThickness,StepperMountThickness,52],2);
+	translate([0,-5,-15]) color("darkgray") rotate([0,-22,0]) cubeX([StepperMountThickness,StepperMountThickness,52],2);
 	if(DoTab) {
 		translate([-20,20,58]) color("green") rotate([90,0,0]) cylinder(h=LayerThickness,d=25); // tab
 		translate([-20,20,32]) color("plum") rotate([90,0,0]) cylinder(h=LayerThickness,d=25); // tab
@@ -196,7 +279,7 @@ module XIdlerExo2020(IdlerScrew=Yes5mmInsert(Use5mmInsert),DoTab=1) {
 	difference() {
 		union() {
 			translate([-3,-2,0]) color("blue") cubeX([27,22,StepperMountThickness],2);
-			translate([-5,StepperMountThickness-3.5,0]) color("black") rotate([46,0,0])
+			translate([-5,StepperMountThickness-3.5,0]) color("darkgray") rotate([46,0,0])
 				cubeX([StepperMountThickness,28,StepperMountThickness],2);
 			translate([20,StepperMountThickness-3.5,0]) color("white") rotate([46,0,0])
 				cubeX([StepperMountThickness,28,StepperMountThickness],2);
@@ -211,7 +294,7 @@ module XIdlerExo2020(IdlerScrew=Yes5mmInsert(Use5mmInsert),DoTab=1) {
 		translate([-(ExoSlideThickness+4+F625ZZ_dia/2),25,F625ZZ_dia/2+4]) rotate([90,0,0]) color("red")
 		cylinder(h=20,d=IdlerScrew);
 		translate([-10,10,-8]) rotate([0,90,0]) color("gray") cylinder(h=20,d=screw5);
-		translate([22,10,-8]) rotate([0,90,0]) color("black") cylinder(h=5,d=screw5hd);
+		translate([22,10,-8]) rotate([0,90,0]) color("darkgray") cylinder(h=5,d=screw5hd);
 		translate([12,10,-8]) rotate([0,90,0]) color("plum") cylinder(h=20,d=screw5);
 		translate([-8,10,-8]) color("green") rotate([0,90,0]) cylinder(h=5,d=screw5hd);
 	}
@@ -228,7 +311,7 @@ module 2040ScrewHolesExo(Screw=screw5,JustOne=0) {
 	translate([-5,0,0]) color("cyan") rotate([0,90,0]) cylinder(h=15,d=Screw);
 	if(!JustOne) translate([-5,0,20]) color("plum") rotate([0,90,0]) cylinder(h=15,d=Screw);
 	if(Screw==screw5) {
-		translate([3,0,0]) color("plum") rotate([0,90,0]) cylinder(h=5,d=screw5hd);
+		translate([3,0,0]) color("plum") rotate([0,90,0]) cylinder(h=15,d=screw5hd);
 		if(!JustOne) translate([3,0,20]) color("cyan") rotate([0,90,0]) cylinder(h=5,d=screw5hd);
 	}
 }
@@ -262,7 +345,7 @@ module BeltCarriageMount(MountingScrewHoles=1) {
 				}
 			}
 		}
-		translate([-20,15,-5.95]) color("black") cube([40,9,LayerThickness]);
+		translate([-20,15,-5.95]) color("darkgray") cube([40,9,LayerThickness]);
 		translate([-20,-24,-5.95]) color("white") cube([40,10,LayerThickness]);
 	//}
 }
@@ -285,7 +368,7 @@ module BeltMount(OnePiece=0) {
 		else {
 			translate([-22.25,17,20]) color("gray") cubeX([35,17,4],2); // individual pieces
 			translate([43,17,20]) color("plum") cubeX([35,17,4],2);
-			translate([10,34,22]) color("black") rotate([90,0,0]) cylinder(h=LayerThickness,d=20); // tab
+			translate([10,34,22]) color("darkgray") rotate([90,0,0]) cylinder(h=LayerThickness,d=20); // tab
 			translate([45,34,22]) color("white") rotate([90,0,0]) cylinder(h=LayerThickness,d=20); // tab
 		}
 		difference() {
@@ -368,7 +451,7 @@ module MotorMountH(Qty=1) {
 	}
 	translate([1,-2,-3]) color("green") rotate([0,0,20]) cubeX([54.5,StepperMountThickness,StepperMountThickness],2);
 	translate([1,-2,53]) color("pink") rotate([0,0,20]) cubeX([54.5,StepperMountThickness,StepperMountThickness],2);
-	translate([0,16,70]) color("black") rotate([0,20,0]) cubeX([54.5,StepperMountThickness,StepperMountThickness],2);
+	translate([0,16,70]) color("darkgray") rotate([0,20,0]) cubeX([54.5,StepperMountThickness,StepperMountThickness],2);
 	translate([1,20,72]) color("green") rotate([90,0,0]) cylinder(h=LayerThickness,d=25); // tab
 }
 
@@ -392,7 +475,7 @@ module XIdlerH(IdlerScrew=Yes5mmInsert(Use5mmInsert)) {
 				translate([1,-2,0]) color("cyan") cubeX([47,22,StepperMountThickness],2);
 				translate([5,20-StepperMountThickness,18.5]) color("green") rotate([0,25,0])
 					cubeX([45,StepperMountThickness,StepperMountThickness],2);
-				translate([1,StepperMountThickness-3.5,0]) color("black") rotate([46,0,0])
+				translate([1,StepperMountThickness-3.5,0]) color("darkgray") rotate([46,0,0])
 					cubeX([StepperMountThickness,26,StepperMountThickness],2);
 				translate([45,20,2]) color("red") rotate([90,0,0]) cylinder(h=LayerThickness,d=25); // tab
 				translate([-24,20-StepperMountThickness,0]) color("plum")
@@ -460,7 +543,7 @@ module AxisBrace(Qty=1,X=0,Y=0) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module 2020ScrewHoles(Two=0) {
-	color("black") cylinder(h=10,d=screw5);
+	color("darkgray") cylinder(h=10,d=screw5);
 	translate([0,0,6.5]) color("white") cylinder(h=5,d=screw5hd);
 	if(Two) {
 		translate([0,0,6.5]) color("white") cylinder(h=5,d=screw5hd);

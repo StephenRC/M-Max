@@ -84,7 +84,7 @@ module BLTouchEXO(UpDown=5,DistanceFromMount=12.5) {
 	translate([3,17,2]) color("green") sphere(d=screw3); // this side down
 	difference() {
 		translate([UpDown,0,0]) difference() {
-			translate([0,9.5,0]) color("purple") cubeX([4,15,DistanceFromMount+17],2);
+				translate([0,9.5,0]) color("purple") cubeX([4,15,DistanceFromMount+17],2);
 			translate([0,1,DistanceFromMount+4]) rotate([90,90,90]) BLTouch_Holes(2);
 		}
 		translate([10,7,0]) {
@@ -92,6 +92,8 @@ module BLTouchEXO(UpDown=5,DistanceFromMount=12.5) {
 			translate([0,20,0]) color("red") cylinder(h=15,d=screw4hd);
 		}
 	}
+	translate([0,10,1]) rotate([0,30,0]) color("white") cuboid([2,2,20],rounding=0.5,p1=[0,0]);
+	translate([0,22,1]) rotate([0,30,0]) color("green") cuboid([2,2,20],rounding=0.5,p1=[0,0]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

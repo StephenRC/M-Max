@@ -37,15 +37,15 @@ HorizontallCarriageHeight=20;
 LayerThickness=0.3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-xcar(1,1,1);
+//xcar(1,1,1);
 //cableholder();
-//Belt_Holder();
+Belt_Holder();
 //Carriage(); // front; Titan=0,Tshift=0,Rear=0
 //Carriage(0,0,0,0,0,1); // rear
 //XCarriageWithExtruder(1,1);
 //XCarriageFullAssemblySingle(1,0,1,0,35);  // StepperLength 35 (pancake) or 45
 //XCarriageFullAssemblyDual(1,1,0,35);
-//XCarriageFullAssemblyNoExtruder(1,1,0,1,1);
+XCarriageFullAssemblyNoExtruder(1,1,0,1,1);
 //Carriage(1,0,0,1,1,0);
 
 ///////////////

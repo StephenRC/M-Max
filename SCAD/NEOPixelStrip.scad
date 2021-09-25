@@ -29,11 +29,11 @@ LayerThickness=0.3;
 Use2mmInsert=1;
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-//NEOPixelStripMount(1); // no counter sink on strip mount
+NEOPixelStripMount(1); // no counter sink on strip mount
 //%translate([0,0,Thickness]) cube([10,10,16-Thickness]); // show clearance height for cover
 //translate([0,-1,10]) // test fit
-//translate([0,20,-1]) rotate([180,0,0]) // print with NEOPixelStripMount()
-//	NEOPixelCover(0);
+translate([0,20,-1]) rotate([180,0,0]) // print with NEOPixelStripMount()
+	NEOPixelCover(0);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 

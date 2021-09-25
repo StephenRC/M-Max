@@ -2,7 +2,7 @@
 // 40mmTo30mmFan.scad
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // created 2/7/21
-// last update 2/14/21
+// last update 9/23/21
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 2/11/21	- Added an offset fan adapter
 // 2/14/21	- Added an angled fan adapter
@@ -66,11 +66,11 @@ module FanAdapterWithOffsetAngled(Thickness=10) {
 	difference() {
 		color("cyan") hull() {
 			translate([-7,0,0]) rotate([0,-30,0]) cuboid([40mmFanDiameter,40mmFanDiameter,1],rounding=0.5);
-			translate([-5,(40mmFanDiameter-30mmFanDiameter)/2-5,-Thickness-3])
+			translate([-5,(40mmFanDiameter-30mmFanDiameter)/2-5,-Thickness-5])
 				cuboid([30mmFanDiameter+1,30mmFanDiameter,8],rounding=0.5);
 		}
 		translate([-27,-19.5,-5]) rotate([0,-30,0]) 40mmMount(Thickness);
-		translate([-25,-20,-11]) 30mmMountV2(Thickness);
+		translate([-25,-20,-3]) 30mmMountV2(Thickness);
 		translate([-15,-19.5,-5]) FanHoleWithOffsetV2(Thickness);
 	}
 }
@@ -143,7 +143,7 @@ module FanHoleWithOffset(Thickness) {
 module FanHoleWithOffsetV2(Thickness) {
 	color("blue") hull() {
 		translate([8,20,Thickness+9]) rotate([0,-30,0]) cylinder(h=1,d=36);
-		translate([10,19.8,-Thickness-4]) cylinder(h=1,d=27);
+		translate([10,19.8,-Thickness-5]) cylinder(h=1,d=27);
 	}
 }
 
