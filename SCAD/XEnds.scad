@@ -100,22 +100,25 @@ TR8_mounting_holes_offset=16;
 /////////////////////////////////////////////////////////////////////
 
 //split_XEnd(0,1,1,1);
-full_XEnd(1);	// arg 1: 0-one XEnd (left),1-two XEnds,2-right XEnd; arg2: 0-no motor mount,1-motor mount,
-					// 3rd arg: 1-MTSSR8 nut, 0-TR8 flange nut
+XEndSet(0,0,1,1);
 //motormount();
 // 2-to test the fit of the motor mount to XEnd
 //difference() {
 //	TR8_nut();
 //	TR8_mounting_holes();
 //}
-//XEnd(0,1,1,1,0); // Bearing=0,mks=0,mits=0,Full=0,Left=0
+//XEnd(0,1,0,1,0); // Bearing=0,mks=0,mits=0,Full=0,Left=0
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-module full_XEnd(mits=0) {
-	//if($preview) %translate([-70,-75,-16]) cube([200,200,5]);
-		rotate([90,0,0]) XEnd(0,1,mits,1,0);
-		translate([0,25,0]) rotate([90,0,0]) XEnd(0,1,mits,1,1);
+module XEndSet(Bearing=0,mks=0,mits=0,Full=0) {
+	if(mits) {
+		rotate([90,0,0]) XEnd(Bearing,mks,1,Full,0);
+		translate([0,25,0]) rotate([90,0,0]) XEnd(Bearing,mks,1,Full,1);
+	} else {
+		rotate([90,0,0]) XEnd(Bearing,mks,0,Full,0);
+		translate([0,25,0]) rotate([90,0,0]) XEnd(Bearing,mks,0,Full,1);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -171,7 +174,6 @@ module XEnd(Bearing=0,mks=0,mits=0,Full=0,Left=0) {  // this version is now brok
 			}
 			difference() {
 				translate([length/2-ZNutWidth/2-0.5,ZDriveOffset,0]) znutshell(mits,1);
-				//translate([37,30,-10]) color("black") cylinder(h=10,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 				if(Left) rotate([0,180,0]) translate([-length/2-ZNutWidth/2-1,ZDriveOffset,0]) color("gray")
 							znutscrew(mits);
 				else  translate([-length/2-ZNutWidth/2+74.5,ZDriveOffset,0]) znutscrew(mits);
@@ -179,7 +181,7 @@ module XEnd(Bearing=0,mks=0,mits=0,Full=0,Left=0) {  // this version is now brok
 					translate([length/2-ZNutWidth/2,ZDriveOffset,0]) color("white") znutscrew(mits);
 					if(!mits) translate([length/2-ZNutWidth/2,ZDriveOffset,0]) rotate([0,90,0]) TR8_mounting_holes();
 				}
-				translate([37,45,0]) rotate([90,0,0]) color("pink")
+				if(mits) translate([37,45,0]) rotate([90,0,0]) color("pink")
 					cylinder(h=10,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 			}
 			difference() {
@@ -312,13 +314,13 @@ module cuthalf(Full=0) {	// remove everything below Z0
 
 module flange(mks,Bearing,mits,Left=0) {  // the part that holds it together
 	difference() {
-		translate([0,ZRodDiameter/2,-(thickness)]) color("red") cuboid([length,BoltFlatWidth-0.7,thickness*2],rounding=2,p1=[0,0]);
+		translate([0,ZRodDiameter/2,-(thickness)]) color("red")
+			cuboid([length,BoltFlatWidth-0.7,thickness*2],rounding=2,p1=[0,0]);
 		screwholes(mks,Left);
 		zrodhole();
 		bearings();	
 		translate([length/2-ZNutWidth/2-0.7+ZNutWidth,ZDriveOffset,0])  rotate([0,180,0]) znutscrew(mits);
-		translate([length/2-ZNutWidth/2-0.7,ZDriveOffset,0])znutscrew(mits);
-		translate([length/2-ZNutWidth/2-0.7-40,ZDriveOffset,0]) znutscrew(mits);
+		translate([length/2-ZNutWidth/2+1,ZDriveOffset,0])znutscrew(mits);
 	}
 	if(mits) translate([37,38,0]) {
 		difference() {
@@ -339,7 +341,7 @@ module motormountscrewholes() {
 		translate([0,0,0]) cylinder(h=thickness*5,r=screw5/2);
 		translate([-5,0,0]) cylinder(h=thickness*5,r=screw5/2);
 	}
-	translate([ExtrusionSlotDistance,0,0]) color("black") cylinder(h=thickness*5,r=screw5/2);
+	translate([ExtrusionSlotDistance,0,0]) color("white") cylinder(h=thickness*5,r=screw5/2);
 	color("white") hull() {
 		translate([ExtrusionSlotDistance*2,0,0]) color("white") cylinder(h=thickness*5,r=screw5/2);
 		translate([ExtrusionSlotDistance*2+5,0,0]) color("white") cylinder(h=thickness*5,r=screw5/2);
@@ -373,31 +375,32 @@ module connector(mks,Bearing,mits) { // connect bearing and ZScrewDiameter secti
 //////////////////////////////////////////////////////////////////////////////
 
 module connectorflat(mks,mits) { // raised section between z rod and z nut
-		if(!mits) {
-			if(mks) {
-				translate([(length/2-ZNutWidth/2),ZNutWidth/6-2,-ZNutThickness/2-0.9]) color("ivory")
-					cube([ZNutWidth-1,ZNutLength-1,ZNutThickness+1.7]);
-				translate([length/2-ZNutWidth/2-0.7,ZDriveOffset,0]) znutshell(mits,1);
-			} else {
-				difference() {
-					translate([(length/2-ZNutWidth/2),ZNutWidth/6-2,-ZNutThickness/2-0.9]) color("white")
-						cube([ZNutWidth,ZNutLength,ZNutThickness+1.5]);
-					translate([length/2-ZNutWidth/2,ZDriveOffset,0]) znutscrew(mits);
-				}
-			}
+	if(!mits) {
+		if(mks) {
+			translate([(length/2-ZNutWidth/2),ZNutWidth/6-2,-ZNutThickness/2-0.9]) color("ivory")
+				cube([ZNutWidth-1,ZNutLength-1,ZNutThickness+1.7]);
+			translate([length/2-ZNutWidth/2-0.7,ZDriveOffset,0]) znutshell(mits,1);
 		} else {
 			difference() {
-				if(mks) {
-					translate([(length/2-ZNutWidth/2),ZNutWidth/6-2,-ZNutThickness/2-0.9]) color("pink")
-						cuboid([ZNutWidth,ZNutLength,ZNutThickness+1.7],rounding=1,p1=[0,0]);
-				} else
-					translate([(length/2-ZNutWidth/2),ZNutWidth/6-2,-ZNutThickness/2-0.9]) color("cyan")
-						cube([ZNutWidth,ZNutLength,ZNutThickness+1.5]);
+				translate([(length/2-ZNutWidth/2),ZNutWidth/6-2,-ZNutThickness/2-1.9]) color("ivory")
+					cuboid([ZNutWidth,ZNutLength,ZNutThickness+3.5],rounding=2,p1=[0,0]);
 				translate([length/2-ZNutWidth/2,ZDriveOffset,0]) znutscrew(mits);
-				translate([(length/2-ZNutWidth/2)-5,ZNutWidth/6+ZNutWidth+4.5,-ZNutThickness/2+9]) rotate([0,90,0])
-					color("ivory") cylinder(h=35,d=MTSSR8d+0.5); // remove connectorflat main cube from z nut hole
 			}
 		}
+	} else {
+		difference() {
+			if(mks) {
+				translate([(length/2-ZNutWidth/2),ZNutWidth/6-2,-ZNutThickness/2-0.9]) color("pink")
+					cuboid([ZNutWidth,ZNutLength,ZNutThickness+1.7],rounding=1,p1=[0,0]);
+			} else
+				translate([(length/2-ZNutWidth/2),ZNutWidth/6-2,-ZNutThickness/2-0.9]) color("cyan")
+					cuboid([ZNutWidth,ZNutLength,ZNutThickness+1.5],rounding=2,p1=[0,0]);
+			translate([length/2-ZNutWidth/2,ZDriveOffset,0]) znutscrew(mits);
+			translate([(length/2-ZNutWidth/2)-5,ZNutWidth/6+ZNutWidth+4.5,-ZNutThickness/2+9]) rotate([0,90,0])
+				color("ivory") cylinder(h=35,d=MTSSR8d+0.5); // remove connectorflat main cube from z nut hole
+		}
+		
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -418,7 +421,7 @@ module znutshell(mits,TR8=0) { // part to hold the z nut
 /////////////////////////////////////////////////////////////////////
 
 module bearingshell() { // part to hold the z rod bearings
-	translate([37,0,0]) rotate([0,90,0]) color("black") cyl(h=length,d=ShellThickness+SABBDiameter,rounding=2);
+	translate([37,0,0]) rotate([0,90,0]) color("white") cyl(h=length,d=ShellThickness+SABBDiameter,rounding=2);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -444,7 +447,7 @@ module bearings() { // dual bearings on z rod
 
 module znutscrew(mits) { // z-nut section
 	if(!mits) {
-		translate([-2,0,0])rotate([0,90,0]) TR8_nut();
+		translate([-5,0,0])rotate([0,90,0]) TR8_nut();
 		//translate([-1,0,0])rotate([0,90,0]) color("blue") cylinder(h=ZNutWidth+2,r= ZScrewDiameter/2);
 		//translate([ZNutWidth/2- ZNutThickness/2,0,0]) rotate([0,90,0]) znut(); // slot for znut
 	} else {
@@ -458,8 +461,8 @@ module znutscrew(mits) { // z-nut section
 
 module TR8_nut() {
 	color("cyan") cylinder(h=TR8_ht,d=TR8_small_dia,$fn=100); // center nut
-	color("pink") cylinder(h=TR8_flange_thickness,d=TR8_flange_dia,$fn=100);
-	translate([0,0,-28]) color("plum") cylinder(h=30,d=TR8_flange_dia,$fn=100);
+	//translate([0,0,2]) color("pink") cylinder(h=TR8_flange_thickness,d=TR8_flange_dia,$fn=100);
+	translate([0,0,-24]) color("plum") cylinder(h=30,d=TR8_flange_dia,$fn=100);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -468,7 +471,7 @@ module TR8_mounting_holes() {
 	translate([0,TR8_mounting_holes_offset/2,-2]) color("blue") cylinder(h=30,d=screw3,$fn=100);
 	translate([0,-TR8_mounting_holes_offset/2,-2]) color("cyan") cylinder(h=30,d=screw3,$fn=100);
 	translate([TR8_mounting_holes_offset/2,0,-2]) color("gray") cylinder(h=30,d=screw3,$fn=100);
-	translate([-TR8_mounting_holes_offset/2,0,-2]) color("black") cylinder(h=30,d=screw3,$fn=100);
+	translate([-TR8_mounting_holes_offset/2,0,-2]) color("white") cylinder(h=30,d=screw3,$fn=100);
 }
 
 

@@ -2,11 +2,13 @@
 // 40mmTo30mmFan.scad
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // created 2/7/21
-// last update 9/23/21
+// last update 10/24/21
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 2/11/21	- Added an offset fan adapter
 // 2/14/21	- Added an angled fan adapter
 // 4/3/21	- Converted to BOSL2
+// 10/19/21	- Added E3DV6 5150 blower adapter
+//10/24/21	- Changed FanAdapterWithOffsetAngled() to a longer one for clearance for a BMG
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <inc/screwsizes.scad>
 include <BOSL2/std.scad>
@@ -21,14 +23,37 @@ $fn=100;
 30mmScrewOffset=7.9;
 LayerHeight=0.3;
 Use3mmInsert=1;
+Use4mmInsert=1;
 LargeInsert=0;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //FanAdapter();
 //FanAdapterWithOffset();
+//FanAdapterWithOffsetAngledLong();
 FanAdapterWithOffsetAngled();
+//5150Adapter();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module 5150Adapter() {
+	difference() {
+		union() {
+			color("cyan") cuboid([30mmFanDiameter+2,30mmFanDiameter+2,10],rounding=1);
+			translate([-10.5,-6,45/2]) difference() {
+				translate([0,0,3]) color("purple") cuboid([5,10,56],rounding=1);
+				translate([-10,0,27]) color("green") rotate([0,90,0]) cylinder(h=20,d=Yes4mmInsert(Use4mmInsert));
+			}
+		}
+		translate([-8,-10,0]) color("green") cube([15,20,10]);
+		translate([0,0,-7]) hull() {
+			translate([0,0,-1]) color("blue") cylinder(h=5,d=30mmFanDiameter);
+			translate([-8,-10,4]) cube([15,20,5]);
+		}
+		translate([-20,-20,15]) 30mmMount(10);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module FanAdapter(Thickness=5) {
 	difference() {
@@ -51,9 +76,9 @@ module FanAdapterWithOffset(Thickness=5) {
 		color("cyan") hull() {
 			cuboid([40mmFanDiameter,40mmFanDiameter,1],rounding=0.5);
 			translate([0,(40mmFanDiameter-30mmFanDiameter)/2,-Thickness])
-				cuboid([30mmFanDiameter,30mmFanDiameter,1],rounding=0.5);
+				cuboid([30mmFanDiameter,30mmFanDiameter,-Thickness],rounding=0.5);
 		}
-		translate([-20,-20,2]) 40mmMount(Thickness);
+		translate([-20,-20,-2]) 40mmMount(Thickness);
 		translate([-20,-15,2]) 30mmMount(Thickness);
 		translate([-9.5,-14,2]) FanHoleWithOffset(Thickness);
 	}
@@ -62,16 +87,31 @@ module FanAdapterWithOffset(Thickness=5) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+module FanAdapterWithOffsetAngledLong(Thickness=10) {
+	difference() {
+		color("cyan") hull() {
+			translate([-3,0,0]) rotate([0,-30,0]) cuboid([40mmFanDiameter,40mmFanDiameter,1],rounding=0.5);
+			translate([-5,(40mmFanDiameter-30mmFanDiameter)/2-5,-50])
+				cuboid([30mmFanDiameter+1,30mmFanDiameter,50],rounding=0.5);
+		}
+		translate([-26,-19.5,0]) rotate([0,-30,0]) 40mmMount(Thickness);
+		translate([-25,-20,-59]) 30mmMountV3(Thickness);
+		translate([-15,-19.5,-5]) FanHoleWithOffsetV4(Thickness);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module FanAdapterWithOffsetAngled(Thickness=10) {
 	difference() {
 		color("cyan") hull() {
-			translate([-7,0,0]) rotate([0,-30,0]) cuboid([40mmFanDiameter,40mmFanDiameter,1],rounding=0.5);
-			translate([-5,(40mmFanDiameter-30mmFanDiameter)/2-5,-Thickness-5])
-				cuboid([30mmFanDiameter+1,30mmFanDiameter,8],rounding=0.5);
+			translate([-3,0,0]) rotate([0,-30,0]) cuboid([40mmFanDiameter,40mmFanDiameter,1],rounding=0.5);
+			translate([-5,(40mmFanDiameter-30mmFanDiameter)/2-5,-15])
+				cuboid([30mmFanDiameter+1,30mmFanDiameter,5],rounding=0.5);
 		}
-		translate([-27,-19.5,-5]) rotate([0,-30,0]) 40mmMount(Thickness);
-		translate([-25,-20,-3]) 30mmMountV2(Thickness);
-		translate([-15,-19.5,-5]) FanHoleWithOffsetV2(Thickness);
+		translate([-26,-19.5,0]) rotate([0,-30,0]) 40mmMount(Thickness);
+		translate([-25,-20,-2]) 30mmMount(Thickness);
+		translate([-14.5,-19.5,-5]) FanHoleWithOffsetV2(Thickness);
 	}
 }
 
@@ -79,13 +119,13 @@ module FanAdapterWithOffsetAngled(Thickness=10) {
 
 module 40mmMount(Thickness) {
 	translate([40mmScrewOffset,40mmScrewOffset,-Thickness*2.5]) color("red")
-		cylinder(h=Thickness*4,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+		cylinder(h=Thickness*5,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 	translate([40mmScrewOffset+40mmOffset,40mmScrewOffset,-Thickness*2.5]) color("blue")
-		cylinder(h=Thickness*4,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+		cylinder(h=Thickness*5,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 	translate([40mmScrewOffset+40mmOffset,40mmScrewOffset+40mmOffset,-Thickness*2.5]) color("plum")
-		cylinder(h=Thickness*4,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+		cylinder(h=Thickness*5,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 	translate([40mmScrewOffset,40mmScrewOffset+40mmOffset,-Thickness*2.5]) color("black")
-		cylinder(h=Thickness*4,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+		cylinder(h=Thickness*5,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,6 +161,21 @@ module 30mmMountV2(Thickness) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+module 30mmMountV3(Thickness) {
+	translate([30mmScrewOffset,30mmScrewOffset,-Thickness*2.5]) color("red") cylinder(h=Thickness*4,d=screw3);
+	translate([30mmScrewOffset+30mmOffset,30mmScrewOffset,-Thickness*2.5]) color("lightgray") cylinder(h=Thickness*4,d=screw3);
+	translate([30mmScrewOffset+30mmOffset,30mmScrewOffset+30mmOffset,-Thickness*2.5]) color("plum")
+		cylinder(h=Thickness*4,d=screw3);
+	translate([30mmScrewOffset,30mmScrewOffset+30mmOffset,-Thickness*2.5]) color("black") cylinder(h=Thickness*4,d=screw3);
+	translate([30mmScrewOffset,30mmScrewOffset,-Thickness+5]) color("green") cylinder(h=Thickness*8,d=screw3hd);
+	translate([30mmScrewOffset+30mmOffset,30mmScrewOffset,-Thickness+5]) color("plum") cylinder(h=Thickness*8,d=screw3hd);
+	translate([30mmScrewOffset,30mmScrewOffset+30mmOffset,-Thickness+5]) color("white") cylinder(h=Thickness*8,d=screw3hd);
+	translate([30mmScrewOffset+30mmOffset,30mmScrewOffset+30mmOffset,-Thickness+5]) color("red")
+		cylinder(h=Thickness*8,d=screw3hd);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module FanHole(Thickness) {
 	color("blue") hull() {
 		translate([20,20,Thickness+2]) cylinder(h=1,d=39);
@@ -138,15 +193,32 @@ module FanHoleWithOffset(Thickness) {
 }
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module FanHoleWithOffsetV4(Thickness) {
+	translate([0,0,-10]) color("red") hull() {
+		translate([12,20,Thickness+9]) rotate([0,-30,0]) cylinder(h=1,d=36);
+		translate([10,19.8,-65]) cylinder(h=1,d=27);
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module FanHoleWithOffsetV2(Thickness) {
 	color("blue") hull() {
-		translate([8,20,Thickness+9]) rotate([0,-30,0]) cylinder(h=1,d=36);
+		translate([11,20,Thickness-4]) rotate([0,-30,0]) cylinder(h=1,d=36);
 		translate([10,19.8,-Thickness-5]) cylinder(h=1,d=27);
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module FanHoleWithOffsetV3(Thickness) {
+	translate([0,0,-10]) color("blue") hull() {
+		translate([8,20,Thickness+9]) rotate([0,-30,0]) cylinder(h=1,d=36);
+		translate([10,19.8,-65]) cylinder(h=1,d=27);
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

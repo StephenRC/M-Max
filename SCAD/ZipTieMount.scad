@@ -2,7 +2,7 @@
 // ZipTieMount.scad
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // created 9/7/2018
-// last update 9/12/21
+// last update 11/3/21
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // something to hold the zipties that support the stuff going to the hotend on the
 // x carriage.
@@ -10,6 +10,7 @@
 // 5/15/19	- Made resizable, can now use M3, M4 and M5 for the mounting
 // 9/13/20	- Mde loop thicker, ablity to set quanity
 // 9/12/21	- Added one that uses a zip tie to hold the wires
+// 11/3/21	- Thickened the ziptie mounts
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 include <bosl2/std.scad>
 include <inc/screwsizes.scad>
@@ -80,10 +81,10 @@ module clip(HoleSize=10) {
 module clipV2(HoleSize=10) {
 	difference() {
 		union() {
-			translate([-10,-2,0]) color("blue") cubeX([2,10,5],1); // side
-			translate([8,-2,0]) color("red") cubeX([2,10,5],1); // side
+			translate([-10,-2,0]) color("blue") cubeX([5,9,7],1); // side
+			translate([5,-2,0]) color("red") cubeX([5,9,7],1); // side
 		}
-		translate([-12,4,2.5]) rotate([0,90,0]) color("green") cylinder(h=25,d=3);
+		translate([-12,4,3.5]) rotate([0,90,0]) color("green") cylinder(h=25,d=3);
 	}
 }
 //////////////// end of Zip Tie Mount.scad ///////////////////////////////////////////////

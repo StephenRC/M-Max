@@ -44,6 +44,8 @@ ExtruderOffset = 18;		// adjusts extruder mounting holes from front edge
 IRSpacing=spacing;
 LayerThickness=0.3; // layer thickness
 Spacing=17;
+//-----------------------------------------------------------------------------------------
+StepperHoleOffset=31;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //ProximityMount(6,1); // arg is shift up/down (min:2)
@@ -58,8 +60,28 @@ Spacing=17;
 //IRAdapterAeroClose(0,1,1);
 //Spacer(3,7,screw3+0.1,3);// bltouch fan mount spacer
 //BLTouchEXO(7); // rear mount
-BLTouchEXO(9,27); // front mount
+//BLTouchEXO(9,27); // front mount
 //SpacerV2(2,10,screw4+0.1,7,7);// exoslide spacer, don't have right size of M4
+BMGBLTMount(6); // uses 50mm M3 screws to mount to extruder
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BMGBLTMount(Offset=5) {   // x-24 Y0 ; 230/80: Z1
+	difference() {
+		union() {
+			translate([0,-Offset,0]) color("cyan") cuboid([StepperHoleOffset+10,10+Offset,12],rounding=2,p1=[0,0]);
+			//translate([0,-5-Offset,4]) color("plum") cuboid([StepperHoleOffset+10,10+Offset,5],rounding=2,p1=[0,0]);
+			translate([0,-Offset,0]) color("khaki") cuboid([StepperHoleOffset+10,5,25],rounding=2,p1=[0,0]);
+		}
+		translate([(StepperHoleOffset+20)/2-2,-7,-7]) color("plum") rotate([90,0,0])  cyl(l=15, d=30, rounding=2);
+		translate([5,5,-5]) color("blue") cylinder(h=20,d=screw3);
+		translate([StepperHoleOffset+5,5,-5]) color("red") cylinder(h=20,d=screw3);
+		translate([5,5,10.5]) color("red") cylinder(h=15,d=screw3hd);
+		translate([StepperHoleOffset+5,5,10.5]) color("blue") cylinder(h=15,d=screw3hd);
+		translate([23,-Offset,0]) rotate([90,90,0]) rotate([0,0,90]) BLTouch_Holes(2,Yes2p5mmInsert(Use2p5mmInsert));
+		translate([(StepperHoleOffset+20)/2-2,-9.5,-7]) color("purple") cuboid([20,10,15], rounding=2,p1=[0,0]);
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
