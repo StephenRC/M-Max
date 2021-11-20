@@ -118,7 +118,7 @@ module all(flip=0,s_w=13,s_l=19.5,s_t=2,Makerslide=1,PBQuantiy=2,Version=0) {
 	//if($preview) %translate([25,20,0]) cube([200,200,2],center=true); // show the 200x200 bed
 	translate([0,15,0]) PowerInlet(Version);
 	translate([0,20,45]) rotate([180,0,0]) PowerInletCover();
-	translate([-40,-45,0]) switch(flip);		// 3 args: Width, length, clip Thickness; defaults to 13,19.5,2
+	translate([-45,-45,0]) PowerToggleSwitch();
 	//translate([-45,85,0]) powersupply_cover();
 	translate([-70,-10,0]) MeanWellRS_15_5();
 }
