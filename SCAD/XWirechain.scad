@@ -50,9 +50,9 @@ module WCXCarriageEXOSlide(DoTab=1) {
 		union() {
 			translate([0,0,0]) color("cyan") cubeX([30,15,Thickness],2);
 			translate([0,10,0]) color("blue") cubeX([30,Thickness,70],2);
-			translate([0,10,65]) color("red") cubeX([30,85,Thickness],2);
-			translate([0,90,45]) color("gray") cubeX([30,Thickness,25],2);
-			translate([0,80,45]) color("white") cubeX([30,15,Thickness],2);
+			//translate([0,10,65]) color("red") cubeX([30,85,Thickness],2);
+			//translate([0,90,45]) color("gray") cubeX([30,Thickness,25],2);
+			//translate([0,80,45]) color("white") cubeX([30,15,Thickness],2);
 		}
 		translate([11,20,58]) rotate([90,0,0]) WCEndMount();
 		translate([4.5,7,-10]) EXOSlideMountHoles(screw4);
@@ -64,7 +64,8 @@ module WCXCarriageEXOSlide(DoTab=1) {
 	//%translate([18,95,70]) rotate([90,0,0]) cylinder(h=36,d=6); // show the needed bowden hole postion
 	if(DoTab) {
 		translate([10,0,2]) EndSupport();
-		translate([10,78,47]) EndSupport();
+		translate([10,10,68]) color("red") EndSupport();
+		//translate([10,78,47]) EndSupport();
 	}
 }
 
@@ -76,7 +77,7 @@ module WCXEndEXO(DoTab=1) { // height may need changing
 			translate([0,0,-5]) color("cyan") cubeX([20,Thickness,100],2);
 			translate([0,-45,90]) color("gray") cubeX([20,50,Thickness],2);
 			translate([0,-55,55]) color("lightgray") cubeX([20,60,Thickness],2);
-			translate([0,-55,75]) color("black") cubeX([20,60,Thickness],2);
+			translate([0,-55,75]) color("white") cubeX([20,60,Thickness],2);
 			translate([-40,-45,75]) color("green") cubeX([60,Thickness,20],2);
 			translate([0,-55,55]) color("blue") cubeX([20,Thickness,25],2);
 	

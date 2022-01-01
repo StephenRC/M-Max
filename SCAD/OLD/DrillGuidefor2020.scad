@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// DrillGuidefor2020AndBedFrame.scad
+// DrillGuides.scad
 //////////////////////////////////////////////////////////////////////////////
 // created 4/6/2016
 // last update 9/15/20
@@ -51,10 +51,10 @@ module BedDrillClips(Quanity=1) { // used to hold bed onto the 2020 to drill the
 	for(x=[0:Quanity-1]) {
 		translate([x*23,0,0]) difference() {
 			union() {
-				color("cyan") cubeX([20,35,4],2);
+				color("cyan") cubeX([20,45,4],2);
 				color("blue") cubeX([20,4,20],2);
 			}
-			translate([10,25,-3]) color("red") cylinder(h=10,d=screw5);
+			translate([10,35,-3]) color("red") cylinder(h=10,d=screw5);
 			translate([10,8,12]) rotate([90,0,0]) color("gray") cylinder(h=10,d=Yes3mmInsert(Use3mmInsert,UseLarge3mmInsert));
 		}
 	}

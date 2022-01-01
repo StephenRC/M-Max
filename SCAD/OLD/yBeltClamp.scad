@@ -3,9 +3,15 @@
 // 11/29/20	- Separated out the modules
 ///////////////////////////////////////////////////////////
 
+include <bosl2/std.scad>
+include <inc/screwsizes.scad>
+
+LayerThickness=0.3;
+
 $fn=32 * 4;
 
-platformHeight = 35.5; //clearance between y carriage and belt. Default 15.5mm fits for my Prusa i3. 
+
+platformHeight = 41.3; //clearance between y carriage and belt. Default 15.5mm fits for my Prusa i3. 
 
 module frame(){
     color("cyan") hull(){
@@ -43,12 +49,24 @@ module beltClamp(){
 }
 
 module platform(){
-    translate([8.5,0,-0]) cube([33,platformHeight,10]);
     difference(){
-        translate([0,0,0]) cube([50,4,10]);
-        translate([4.5,-1,6]) rotate([-90,0,0]) cylinder(h=30, r=1.7, $fn=10);
-        translate([45.5,-1,6]) rotate([-90,0,0]) cylinder(h=30, r=1.7, $fn=10);
-    }
+		union() {
+//			translate([8.5,0,-0]) color("green") cuboid([33,platformHeight-1,15],rounding=2,p1=[0,0]);
+//			translate([-2.5,0,0]) color("cyan") cuboid([55,7,15],rounding=2,p1=[0,0]);
+			color("green") hull() {
+				translate([8.5,platformHeight-6,0]) color("green") cuboid([33,5,15],rounding=2,p1=[0,0]);
+				translate([-2.5,0,0]) color("cyan") cuboid([55,5,15],rounding=2,p1=[0,0]);
+			}
+		}
+		translate([25,7,15]) color("lightgray") hull() { // reduce plastic
+			cuboid([40,5,20],rounding=2);
+			translate([0,platformHeight-16]) cuboid([20,5,20],rounding=2);
+		}
+		translate([4,-1,6]) rotate([-90,0,0]) color("red") cylinder(h=30, d=screw5);
+        translate([46,-1,6]) rotate([-90,0,0]) color("blue") cylinder(h=30, d=screw5);
+		translate([4,3,6]) rotate([-90,0,0]) color("red") cylinder(h=platformHeight+10, d=screw5hd);
+        translate([46,3,6]) rotate([-90,0,0]) color("blue") cylinder(h=platformHeight+10, d=screw5hd);
+ 	}
 }
 
 translate([6,platformHeight-6.5,0]) beltClamp();
