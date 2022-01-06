@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // DualTitanAero - titan w/e3dv6 or titan aero
 // created: 10/14/2020
-// last modified: 1/10/21
+// last modified: 1/6/22
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 1/12/16	- added bevel on rear carriage for x-stop switch to ride up on
 // 5/30/20	- Added ability to use a Titan Aero on mirrored version
@@ -12,6 +12,7 @@
 // 11/14/20	- Made SingleAero() adjustable for different stepper lengths
 // 11/15/20	- Made DualAero() adjustable for different stepper lengths
 // 1/10/21	- Added brace to dual titan aero
+// 1/6/22	- BOSL2
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //****NOTE: dual titan aero not tested
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,12 +33,6 @@ LEDSpacer=0;//8;  // length need for titan is 8; length need for aero is 0
 //Dual(1,35);
 Single(1,35);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module cubeX(size,Rounding) { // temp module
-	cuboid(size,rounding=Rounding,p1=[0,0]);
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module Dual(Brc=0,StepperLength=35) {
@@ -57,13 +52,13 @@ module Single(Brc=0,StepperLength=35) {
 module Brace(DoTab=0,Dual=0) {
 	difference() {
 		union() {
-			color("cyan") cubeX([55,4,5],1);
+			color("cyan") cuboid([55,4,5],rounding=1,p1=[0,0]);
 			if(Dual) {
-				color("red") cubeX([4,104,5],1);
-				translate([0,100,0]) color("blue") cubeX([55,4,5],1);
+				color("red") cuboid([4,104,5],rounding=1,p1=[0,0]);
+				translate([0,100,0]) color("blue") cuboid([55,4,5],rounding=1,p1=[0,0]);
 			} else {
-				color("red") cubeX([4,63,5],1);
-				translate([0,59,0]) color("blue") cubeX([55,4,5],1);
+				color("red") cuboid([4,63,5],rounding=1,p1=[0,0]);
+				translate([0,59,0]) color("blue") cuboid([55,4,5],rounding=1,p1=[0,0]);
 			}
 		}
 		translate([52,120,2.6]) color("plum") rotate([90,0,0]) cylinder(h=130,d=screw3);
@@ -105,8 +100,8 @@ module TitanDual(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0,Brac
 	if(LEDLight && LEDSpacer) translate([0,40,-4]) LED_Spacer(LEDSpacer,screw5);
 	difference() {
 		translate([-0.5,-32,0]) rotate([90,0,90]) TitanMotorMount();
-		translate([-24,19,-2]) color("plum") cubeX([wall*2,36,wall],3); // clearance for hotend
-		translate([-24,-25,-2]) color("pink") cubeX([wall*2,36,wall],3); // clearance for hotend
+		translate([-24,19,-2]) color("plum") cuboid([wall*2,36,wall],rounding=3,p1=[0,0]); // clearance for hotend
+		translate([-24,-25,-2]) color("pink") cuboid([wall*2,36,wall],rounding=3,p1=[0,0]); // clearance for hotend
 		SensorAnd1LCMountDual();
 		if(DoNotch) {
 			color("blue") hull() {
@@ -154,9 +149,9 @@ module SensorAnd1LCMountDual() {
 module DualBase(StepperLength=45,Mounting=1) {
 	union() {
 		translate([StepperLength-5,0,0]) DualExtruderAttachment(Mounting);
-		translate([-21,-33,-wall/2]) color("blue") cubeX([45,10,wall],1);
-		translate([-21,10,-wall/2]) color("cyan") cubeX([45,10,wall],1); // middle
-		translate([-21,54,-wall/2]) color("green") cubeX([45,10,wall],1);
+		translate([-21,-33,-wall/2]) color("blue") cuboid([45,10,wall],rounding=1,p1=[0,0]);
+		translate([-21,10,-wall/2]) color("cyan") cuboid([45,10,wall],rounding=1,p1=[0,0]); // middle
+		translate([-21,54,-wall/2]) color("green") cuboid([45,10,wall],rounding=1,p1=[0,0]);
 	}
 }
 
@@ -164,7 +159,8 @@ module DualBase(StepperLength=45,Mounting=1) {
 
 module DualExtruderAttachment(Mounting=1) {
 	difference() {
-		translate([-20,-35,-wall/2]) color("lightgray") cubeX([20,HorizontallCarriageWidth+25,wall],1); // extruder side
+		translate([-20,-35,-wall/2]) color("lightgray")
+			cuboid([20,HorizontallCarriageWidth+25,wall],rounding=1,p1=[0,0]); // extruder side
 		if(Mounting) translate([-5,16,10]) rotate([90,0,90]) ExtruderMountHoles();
 		if(LEDLight) {
 			translate([-37,0,0]) {
@@ -187,7 +183,7 @@ module TitanSingle(Mounting=1,DoTab=1,StepperNotch=0,StepperLength=45,ShowLength
 	if(LEDLight && LEDSpacer) translate([0,40,-4]) LED_Spacer(LEDSpacer,screw5);
 	difference() {
 		translate([-0.5,-32,0]) rotate([90,0,90]) TitanMotorMountSingle();
-		translate([-24,-25,-3]) color("plum") cubeX([wall*2,38,wall],3); // clearance for hotend
+		translate([-24,-25,-3]) color("plum") cuboid([wall*2,38,wall],rounding=3,p1=[0,0]); // clearance for hotend
 		SensorAnd1LCMountSingle();
 		if(StepperNotch) color("green") hull() {
 			translate([-22,-11.5,55])cube([wall,10,1]); // cut out to allow motor be install after nount to xcarriage
@@ -195,16 +191,16 @@ module TitanSingle(Mounting=1,DoTab=1,StepperNotch=0,StepperLength=45,ShowLength
 		}
 	}
 	if(BraceAttachment) {
-		translate([-14,21,52]) {
+		translate([-14,19,52]) {
 			difference() {
-				color("blue") rotate([90,0,0]) cylinder(h=4,d=screw5hd+1);
-				translate([0,1,0]) color("pink") rotate([90,0,0]) cylinder(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+				color("green") rotate([90,0,0]) cyl(h=4,d=screw5hd+1,rounding=1);
+				translate([0,1,0]) color("pink") rotate([90,0,0]) cyl(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 			}
 		}
-		translate([-14,-30,52]) {
+		translate([-14,-32,52]) {
 			difference() {
-				color("blue") rotate([90,0,0]) cylinder(h=4,d=screw5hd+1);
-				translate([0,1,0]) color("pink") rotate([90,0,0]) cylinder(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+				color("blue") rotate([90,0,0]) cyl(h=4,d=screw5hd+1,rounding=1);
+				translate([0,1,0]) color("pink") rotate([90,0,0]) cyl(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 			}
 		}
 	}
@@ -219,8 +215,8 @@ module TitanSingle(Mounting=1,DoTab=1,StepperNotch=0,StepperLength=45,ShowLength
 module SingleBase(StepperLength=45,Mounting=1) {
 	union() {
 		translate([StepperLength-5,0,0]) ExtruderAttachment(Mounting);
-		translate([-21,-35,-wall/2]) color("gray") cubeX([45,10,wall],1); // extruder side
-		translate([-21,12,-wall/2]) color("black") cubeX([45,10,wall],1); // extruder side
+		translate([-21,-35,-wall/2]) color("gray") cuboid([45,10,wall],rounding=1,p1=[0,0]); // extruder side
+		translate([-21,12,-wall/2]) color("black") cuboid([45,10,wall],rounding=1,p1=[0,0]); // extruder side
 	}
 }
 
@@ -229,7 +225,7 @@ module SingleBase(StepperLength=45,Mounting=1) {
 module ExtruderAttachment(Mounting=1) {
 	difference() {
 		translate([-20,-35,-wall/2]) color("lightgray")
-			cubeX([20,HorizontallCarriageWidth-18,wall],1); // extruder side
+			cuboid([20,HorizontallCarriageWidth-18,wall],rounding=1,p1=[0,0]); // extruder side
 		if(Mounting) translate([-5,1,10]) rotate([90,0,90]) ExtruderMountHoles();
 		if(LEDLight) translate([-38,-15,0]) LEDRingMount();
 	}
@@ -279,7 +275,7 @@ module LED_Spacer(Length=10,Screw=screw5) {
 
 module TitanMotorMount() {
 	difference() {	// motor mount
-		translate([-1,0,-20.5]) color("red") cubeX([96,51,5],1);
+		translate([-1,0,-20.5]) color("red") cuboid([96,51,5],rounding=1,p1=[0,0]);
 		translate([25,27,-22]) rotate([0,0,45]) color("purple") NEMA17_x_holes(8,1);
 		translate([70,27,-22]) rotate([0,0,45]) color("blue") NEMA17_x_holes(8,1);
 	}
@@ -291,9 +287,8 @@ module TitanMotorMount() {
 
 module TitanMotorMountSingle() {
 	difference() {	// motor mount
-		translate([-2,0,-20.5]) color("red") cubeX([55,51,5],1);
+		translate([-2,0,-20.5]) color("red") cuboid([55,51,5],rounding=1,p1=[0,0]);
 		translate([25,27,-22]) rotate([0,0,45]) color("purple") NEMA17_x_holes(8,1);
-		//translate([70,27,-22]) rotate([0,0,45]) color("blue") NEMA17_x_holes(8,1);
 	}
 	translate([0,0,-20]) color("blue") TitanSupport();
 	translate([-51,0,-20]) TitanSupport();
@@ -303,7 +298,7 @@ module TitanMotorMountSingle() {
 
 module TitanSupport() {
 	difference() { // rear support
-		translate([49,47.5,-1.5]) rotate([50]) color("cyan") cubeX([4,6,69],1);
+		translate([49,47.5,-1.5]) rotate([50]) color("cyan") cuboid([4,6,69],rounding=1,p1=[0,0]);
 		translate([47,-1,-67]) color("gray") cube([7,70,70]);
 		translate([47,-73,-26]) color("lightgray") cube([7,75,75]);
 	}

@@ -2,7 +2,7 @@
 // relaymount.scad - something to mount a relay board onto 2020
 ///////////////////////////////////////////////////////////////////////////////
 // created 2/13/16
-// last update 6/5/20
+// last update 1/6/22
 ///////////////////////////////////////////////////////////////////////////////
 // 2/24/16	- added zip tie option
 // 5/17/16	- changed to use CubeX and the corrected the math for the mount holes
@@ -12,6 +12,7 @@
 // 4/21/20	- added 3mm brass inserts
 // 6/1/20	- Added 24v relay module (FC-86) from Amazon
 // 6/5/20	- Added 24vdc to 12vdc convertor
+// 1/6/22	- BOSL2
 ///////////////////////////////////////////////////////////////////////////////
 include <bosl2/std.scad>
 include <inc/screwsizes.scad>
@@ -35,17 +36,11 @@ RelayMount(2,21.2,43.1,6,6.3,3); // ebay buck convertor
 //RelayMount(2,33,49.9,6,3,3); // 24vdc relay module from Amazon
 //RelayMount(2,46.7,51.5,6,4,6); // 24vdc to 12vdc convertor
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module cubeX(size,Rounding) { // temp module
-	cuboid(size,rounding=Rounding,p1=[0,0]);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 module RelayMount(type,width,length,thickness,side_dx,side_dy) {
 	difference() {
-		color("cyan") cubeX([length,width,thickness],2);
+		color("cyan") cuboid([length,width,thickness],rounding=2,p1=[0,0]);
 		boardholes(Yes3mmInsert(Use3mmInsert,LargeInsert),thickness+1,side_dx,side_dy,length,width);
 		if(type==0)	zip(width,length,thickness);
 		if(type==1) mounthole(screw3,width,length,thickness);

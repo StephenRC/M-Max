@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // DualTitanE3DV6.scad - to mount two Titans with a e3dv6 or two e3dv6 in bowden on the x carridge
 // created: 8/17/2018
-// last modified: 8/19/2018
+// last modified: 1/6/22
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 8/17/18	- dual filament setup using two Titan extruders on the x carridge and a couple of modules from
 //			  corxy-x-carridge.scad
@@ -13,6 +13,7 @@
 //			- Added a bowden setup for single or dual using the bowden setup from my CXY-MGNv2
 // 8/23/18	- Redid titan_motor() supports; added sensor mounts
 // 9/26/18	- Moved bowden_titan() mounts to outside of bracket
+// 1/6/22	- BOSL2
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // For some reason OpenSCAD thinks the dual titan bowden may not be a valid 2-manifold, Slic3r PE doesn't
 // Not printed as of 8/23/18
@@ -40,12 +41,6 @@ Use3mmInsert=1;
 //bowden_titan(screw5);  // Titan extruder frame mount
 //blt_mount(1);
 SingleE3DV6();
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module cubeX(size,Rounding) { // temp module
-	cuboid(size,rounding=0.5,p1=[0,0]);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -103,7 +98,7 @@ module mountingblock(Qty=1,X=0,Y=0,Z=0,TMountholes=1) {
 				translate([-5,-30,0]) bracketmount(TMountholes); // left side
 				translate([20,-15,0]) CarriageMount();	// carriage mount is behind left titan
 			}
-			translate([-5,19,0]) color("purple") cubeX([60,13,8],2); // center that connects the two bracketmounts together
+			translate([-5,19,0]) color("purple") cuboid([60,13,8],rounding=2,p1=[0,0]); // center that connects the two bracketmounts together
 			translate([-5,28,0]) bracketmount(); // right side
 		}
 	}
@@ -126,7 +121,7 @@ module dualmountingblock(Sensor,Extruders) {
 
 module BracketMount(TMountholes=0,Screw=Yes4mmInsert(Use4mmInsert)) {
 	difference() {
-		color("cyan") cubeX([60,80,8],2);
+		color("cyan") cuboid([60,80,8],rounding=2,p1=[0,0]);
 		if(TMountholes) {
 			translate([50,46.5,-38]) color("blue") cylinder(h=50,d=screw3);
 			translate([10.5,5.5,-38]) color("lightblue") cylinder(h=50,d=screw3);
@@ -155,7 +150,7 @@ module bowden_hotend_mount(Single=0) {
 
 module bracketmount(TMountholes) {
 	difference() {
-		color("cyan") cubeX([60,53,8],2);
+		color("cyan") cuboid([60,53,8],rounding=2,p1=[0,0]);
 		if(TMountholes) {
 			translate([50,46.5,-38]) color("blue") cylinder(h=50,d=screw3);
 			translate([10.5,5.5,-38]) color("lightblue") cylinder(h=50,d=screw3);
@@ -227,13 +222,13 @@ module TitanBowden(Dual=2,Sensor=0,Extruders=1) { // defaults to two bowden hote
 
 module titanbowden(Dual=2,Sensor=0) { // defaults to two bowden hotends
 	if(Dual == 2) { // two bowden hotends
-		if($preview) %translate([-30,-80,-5]) cubeX([200,200,5],2); // show a 200x200 bed in preview
+		if($preview) %translate([-30,-80,-5]) cuboid([200,200,5],rounding=2,p1=[0,0]); // show a 200x200 bed in preview
 		translate([100,-45,0]) bowden_titan(screw5);  // Titan extruder frame mount
 		translate([100,35,0]) bowden_titan(screw5);  // Titan extruder frame mount
 		e3dv6_bowden(AdjustE3DV6_UD/2,Sensor);  // move one up, one down, so that they both make the total offset
 	}	
 	if(Dual == 1) { // one bowden hotend
-		if($preview) %translate([-80,-80,-5]) cubeX([200,200,5],2); // show a 200x200 bed in preview
+		if($preview) %translate([-80,-80,-5]) cuboid([200,200,5],rounding=2,p1=[0,0]); // show a 200x200 bed in preview
 		translate([50,-40,0]) bowden_titan(screw5);  // Titan extruder frame mount
 		e3dv6_bowden_single(Sensor);
 	}
@@ -260,7 +255,8 @@ module e3dv6_bowden(Adjust=0,Sensor=0,Type=0) {
 		translate([32,20,0]) rotate([90,0,0]) bowden_nuts();
 		translate([-7.5,0,7.5]) bowden_ir(0);
 		translate([-7.5,0,7.5]) bowden_ir(0);
-		translate([-(hole1x+iroffset-1.5-fan_spacing),irmounty,14]) rotate([90,0,0]) color("yellow") cylinder(h=100,r=screw3t/2,$fn=50);  // put a mounting hole at fan_spacing
+		translate([-(hole1x+iroffset-1.5-fan_spacing),irmounty,14]) rotate([90,0,0]) color("yellow")
+			cylinder(h=100,r=screw3t/2,$fn=50);  // put a mounting hole at fan_spacing
 	}
 	difference() {
 		translate([-1,1,0]) bowden_fan();
@@ -350,8 +346,8 @@ module e3dv6_bowden_single(Sensor=0) {
 module bowden_mount(Adjust=0) {
 	difference() {
 		color("grey") hull() {
-			cubeX([puck_l,e3dv6_total,3],2);
-			translate([e3dv6_od/2,0,27]) cubeX([e3dv6_od*2,e3dv6_total,3],2);
+			cuboid([puck_l,e3dv6_total,3],rounding=1,p1=[0,0]);
+			translate([e3dv6_od/2,0,27]) cuboid([e3dv6_od*2,e3dv6_total,3],rounding=1,p1=[0,0]);
 		}
 		translate([e3dv6_od+e3dv6_od/2,e3dv6_total+Adjust,31]) rotate([90,0,0]) e3dv6();
 		translate([0,0,-10]) bowden_screws();
@@ -401,7 +397,7 @@ module bowden_nut_support() {
 
 module bowden_clamp(Adjust=0) {
 	difference() {
-		translate([e3dv6_od/2,0,0]) color("blue") cubeX([e3dv6_od*2,e3dv6_total,15],2);	//main body
+		translate([e3dv6_od/2,0,0]) color("blue") cuboid([e3dv6_od*2,e3dv6_total,15],rounding=2,p1=[0,0]);	//main body
 		translate([e3dv6_od+e3dv6_od/2,e3dv6_total+Adjust,16]) rotate([90,0,0]) e3dv6(); // e3dv6 mount in clamp
 		translate([0,0,-20]) bowden_screws_CS(); // countersink the screw holes
 	}
@@ -411,7 +407,7 @@ module bowden_clamp(Adjust=0) {
 
 module bowden_titan(Screw=screw4) { // platform for e3d titan
 	difference() {
-		color("cyan") translate([0,-11,0]) cubeX([60,75,5],2); // extruder side
+		color("cyan") translate([0,-11,0]) cuboid([60,75,5],rounding=2,p1=[0,0]); // extruder side
 		color("gray") hull() {
 			translate([25,27,-10]) cylinder(h=25,d=30,$fn=100); // remove some plastic under the motor
 			translate([30,27,-10]) cylinder(h=45,d=30,$fn=100); // remove some plastic under the motor
@@ -448,11 +444,11 @@ module CSbowden_titan(Screw=screw4hd) {
 
 module titanmotor(ShiftUp=0,Screw) {
 	difference() {	// motor mounting holes
-		translate([-1,0,0]) color("plum") cubeX([54,50+ShiftUp,5],2);
+		translate([-1,0,0]) color("plum") cuboid([54,50+ShiftUp,5],rounding=2,p1=[0,0]);
 		translate([25,25+ShiftUp,-1]) rotate([0,0,45]) color("black") NEMA17_x_holes(8, 2);
 	}
 	difference() { // front support
-		translate([-1,19,-46]) rotate([56,0,0]) color("red") cubeX([4,60,63],2);
+		translate([-1,19,-46]) rotate([56,0,0]) color("red") cuboid([4,60,63],rounding=2,p1=[0,0]);
 		translate([-2,-49,-37]) color("blue") cube([7,50,75]);
 		translate([-2,0,-48])  color("cyan")cube([7,75,50]);
 		titanmotor_slots();
@@ -461,7 +457,7 @@ module titanmotor(ShiftUp=0,Screw) {
 	difference() { // rear support
 		translate([49.5,0,0]) {
 			difference() {
-				translate([-0.5,19,-46]) rotate([56,0,0]) color("red") cubeX([4,60,63],2);
+				translate([-0.5,19,-46]) rotate([56,0,0]) color("red") cuboid([4,60,63],rounding=2,p1=[0,0]);
 				translate([-2,-49,-37])  color("blue")cube([7,50,75]);
 				translate([-2,0,-48])  color("cyan")cube([7,75,50]);
 			}
@@ -505,7 +501,7 @@ module bowden_bottom_ir_mount_hole() {
 
 module bowden_fan2() {
 	difference() {
-		translate([73,-46,0]) color("cyan") cubeX([5,fan_spacing+20,7]);
+		translate([73,-46,0]) color("cyan") cuboid([5,fan_spacing+20,7],rounding=2,p1=[0,0]);
 		translate([69,-(fan_spacing),3.5]) rotate([0,90,0]) color("red") cylinder(h=10,d=screw3t);
 		translate([64,0,3.5]) rotate([0,90,0]) color("blue") cylinder(h=15,d=screw3t);
 //		translate([70,-hole2x,3.5]) rotate([0,90,0]) color("gray") cylinder(h=15,d=screw3t);
@@ -516,7 +512,7 @@ module bowden_fan2() {
 
 module bowden_fan(Screw=Yes3mmInsert(Use3mmInsert)) {
 		difference() {
-			translate([73,-46,0]) color("cyan") cubeX([5,fan_spacing+20,7]);
+			translate([73,-46,0]) color("cyan") cuboid([5,fan_spacing+20,7],rounding=2,p1=[0,0]);
 			translate([69,-(fan_spacing+9.5),3.5]) rotate([0,90,0]) color("red") cylinder(h=10,d=Yes3mmInsert(Use3mmInsert));
 			bowden_bottom_fan_mount_hole(9.5,Screw);
 		}
@@ -532,7 +528,7 @@ module bowden_bottom_fan_mount_hole(X=0,Screw=Yes3mmInsert(Use3mmInsert)) {
 
 module iradapter(Taller=0) {  // ir sensor bracket stuff is from irsensorbracket.scad
 	difference() {
-		color("plum") cubeX([irmount_width,irmount_height+Taller,irthickness],2); // mount base
+		color("plum") cuboid([irmount_width,irmount_height+Taller,irthickness],rounding=2,p1=[0,0]); // mount base
 		block_mount(Taller,screw3t);
 		reduce(Taller);
 		recess(Taller);
@@ -544,7 +540,7 @@ module iradapter(Taller=0) {  // ir sensor bracket stuff is from irsensorbracket
 
 module iradapter2(Taller=0) { //  fan_spacing mounting width version
 	difference() {
-		color("plum") cubeX([irthickness,fan_spacing+5,irmount_height+Taller],2); // mount base
+		color("plum") cuboid([irthickness,fan_spacing+5,irmount_height+Taller],rounding=2,p1=[0,0]); // mount base
 		translate([0,5,0]) block_mount2(Taller,screw3t);
 		hull() {
 			translate([-2.5,irmount_height-irreduce+Taller/2-3,16]) rotate([0,90,0]) color("teal") cylinder(h=10,r=irmount_width/3);
@@ -598,11 +594,11 @@ module block_mount3(Taller=0,Screw=screw3t) // mounting screw holes for the ir s
 
 module prox_mount(Shift=0) {
 	difference() {
-		color("red") cubeX([30,30,5],2);
+		color("red") cuboid([30,30,5],rounding=2,p1=[0,0]);
 		translate([15,12,-2]) color("olive") cylinder(h=wall*2,r=psensord/2,$fn=50); // proximity sensor hole
 	}
 	difference() {
-		translate([0,26,0]) color("blue") cubeX([40,5,13+Shift],2);
+		translate([0,26,0]) color("blue") cuboid([40,5,13+Shift],rounding=2,p1=[0,0]);
 		translate([-16,60,53+Shift]) rotate([90,0,90]) fan(screw3);
 	}
 }
@@ -611,12 +607,12 @@ module prox_mount(Shift=0) {
 
 module blt_mount(Type=0,Shift=0) {
 	difference() {
-		color("salmon") cubeX([40,30,5],2);
+		color("salmon") cuboid([40,30,5],rounding=2,p1=[0,0]);
 		if(Type==0) translate([20,0,bltdepth+6]) blt(Type); // recessed
 		if(Type==1) translate([20,0,bltdepth+3]) blt(Type); 
 	}
 	difference() {
-		translate([0,26,0]) color("cyan") cubeX([40,5,15+Shift],2);
+		translate([0,26,0]) color("cyan") cuboid([40,5,15+Shift],rounding=2,p1=[0,0]);
 		translate([-16,60,55+Shift]) rotate([90,0,90]) fan();
 	}
 }

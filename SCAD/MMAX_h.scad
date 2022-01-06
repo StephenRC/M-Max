@@ -8,11 +8,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <inc/configuration.scad> // http://github.com/prusajr/PrusaMendel, which also uses functions.scad & metric.scad
 include <inc/screwsizes.scad>
-include <BOSL2/std.scad>	// 
 include <BOSL2/std.scad> // https://github.com/revarbat/BOSL2
 use <inc/Nema17.scad>	// https://github.com/mtu-most/most-scad-libraries
 include <inc/configuration.scad> // http://github.com/prusajr/PrusaMendel, which also uses functions.scad & metric.scad
-use <inc/corner-tools.scad> // got from https://www.myminifactory.com/it/object/3d-print-tools-for-fillets-and-chamfers-on-edges-and-corners-straight-and-or-round-45862 by Ewald Ikemann
 $fn=50;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // variables

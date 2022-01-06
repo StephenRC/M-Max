@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////////////
-// MMAX-Z-Support.scad - modifiy the TMAX Z supports
+// ZSupport.scad - modifiy the TMAX Z supports
 // created: 2/16/14
 // last modified: 4/10/21
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +13,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 include <inc/configuration.scad>
 include <inc/screwsizes.scad>
-include <inc/corner-tools.scad> // https://www.myminifactory.com/it/object/3d-print-tools-for-fillets-and-chamfers-on-edges-and-corners-straight-and-or-round-45862 by Ewald Ikemann
 include <bosl2/std.scad>
 include <inc/brassinserts.scad>
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -43,11 +42,11 @@ module Clamps(Qty=1,Screw=screw5) {
 
 module two(Top=0,Screw=Yes5mmInsert(Use5mmInsert)) {
 	if(Top) {
-		if($preview) %translate([-100,-100,20.75]) cuboid([200,200,5],p1=[0,0]);
+		//if($preview) %translate([-100,-100,20.75]) cuboid([200,200,5],p1=[0,0]);
 		translate([-35,-2.5,0]) top(Screw);
 		translate([35,2.5,0]) rotate([0,0,180]) top();
 	} else {
-		if($preview) %translate([-90,-100,20.75]) cuboid([200,200,5],p1=[0,0]);
+		//if($preview) %translate([-90,-100,20.75]) cuboid([200,200,5],p1=[0,0]);
 		translate([-45,-2.5,0]) bottom(Screw);
 		translate([60,2.5,0]) rotate([0,0,180]) bottom();;
 	}

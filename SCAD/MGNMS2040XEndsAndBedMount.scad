@@ -2,7 +2,7 @@
 // MGNMS2040XEndsAndBedMount.scad - use MGN rails for the Z axis and 2040 XEnds
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 5/21/2020
-// Last Update: 12/28/20
+// Last Update: 1/6/22
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 5/23/20	- Added X axis motor mount and idler mount that go at the ends of the makerslide
 // 5/23/20	- Added abilty to print more that one MotorMount and to print a left, right or both of the ZCarriage
@@ -25,6 +25,7 @@
 // 9/19/20	- Added holes in BedMount2020()
 // 9/24/20	- Moved the belt attachment and enstops to HorizontalXBeltDrive.scad
 // 11/7/20	- Stiffened up BedMount2020()
+// 1/6/22	- BOSL2
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //=====================================================================================================
 // 2020x460mm with the 400mm MGN12 are to be connected to the middle and upper 2020 on the M-Max
@@ -33,7 +34,6 @@
 include <mmax_h.scad>
 include <inc/brassinserts.scad>
 include <inc/screwsizes.scad>
-//use <Z-Motor_Leadscrew-Coupler.scad> // coupler(motorShaftDiameter = 5,threadedRodDiameter = 5)
 include <inc/NEMA17.scad>
 use <Single-Titan-E3DV6.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,16 +90,10 @@ Bed1212Width=310;
 BedMount2020(1,0);
 //BedMount(2);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module cubeX(size,Rounding) { // temp module
-	cuboid(size,rounding=Rounding,p1=[0,0]);
-}
-
 ///////////////////////////////////////////////////////////////////////
 
 module Show2020() {
-	#cubeX([20,60,20],2);
+	%cuboid([20,60,20],rounding=2,p1=[0,0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,9 +134,11 @@ module XEndHorizontalBeltEnds() {
 module mount(Screw=screw5,Side=0) {
 	difference() {
 		union() {
-			color("cyan") cubeX([22,HolderWidth,Switch_thk2],1);
-			if(Side==0) translate([Screw/2-3,23,Switch_thk2-1]) color("red") cubeX([22,6,2],1); // slot align
-			if(Side==1) translate([Screw/2-3,3,Switch_thk2-1]) color("blue") cubeX([22,6,2],1); // slot align
+			color("cyan") cuboid([22,HolderWidth,Switch_thk2],rounding=1,p1=[0,0]);
+			if(Side==0) translate([Screw/2-3,23,Switch_thk2-1]) color("red")
+				cuboid([22,6,2],rounding=1,p1=[0,0]); // slot align
+			if(Side==1) translate([Screw/2-3,3,Switch_thk2-1]) color("blue") 
+				cuboid([22,6,2],rounding=1,p1=[0,0]); // slot align
 		}
 		translate([10,6,-1])  color("red") cylinder(h=Switch_thk2*2,d=Screw);
 		translate([10,26,-1])  color("green") cylinder(h=Switch_thk2*2,d=Screw);
@@ -153,7 +149,7 @@ module mount(Screw=screw5,Side=0) {
 module base(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 	rotate([0,-90,0]) difference() {
 		difference() {
-			translate([0,0,-4]) color("yellow") cubeX([Switch_thk,HolderWidth,Switch_ht+Offset-Adjust],1);
+			translate([0,0,-4]) color("yellow") cuboid([Switch_thk,HolderWidth,Switch_ht+Offset-Adjust],rounding=1,p1=[0,0]);
 			// screw holes for switch
 			rotate([0,90,0]) {		
 				translate([-(Switch_ht-Offset)-0.5, SwitchShift, -1]) {
@@ -190,17 +186,20 @@ module TopMountBeltHoles(Screw=Yes3mmInsert(Use3mmInsert,UseLarge3mmInsert),UseH
 
 module MotorMountH(Qty=1) {
 	translate([0,20-StepperMountThickness,-3]) difference() {
-		color("red") cubeX([55,StepperMountThickness,60],2);
+		color("red") cuboid([55,StepperMountThickness,60],rounding=2,p1=[0,0]);
 		translate([28,6,28]) color("blue") rotate([90,0,0]) NEMA17_parallel_holes(8,10);
 	}
 	difference() {
-		translate([0,-2,-3]) color("blue") cubeX([StepperMountThickness,22,77],2);
+		translate([0,-2,-3]) color("blue") cuboid([StepperMountThickness,22,77],rounding=2,p1=[0,0]);
 		translate([0,10.5,32+StepperShaftOffset]) 2040ScrewHoles(screw5);
-		translate([-3,3,StepperMountThickness+8]) color("gray") cubeX([12,13,26],2);
+		translate([-3,3,StepperMountThickness+8]) color("gray") cuboid([12,13,26],rounding=2,p1=[0,0]);
 	}
-	translate([1,0,-3]) color("green") rotate([0,0,19]) cubeX([50,StepperMountThickness,StepperMountThickness],2);
-	translate([1,0,53]) color("pink") rotate([0,0,19]) cubeX([50,StepperMountThickness,StepperMountThickness],2);
-	translate([1,16,69]) color("black") rotate([0,19,0]) cubeX([50,StepperMountThickness,StepperMountThickness],2);
+	translate([1,0,-3]) color("green") rotate([0,0,19]) 
+		cuboid([50,StepperMountThickness,StepperMountThickness],rounding=2,p1=[0,0]);
+	translate([1,0,53]) color("pink") rotate([0,0,19])
+		cuboid([50,StepperMountThickness,StepperMountThickness],rounding=2,p1=[0,0]);
+	translate([1,16,69]) color("black") rotate([0,19,0]) 
+		cuboid([50,StepperMountThickness,StepperMountThickness],rounding=2,p1=[0,0]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,17 +218,17 @@ module 2040ScrewHoles(Screw=screw5) {
 module XIdlerH(IdlerScrew=Yes5mmInsert(Use5mmInsert)) {
 	difference() {
 		union() {
-			translate([1,-2,0]) color("cyan") cubeX([47,22,StepperMountThickness],2);
+			translate([1,-2,0]) color("cyan") cuboid([47,22,StepperMountThickness],rounding=2,p1=[0,0]);
 			translate([-24,20-StepperMountThickness,0]) color("plum")
-				cubeX([35,StepperMountThickness,20],2);
+				cuboid([35,StepperMountThickness,20],rounding=2,p1=[0,0]);
 		}
 		translate([30,10.5,0]) rotate([0,-90,0]) 2040ScrewHoles(screw5);
 		translate([-14,25,F625ZZ_dia/2+2]) rotate([90,0,0]) color("red") cylinder(h=20,d=IdlerScrew);
 	}
 	translate([5,20-StepperMountThickness,16.5]) color("green") rotate([0,22,0])
-		cubeX([45,StepperMountThickness,StepperMountThickness],2);
+		cuboid([45,StepperMountThickness,StepperMountThickness],rounding=2,p1=[0,0]);
 	translate([1,StepperMountThickness-3.5,0]) color("black") rotate([43,0,0])
-		cubeX([StepperMountThickness,26,StepperMountThickness],2);
+		cuboid([StepperMountThickness,26,StepperMountThickness],rounding=2,p1=[0,0]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -282,7 +281,8 @@ module ZNutTR8() {
 module ZNutFrame() {
 	union() {
 		color("red") cylinder(h=TR8_ht,d=TR8_flange_dia+2);
-		//translate([5,-TR8_flange_dia/2+4,0]) color("blue") cubeX([TR8_flange_dia-15.5,TR8_flange_dia-3,TR8_ht],2);
+		//translate([5,-TR8_flange_dia/2+4,0]) color("blue")
+		//	cuboid([TR8_flange_dia-15.5,TR8_flange_dia-3,TR8_ht],rounding=2,p1=[0,0]);
 	}
 }
 
@@ -321,7 +321,7 @@ module MTSSGrubScrewHole(Screw=Yes3mmInsert(Use3mmInsert,UseLarge3mmInsert),X=0,
 
 module mgnbase(X=0,Y=0,Z=0,Two2020=0,AddLength=0) {
 	difference() {
-		color("cyan") cubeX([MGN12HLength,MGN12HWidth+MountWidth+AddLength+5,Thickness],2);
+		color("cyan") cuboid([MGN12HLength,MGN12HWidth+MountWidth+AddLength+5,Thickness],rounding=2,p1=[0,0]);
 		translate([MGN12HLength/4+1,32,-2]) mgnscrewholes();
 		translate([MGN12HLength/4+1,32,-Thickness+4]) mgnscountersink();
 		translate([X,Y,Z]) MountingHoles2020(Two2020);
@@ -388,14 +388,14 @@ module TR8_mounting_holes() {
 
 module IdlerSuppoerts() {
 	difference() {
-		translate([-1,-4,22]) color("green") rotate([0,23,0]) cubeX([80,4,5],2);
+		translate([-1,-4,22]) color("green") rotate([0,23,0]) cuboid([80,4,5],rounding=2,p1=[0,0]);
 		translate([48,-8,-2]) color("gray") cube([10,10,10]);
-		translate([43,-8,-Thickness*2-1]) color("lightgray") cubeX([35,20,20],2);
+		translate([43,-8,-Thickness*2-1]) color("lightgray") cuboid([35,20,20],rounding=2,p1=[0,0]);
 	}
 	translate([0,23.5,0]) difference() {
-		translate([-1,-4,22]) color("green") rotate([0,23,0]) cubeX([80,4,5],2);
+		translate([-1,-4,22]) color("green") rotate([0,23,0]) cuboid([80,4,5],rounding=2,p1=[0,0]);
 		translate([48,-8,-2]) color("gray") cube([10,10,10]);
-		translate([43,-8,-Thickness*2-1]) color("lightgray") cubeX([35,20,20],2);
+		translate([43,-8,-Thickness*2-1]) color("lightgray") cuboid([35,20,20],rounding=2,p1=[0,0]);
 	}
 }
 
@@ -410,14 +410,14 @@ module MSSideHoles() {
 
 module SideSupports() {
 	difference() {
-		translate([-0.5,-2.5,40]) color("green") rotate([0,39,0]) cubeX([80,4,5],2);
+		translate([-0.5,-2.5,40]) color("green") rotate([0,39,0]) cuboid([80,4,5],rounding=2,p1=[0,0]);
 		translate([53,-3,-2]) color("gray") cube([10,10,10]);
-		translate([43,-4,-Thickness*2-1]) color("lightgray") cubeX([25,20,20],2);
+		translate([43,-4,-Thickness*2-1]) color("lightgray") cuboid([25,20,20],rounding=2,p1=[0,0]);
 	}
 	translate([0,48.5,0]) difference() {
-		translate([0,0,40]) color("green") rotate([0,39,0]) cubeX([80,4,5],2);
+		translate([0,0,40]) color("green") rotate([0,39,0]) cuboid([80,4,5],rounding=2,p1=[0,0]);
 		translate([53,-3,-2]) color("gray") cube([10,10,10]);
-		translate([45,-4,-Thickness*2-1]) color("lightgray") cubeX([25,20,20],2);
+		translate([45,-4,-Thickness*2-1]) color("lightgray") cuboid([25,20,20],rounding=2,p1=[0,0]);
 	}
 }
 
@@ -427,8 +427,8 @@ module AxisBrace(Qty=1,X=0,Y=0) {
 	for(x = [0 : Qty-1]) {
 		translate([X,x*65+Y,0]) difference() {
 			color("blue") hull() {
-				translate([40,0,0]) cubeX([20,60,5],2);
-				translate([2,20,0]) cubeX([1,20,5],2);
+				translate([40,0,0]) cuboid([20,60,5],rounding=2,p1=[0,0]);
+				translate([2,20,0]) cuboid([1,20,5],rounding=2,p1=[0,0]);
 			}
 			translate([10,30,-3]) 2020ScrewHoles(1);
 			translate([50,10,-3]) 2020ScrewHoles();
@@ -455,7 +455,7 @@ module BedMount(Qty=2) {
 	for(x = [0 : Qty-1]) {
 		translate([0,x*45,0]) {
 			difference() {
-				translate([-55,0,0]) color("cyan") cubeX([250,40,screw4cs*2],2);
+				translate([-55,0,0]) color("cyan") cuboid([250,40,screw4cs*2],rounding=2,p1=[0,0]);
 				translate([59,10,-2]) mgnscrewholes(screw3);
 				translate([59,10,-screw4cs*2+screw3cs*1.5]) mgnscountersink(screw3hd);
 				translate([6.5,7.5,0]) BedScrewHoles(Yes3mmInsert(Use3mmInsert,UseLarge3mmInsert));
@@ -463,17 +463,19 @@ module BedMount(Qty=2) {
 			}
 			translate([54,7,screw3cs*1.5]) color("black") cube([30,30,LayerThickness]);
 			difference() {
-				translate([-55,0,1]) color("green") cubeX([4,40,screw4cs*2+3],1.5);
+				translate([-55,0,1]) color("green") cuboid([4,40,screw4cs*2+3],rounding=1.5,p1=[0,0]);
 				translate([25.5 - 20.5,7.5,0]) BedScrewHoles(Yes3mmInsert(Use3mmInsert,UseLarge3mmInsert));
-				translate([-58,15,screw4cs*2+2]) color("black") cubeX([10,10,10],2); // notch for the bumper at the end of the mgn
+				translate([-58,15,screw4cs*2+2]) color("black") 
+					cuboid([10,10,10],rounding=2,p1=[0,0]); // notch for the bumper at the end of the mgn
 			}
 			difference() {
-				translate([191,0,1]) color("purple") cubeX([4,40,screw4cs*2+3],1.5);
+				translate([191,0,1]) color("purple") cuboid([4,40,screw4cs*2+3],rounding=1.5,p1=[0,0]);
 				translate([25.5 - 20.5,7.5,0]) BedScrewHoles(Yes3mmInsert(Use3mmInsert,UseLarge3mmInsert));
-				translate([188,15,screw4cs*2+2]) color("white") cubeX([10,10,10],2); // notch for the bumper at the end of the mgn
+				translate([188,15,screw4cs*2+2]) color("white")
+					cuboid([10,10,10],rounding=2,p1=[0,0]); // notch for the bumper at the end of the mgn
 			}
-			translate([-55,0,1]) color("gray") cubeX([250,3,screw4cs*2+3],1.5);
-			translate([-55,36.99,1]) color("white") cubeX([250,3,screw4cs*2+3],1.5);
+			translate([-55,0,1]) color("gray") cuboid([250,3,screw4cs*2+3],rounding=1.5,p1=[0,0]);
+			translate([-55,36.99,1]) color("white") cuboid([250,3,screw4cs*2+3],rounding=1.5,p1=[0,0]);
 		}
 	}
 }
@@ -617,14 +619,14 @@ module BedCounterSinkSupport() {
 
 module XCarriageForMGN(AddExtruder=0) {
 	difference() {
-		color("cyan") cubeX([HorizontallCarriageWidth,MGN12HWidth+5,wall],2);
+		color("cyan") cuboid([HorizontallCarriageWidth,MGN12HWidth+5,wall],rounding=2,p1=[0,0]);
 		translate([27,6,0]) mgnscrewholes();
 		translate([27,6,5])  mgnscountersink();
 		translate([37,30,wall/2])
 		ExtruderMountHolesFn();
 	}
 	difference() { // belt mount
-		translate([HorizontallCarriageWidth/2-20,MGN12HWidth,0]) color("red") cubeX([40,40,wall],2);
+		translate([HorizontallCarriageWidth/2-20,MGN12HWidth,0]) color("red") cuboid([40,40,wall],rounding=2,p1=[0,0]);
 		translate([27,6,0]) mgnscrewholes();
 		translate([27,6,5])  mgnscountersink();
 		translate([HorizontallCarriageWidth/2-14,70,4]) rotate([90,0,0])
@@ -636,7 +638,7 @@ module XCarriageForMGN(AddExtruder=0) {
 			translate([27,6,0]) mgnscrewholes();
 			translate([27,6,5])  mgnscountersink();
 		}
-		translate([47.5,41,wall-2]) color("blue") cubeX([10,10,8],2);
+		translate([47.5,41,wall-2]) color("blue") cuboid([10,10,8],rounding=2,p1=[0,0]);
 	}
 }
 

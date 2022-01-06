@@ -2,14 +2,14 @@
 // Endstops.scad
 //////////////////////////////////////////////////////////////////////////////////////////
 // created 12/10/20
-// last update 2/20/21
+// last update 1/6/22
 //////////////////////////////////////////////////////////////////////////////////////////////
 // 12/10/20	- Put endstops into a seperate file
 // 2/20/21	- Added a 2020 X endstop mount
+// 1/6/22	- BOSL2
 /////////////////////////////////////////////////////////////////////////////////////////////
 include <mmax_h.scad>
 include <inc/NEMA17.scad>
-use <yBeltClamp.scad>
 include <inc/brassinserts.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
@@ -39,18 +39,12 @@ XEndStop2020(9.7,0,8,Yes2mmInsert(Use2mmInsert)); // green microswitch inline mo
 //YEndStop(10,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // Black microswitch
 //YEndStop(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert),screw5,11.5); // CN0097
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module cubeX(size,Rounding) { // temp module
-	cuboid(size,rounding=Rounding,p1=[0,0]);
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module XEndStop2020(Sep,DiagOffset,Offset,ScrewS,Adjust=0,Thickness=Switch_thk2) {
 	difference() {
-		if(Sep>20) color("cyan") cubeX([20,32,Switch_thk2],1);
-		else color("cyan") cubeX([20,20,Switch_thk2],1);
+		if(Sep>20) color("cyan") cuboid([20,32,Switch_thk2],rounding=2,p1=[0,0]);
+		else color("cyan") cuboid([20,20,Switch_thk2],rounding=2,p1=[0,0]);
 		translate([10,10,-1])  color("red") cylinder(h=Thickness*2,d=screw5);
 		translate([10,10,Thickness-3])  color("green") cylinder(h=5,d=screw5hd);
 		translate([4, SwitchShift-1,-1]) color("purple") cylinder(h = 11, d=ScrewS);
@@ -63,8 +57,8 @@ module XEndStop2020(Sep,DiagOffset,Offset,ScrewS,Adjust=0,Thickness=Switch_thk2)
 module YEndStop(Sep,DiagOffset,Offset,ScrewS,ScrewM=screw5,Adjust,MS=0) {
 	difference() {
 		union() {
-			color("red") cubeX([22,33,5],2);
-			color("purple") cubeX([5,20,17+Adjust],2);
+			color("red") cuboid([22,33,5],rounding=2,p1=[0,0]);
+			color("purple") cuboid([5,20,17+Adjust],rounding=2,p1=[0,0]);
 		}
 		YEndStopExtrusionMountingHole(Sep,DiagOffset,Offset,ScrewS,ScrewM,Adjust);
 		if(MS) translate([-10,-2,0]) rotate([0,45,0]) color("black") cube([10,40,10]);
@@ -122,9 +116,11 @@ module XEndStopV2(Sep,DiagOffset,Offset,ScrewS,Adjust,Side) {
 module mount(Screw=screw5,Side=0) {
 	difference() {
 		union() {
-			color("cyan") cubeX([22,HolderWidth,Switch_thk2],1);
-			if(Side==0) translate([Screw/2-3,23,Switch_thk2-1]) color("red") cubeX([22,6,2],1); // slot align
-			if(Side==1) translate([Screw/2-3,3,Switch_thk2-1]) color("blue") cubeX([22,6,2],1); // slot align
+			color("cyan") cuboid([22,HolderWidth,Switch_thk2],rounding=2,p1=[0,0]);
+			if(Side==0) translate([Screw/2-3,23,Switch_thk2-1]) color("red") 
+					cuboid([22,6,2],rounding=2,p1=[0,0]); // slot align
+			if(Side==1) translate([Screw/2-3,3,Switch_thk2-1]) color("blue")
+					cuboid([22,6,2],rounding=2,p1=[0,0]); // slot align
 		}
 		translate([10,6,-1])  color("red") cylinder(h=Switch_thk2*2,d=Screw);
 		translate([10,26,-1])  color("green") cylinder(h=Switch_thk2*2,d=Screw);
@@ -143,7 +139,7 @@ module mount(Screw=screw5,Side=0) {
 
 module base(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 	rotate([0,-90,0]) difference() {
-		translate([0,0,-4]) color("yellow") cubeX([Switch_thk,HolderWidth,Switch_ht+Offset-Adjust],1);
+		translate([0,0,-4]) color("yellow") cuboid([Switch_thk,HolderWidth,Switch_ht+Offset-Adjust],rounding=2,p1=[0,0]);
 		// screw holes for switch
 		rotate([0,90,0]) translate([-(Switch_ht-Offset)-0.5, SwitchShift, -1]) color("purple") cylinder(h = 11, d=ScrewT);
 		rotate([0,90,0]) translate([-(Switch_ht-Offset)-0.5+DiagOffset, SwitchShift+Sep, -1])
@@ -156,7 +152,7 @@ module base(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 module baseV2(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 	if(Offset==0) {
 		translate([8,31.5,0]) difference() {
-			color("yellow") cubeX([Switch_ht-Adjust+2,HolderWidth-2,Switch_thk],1);
+			color("yellow") cuboid([Switch_ht-Adjust+2,HolderWidth-2,Switch_thk],rounding=2,p1=[0,0]);
 			translate([31,12,0]) {// screw holes for switch	
 				translate([-Switch_ht, SwitchShift, -1]) color("purple") cylinder(h = 11, d=ScrewT);
 				translate([-Switch_ht+DiagOffset, SwitchShift+Sep, -1]) color("black") cylinder(h = 11, d=ScrewT);
@@ -164,7 +160,7 @@ module baseV2(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 		}
 	} else {
 		translate([0,31.5,0]) difference() {
-			color("yellow") cubeX([Switch_ht+Offset-Adjust+2,HolderWidth-2,Switch_thk],1);
+			color("yellow") cuboid([Switch_ht+Offset-Adjust+2,HolderWidth-2,Switch_thk],rounding=2,p1=[0,0]);
 			translate([20,-1,0]) { // screw holes for switch		
 				translate([-(Switch_ht-Offset)-0.5+DiagOffset, SwitchShift, -1]) color("purple") cylinder(h = 11, d=ScrewT);
 				translate([-(Switch_ht-Offset)-0.5, SwitchShift+Sep, -1]) color("black") cylinder(h = 11, d=ScrewT);

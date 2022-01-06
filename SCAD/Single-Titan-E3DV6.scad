@@ -9,10 +9,7 @@
 // 10/13/20	- Changed width of base to allow 42mm long stepper motor
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
-use <ybeltclamp.scad>	// modified https://www.thingiverse.com/thing:863408
-use <inc/corner-tools.scad>
 use <SensorMounts.scad>
-use <DrillGuidefor2020.scad>
 include <inc/brassinserts.scad>
 //-------------------------------------------------------------------------------------------------------------
 Use3mmInsert=1; // set to 1 to use 3mm brass inserts
@@ -52,12 +49,6 @@ Extruder(2,5,1,1);	// arg1: extruderplatform type
 					//	5 or higher - none
 					// arg 3: 0 - titan; 1 - aero
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module cubeX(size,Rounding) { // temp module
-	cuboid(size,rounding=Rounding,p1=[0,0]);
-}
-
 /////////////////////////////////////////////////////////////////////////////////////////
 
 module Extruder(Extruder=0,Sensor=0,Aero=0,ExtruderMountHoles=1) {
@@ -78,7 +69,7 @@ module Extruder(Extruder=0,Sensor=0,Aero=0,ExtruderMountHoles=1) {
 module ExtruderPlatform(recess=0) // bolt-on extruder platform
 {										 // used for extruder mount via a wades extruder style
 	difference() {
-		color("red") cubeX([HorizontallCarriageWidth,heightE,wall],radius=2,center=true); // extruder side
+		color("red") cuboid([HorizontallCarriageWidth,heightE,wall],rounding=2); // extruder side
 		translate([0,-height/3-6,0]) ExtruderPlatformNotch(); // extruder notch
 		translate([0,26,10]) rotate([90,0,0]) ExtruderMountHoles(screw3);	// screw holes to mount extruder plate
 		// extruder mounting holes
@@ -103,10 +94,7 @@ module ExtruderPlatform(recess=0) // bolt-on extruder platform
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module ExtruderPlatformNotch() {
-	color("blue") minkowski() {
-		cube([25,60,wall+5],true);
-		cylinder(h = 1,r = 5);
-	}
+	color("blue") cuboid([35,75,wall+5],rounding=5);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,17 +103,16 @@ module TitanExtruderPlatform(recess=2,InnerSupport=0,MountingHoles=1,Aero=0) {
 	// extruder platform for e3d titan with (0,1)BLTouch or (2)Proximity or (3)dc42's ir sensor
 	difference() {
 		union() {
-			translate([-37.5+17,-37,-wall/2])
-				color("cyan") cubeX([HorizontallCarriageWidth+ShiftHotend2/1.3-12,heightE+8,wall],2); // extruder side
-			translate([14,24,-wall/2]) color("plum") cubeX([23,wall-1,wall],2);
-			translate([-38,23,-wall/2]) color("blue") cubeX([25,wall,wall],2);
+			translate([-37.5+17,-37,-wall/2]) color("cyan")
+				cuboid([HorizontallCarriageWidth+ShiftHotend2/1.3-12,heightE+8,wall],rounding=2,p1=[0,0]); // extruder side
+			translate([14,24,-wall/2]) color("plum") cuboid([23,wall-1,wall],rounding=2,p1=[0,0]);
+			translate([-38,23,-wall/2]) color("blue") cuboid([25,wall,wall],rounding=2,p1=[0,0]);
 		}
 		if(MountingHoles) translate([0,27,10]) rotate([90,0,0]) ExtruderMountHoles();
  		if(LEDLight) LEDRingMount();
 		if(Aero) {
-			translate([-19,3,-5]) color("purple") cylinder(wall*2,d=30); // clearance for aero titan e3dv6 heater block
-			translate([-19,3,wall/2]) color("purple") fillet_r(2,15,-1,$fn);	// round top edge
-			translate([-19,3,-wall/2]) color("purple") rotate([180]) fillet_r(2,15,-1,$fn);	// round bottom edge
+			translate([-19,3,0]) color("purple")
+				cyl(h=wall+0.1,d=30,rounding=-2); // clearance for aero titan e3dv6 heater block
 		} else {
 			translate([20+ShiftHotend2,-5,-10]) color("pink") cylinder(h=20,d=23.5); // remove some under the motor
 			translate([0,-5,wall/2]) color("purple") fillet_r(2,23/2,-1,$fn);	// round top edge
@@ -260,7 +247,7 @@ module ScrewSpacer(Length=10,Screw=screw5) {
 
 module TitanMotorMount(WallMount=0,Screw=screw4,InnerSupport=1) {
 	difference() {	// motor mount
-		translate([-1,0,0]) color("red") cubeX([54,60+ShiftTitanUp,5],2);
+		translate([-1,0,0]) color("red") cuboid([54,60+ShiftTitanUp,5],rounding=2,p1=[0,0]);
 		translate([25,35+ShiftTitanUp,-1]) rotate([0,0,45]) color("purple") NEMA17_x_holes(8,1);
 		if(ShiftTitanUp > -2.6) {
 			color("blue") hull() {
@@ -277,7 +264,7 @@ module TitanMotorMount(WallMount=0,Screw=screw4,InnerSupport=1) {
 module TitanMountSupports(WallMount=0,InnerSupport=0,Screw=screw4) {
 	if(WallMount) {
 		difference() { // front support
-			translate([52,0,0]) color("cyan") cubeX([4,45+ShiftTitanUp,45],2);
+			translate([52,0,0]) color("cyan") cuboid([4,45+ShiftTitanUp,45],rounding=2,p1=[0,0]);
 			// lower mounting screw holes
 			translate([40,15,11]) rotate([0,90,0]) color("cyan") cylinder(h=20,d=Screw);
 			translate([40,15,11+mount_seperation]) rotate([0,90,0])  color("blue") cylinder(h=20,d=Screw);
@@ -296,7 +283,7 @@ module TitanMountSupports(WallMount=0,InnerSupport=0,Screw=screw4) {
 
 module TitanSupport(Clear=0, Screw=Yes3mmInsert(Use3mmInsert)) {
 	difference() { // rear support
-		translate([49,47.5,-1.5]) rotate([50]) color("cyan") cubeX([4,6,69],2);
+		translate([49,47.5,-1.5]) rotate([50]) color("cyan") cuboid([4,6,69],rounding=2,p1=[0,0]);
 		translate([47,-1,-67]) color("gray") cube([7,70,70]);
 		translate([47,-73,-28]) color("lightgray") cube([7,75,75]);
 		if(Clear) translate([44,44.5,75]) rotate([0,90,0]) PCFanMounting(Screw=Yes3mmInsert(Use3mmInsert));
