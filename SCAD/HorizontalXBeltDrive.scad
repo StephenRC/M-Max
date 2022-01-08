@@ -4,6 +4,8 @@
 // Created: 9/23/2020
 // Last Update: 10/16/21
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// https://creativecommons.org/licenses/by-sa/4.0/
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 5/23/20	- Added X axis motor mount and idler mount that go at the ends of the makerslide
 // 5/23/20	- Added abilty to print more that one MotorMount and to print a left, right or both of the ZCarriage
 //			  Added support bars to XIdler, ZCarrige can now use a TR8 or a Musumi MTSS8 nut
