@@ -48,6 +48,8 @@
 // Each side uses two self-aligning bearings each on the z axis rods.
 // Currently set to use Misumi MTSSR8 nuts and SDI/SP 3A 7Z41MPSB10M bronze bearings on 10mm z rods.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ***** Use a brim for printing *****
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <bosl2/std.scad>
 include <inc/nema17.scad>
 include <inc/screwsizes.scad>
@@ -102,7 +104,7 @@ TR8_mounting_holes_offset=16;
 /////////////////////////////////////////////////////////////////////
 
 //split_XEnd(0,1,1,1);
-XEndSet(0,0,1,1);
+XEndSet(0,0,0,1);
 //motormount();
 // 2-to test the fit of the motor mount to XEnd
 //difference() {
@@ -114,13 +116,8 @@ XEndSet(0,0,1,1);
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 module XEndSet(Bearing=0,mks=0,mits=0,Full=0) {
-	if(mits) {
-		rotate([90,0,0]) XEnd(Bearing,mks,1,Full,0);
-		translate([0,25,0]) rotate([90,0,0]) XEnd(Bearing,mks,1,Full,1);
-	} else {
-		rotate([90,0,0]) XEnd(Bearing,mks,0,Full,0);
-		translate([0,25,0]) rotate([90,0,0]) XEnd(Bearing,mks,0,Full,1);
-	}
+	rotate([90,0,0]) XEnd(Bearing,mks,mits,Full,0);
+	translate([0,25,0]) rotate([90,0,0]) XEnd(Bearing,mks,mits,Full,1);
 }
 
 //////////////////////////////////////////////////////////////////////
