@@ -19,9 +19,10 @@
 include <bosl2/std.scad>
 include <inc/nema17.scad>
 include <inc/screwsizes.scad>
+include <inc/brassinserts.scad>
 $fn=100;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// vars
+Use5mmInsert=1;
 Clearance = 0.7;		// allow threaded rod to slide without problem
 BaseWidth = 90;
 BaseLength = 100;
@@ -34,6 +35,7 @@ BearingHoleClearance = 17;			// Clearance for a 8mm nut
 //----------------------------------------------------------------------------
 Show=0;		// show original steeper mount
 PrintPos=1;	// put Z rod clamp to print positon
+TwoZRodBaseSupports=1;  // have two supports on the Z Rod mount, if 0, you'll need to print supports
 /////////////////////////////////////////////////////////////////////////////////////////
 
 ZMotorMount(1,1,0,0,0,47);	// 1st arg:Quanity; 2nd arg: X position
@@ -64,25 +66,32 @@ module ZBeltDrive(X=0,Y=0,Z=0,Adjust=0) {
 			translate([X-28,BaseLength/2,2.5]) color("green") cuboid([64,BaseLength,BaseThickness],rounding=2);
 			translate([X-20,-Z-1.5,30]) color("lightblue") cuboid([80,BaseThickness,60],rounding=2);
 		}
+		MountingHoles(X,Y,0);
 		translate([X-25,-Z+2,35]) rotate([90,0,0]) color("white") NEMA17_parallel_holes(10,8);
 		translate([X-70,Z/4+25,BaseThickness/2-BaseThickness/2]) InnerHoleBearingSide();
+		translate([-49,10,0]) color("green") cyl(h=20,d=screw5);
+		translate([-49,90,0]) color("blue") cyl(h=20,d=screw5);
+		translate([-49,10,6]) color("lightgray") cyl(h=5,d=screw5hd);
+		translate([-49,90,6]) color("red") cyl(h=5,d=screw5hd);
 	}
+	SingleSideBaseSupport(X,Y,Z,0,BaseLength);
 	union() {
+		OriginalSupportSingle(X,Y,Z);
 		difference() {
-			translate([X-60,-Z-55,-10]) rotate([45,0,0]) color("white") cuboid([Thickness,90,10],rounding=2,p1=[0,0]);
-			translate([X-65,-Z,43]) color("gray") cube([20,20,20]);
-			translate([X-65,-Z-65,-18]) color("gray") cube([20,20,20]);
+			color("green") hull() {
+				translate([X+60,-Z-9,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+				translate([X+60,-Z+36.25,58+Adjust]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+			}
+			translate([X+55,-Z-10.25,0]) color("gray") cuboid([10,10,10],p1=[0,0]);
 		}
-		color("green") hull() {
-			translate([X+60,-Z-9,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
-			translate([X+60,-Z+36.25,58+Adjust]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+		if(TwoZRodBaseSupports) {
+			translate([-54,0,0]) color("khaki") hull() {
+				translate([X+79,-Z+15,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+				translate([X+79,-Z+36.25,58+Adjust]) cuboid([Thickness,10,6],rounding=2,p1=[0,0]);
+			}
+			translate([X+25,-Z-3,0]) color("blue") cuboid([Thickness,25,10],rounding=2,p1=[0,0]);
+			translate([X+27,-Z+20,0]) color("red") cylinder(h=LayerThickness,d=20);  // corner brim
 		}
-		translate([-54,0,0]) color("khaki") hull() {
-			translate([X+79,-Z+15,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
-			translate([X+79,-Z+36.25,58+Adjust]) cuboid([Thickness,10,6],rounding=2,p1=[0,0]);
-		}
-		translate([X+25,-Z-3,0]) color("blue") cuboid([Thickness,25,10],rounding=2,p1=[0,0]);
-		translate([X+27,-Z+20,0]) color("red") cylinder(h=LayerThickness,d=20);
 	}
 }
 
@@ -95,6 +104,9 @@ module ZRodMount(Adjust=0,Print=0,ZRodSize=10,UpDown=0) {
 			ZRodMountHoles();
 			ZRod(Adjust,ZRodSize,UpDown);
 		}
+		ClampScrewHoleSupport();
+		translate([BaseWidth/2-10,93,58.15]) color("gray") cyl(h=LayerThickness,d=screw5hd); // hole support
+		translate([BaseWidth/2+10,93,58.15]) color("green") cyl(h=LayerThickness,d=screw5hd); // hole support
 		translate([27,BaseLength-26,60]) color("gold") cuboid([4,42+UpDown,10],rounding=2);
 		translate([63,BaseLength-26,60]) color("salmon") cuboid([4,46+UpDown,10],rounding=2);
 		if(Print) translate([15,-15,-66.2]) ZRodClamp(Adjust,ZRodSize);
@@ -129,12 +141,20 @@ module ZRod(Adjust=0,Size=10,UpDown=0) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ZRodMountHoles(Screw) {
-	translate([BaseWidth/2-10,93,70]) color("white") cyl(h=50,d=screw5);
-	translate([BaseWidth/2+10,93,70]) color("lightgray") cyl(h=50,d=screw5);
-	translate([BaseWidth/2-10,93,76]) color("lightgray") cyl(h=5,d=screw5hd);
-	translate([BaseWidth/2+10,93,76]) color("white") cyl(h=5,d=screw5hd);
+module ZRodMountHoles(Screw=Yes5mmInsert(Use5mmInsert)) {
+	translate([BaseWidth/2-12,93,70]) color("white") cyl(h=50,d=Screw);
+	translate([BaseWidth/2+12,93,70]) color("lightgray") cyl(h=50,d=Screw);
+	if(Screw==screw5) {
+		translate([BaseWidth/2-12,93,76]) color("lightgray") cyl(h=5,d=screw5hd);
+		translate([BaseWidth/2+12,93,76]) color("white") cyl(h=5,d=screw5hd);
+	}
+}
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ClampScrewHoleSupport() {
+	translate([BaseWidth/2-12,93,58.15]) color("gray") cyl(h=LayerThickness,d=screw5hd); // hole support
+	translate([BaseWidth/2+12,93,58.15]) color("green") cyl(h=LayerThickness,d=screw5hd); // hole support
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,7 +193,6 @@ module BearingBase(X=0,Y=0,Z=0,Z2=0,Length=BaseLength,Adjust) { // makes the mot
 		union() {
 			color("skyblue") cuboid([BaseWidth,Length,BaseThickness],rounding=2,p1=[0,0]);
 			SideBaseSupports(X,Y,Z,0,BaseLength);
-			SingleSideBaseSupport(X,Y,Z,0,BaseLength);
 		}
 		BaseHoles();
 	}
@@ -253,14 +272,14 @@ module base(X=0,Y=0,Z=0,Z2=0,BaseLength=50) { // makes the motor mount holder
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module SideBaseSupports(X=0,Y=0,Z=0,Add=0,BaseLength) { // prevent the base from flexing in between the 2020 pieces
-	translate([X+14.5,Y,0]) color("firebrick") cuboid([Thickness,BaseLength+Add,21],rounding=2,p1=[0,0]);
-	translate([X+BaseWidth-21.5,Y,0]) color("seashell") cuboid([Thickness,BaseLength+Add,21],rounding=2,p1=[0,0]);
+	translate([X+14.5,Y,0]) color("firebrick") cuboid([Thickness,BaseLength+Add,12],rounding=2,p1=[0,0]);
+	translate([X+BaseWidth-21.5,Y,0]) color("seashell") cuboid([Thickness,BaseLength+Add,12],rounding=2,p1=[0,0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module SingleSideBaseSupport(X=0,Y=0,Z=0,Add=0,BaseLength) { // prevent the base from flexing in between the 2020 pieces
-	translate([X-60,Y,0]) color("khaki") cuboid([Thickness,BaseLength+Add,21],rounding=2,p1=[0,0]);
+	translate([X-60,Y,0]) color("khaki") cuboid([Thickness,BaseLength+Add,12],rounding=2,p1=[0,0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -275,8 +294,6 @@ module SideBase(X=0,Y=0,Z=0,Add=0) { // prevent the base from flexing in between
 module BaseHoles(X=0,Y=0,Z=0) { // moke the holes in the base
 	MountingHoles(X,Y,Z);
 	InnerHole(X,Y,Z); // inner hole
-	//SideSlots();
-	//MountSlots();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,19 +309,6 @@ module MountingHoles(X,Y,Z){ // mounting screw hole to frame
 	color("lightgray") translate([X+8,Y+BaseLength-10,-Thickness/2+Z])
 		cylinder(h=Thickness*2,d=screw5); // mounting screw hole to frame
 	color("gray") translate([X+8,BaseLength-10,Y+Thickness-1.5+Z]) cylinder(h=Thickness*2,d=screw5hd);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module MountSlots() {  // slots between the horizontal mounting holes
-	color("cyan") hull() { // bottom slot
-		translate([30,10,-Thickness/2]) cylinder(h=Thickness*2,d=10);
-		translate([BaseWidth-30,10,-Thickness/2]) cylinder(h=Thickness*2,d=10);
-	}
-	color("pink") hull() { // top slot
-		translate([30,BaseLength-10,-Thickness/2]) cylinder(h=Thickness*2,d=10);
-		translate([BaseWidth-30,BaseLength-10,-Thickness/2]) cylinder(h=Thickness*2,d=10);
-	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -335,13 +339,22 @@ module SideSlots() { // notches left & right of mounting base
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module OriginalSupports(X=0,Y=0,Z=0) { // the angled supports for the Nema17
-	translate([-55,-41,0]) color("gold") hull() {
-		translate([X+69,-Z-17,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
-		translate([X+70,-Z+31.75,56]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
-	}
-	translate([-90+BaseWidth,-41,0]) color("lightcoral") hull() {
+	translate([-54.5,-41,0]) color("gold") hull() {
 		translate([X+69,-Z-17,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
 		translate([X+69,-Z+31.75,56]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+	}
+	translate([-90.5+BaseWidth,-41,0]) color("lightcoral") hull() {
+		translate([X+69,-Z-17,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+		translate([X+69,-Z+31.75,56]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module OriginalSupportSingle(X=0,Y=0,Z=0) { // the angled supports for the Nema17
+	translate([-129,-41,0]) color("purple") hull() {
+		translate([X+69,-Z-17,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+		translate([X+69,-Z+31.75,55]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
 	}
 }
 

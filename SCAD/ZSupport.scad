@@ -5,7 +5,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // https://creativecommons.org/licenses/by-sa/3.0/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
 // 8/29/18	- Added make two top or bottom
 // 4/4/19	- Removed notch under connecting extrusion mount, replaced minkowski() with cubeX()
 //			- fixed nut holes in top()
@@ -33,23 +32,20 @@ Use5mmInsert=1;
 //top(Yes5mmInsert(Use5mmInsert));
 //bottom(Yes5mmInsert(Use5mmInsert));
 two(1,Yes5mmInsert(Use5mmInsert)); // 0 = bottom; 1 = top
-//Clamps(2,screw5);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 module Clamps(Qty=1,Screw=screw5) {
-	for(a=[0:Qty-1]) translate([0,a*(thickness+3),0]) rotate([90,0,0]) clamp_v2(Screw);
+	for(a=[0:Qty-1]) translate([0,a*(thickness+3),0]) rotate([90,0,0]) clamp(Screw);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
 module two(Top=0,Screw=Yes5mmInsert(Use5mmInsert)) {
 	if(Top) {
-		//if($preview) %translate([-100,-100,20.75]) cuboid([200,200,5],p1=[0,0]);
 		translate([-35,-2.5,0]) top(Screw);
 		translate([35,2.5,0]) rotate([0,0,180]) top();
 	} else {
-		//if($preview) %translate([-90,-100,20.75]) cuboid([200,200,5],p1=[0,0]);
 		translate([-45,-2.5,0]) bottom(Screw);
 		translate([60,2.5,0]) rotate([0,0,180]) bottom();;
 	}
@@ -61,13 +57,13 @@ module two(Top=0,Screw=Yes5mmInsert(Use5mmInsert)) {
 module top(Screw=Yes5mmInsert(Use5mmInsert)) { // top z support
 	translate([-47,0,0]) {
 		difference() {
-			color("gray") import("original stl/Z ROD MOUNT BOTTOM.stl", convexity=5);
+			OriginalPart();
 			translate([45,-26,25]) newrod(); // resize rod notch
 			RedoScrewHoles(Screw);
 		}
 		replace_nuts(Yes5mmInsert(Use5mmInsert));
 		topbracket(); // add mount for a brace between left & right tops
-		translate([28,-50,25.9]) rotate([90,0,0]) clamp_v2();
+		translate([28,-50,25.9]) rotate([90,0,0]) clamp();
 	}
 }
 
@@ -115,7 +111,7 @@ module nuts() { // resize nut holes for 5mm
 module bottom(Screw=Yes5mmInsert(Use5mmInsert)) { // bottom z support
 	translate([45,0,0]) {
 		difference() {
-			color("lightgray") import("original stl/Z ROD MOUNT BOTTOM.stl");
+			OriginalPart();
 			translate([45,-26,25]) newrod(); // resize rod notch
 			bottomhole(); // resize hole to allow a coupler to fit through
 			do_fillets(1); // round over where the new hole is
@@ -125,6 +121,12 @@ module bottom(Screw=Yes5mmInsert(Use5mmInsert)) { // bottom z support
 		bottomholeouter();
 		translate([28,-50,25.9]) clamp_v2();
 	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module OriginalPart() {
+	color("lightgray") import("original stl/Z ROD MOUNT BOTTOM.stl",convexity=3);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,31 +175,13 @@ module topbracket()  // for top horizontal brace between left & right sides
 
 
 module newrod() { // resize the notch for the z rod
-	color("black") cylinder(h=40, r = ZRodDiameter/2, $fn = 100);
+	color("white") cylinder(h=40, r = ZRodDiameter/2, $fn = 100);
 }
+
 
 ///////////////////////////////////////////////////////////////////////
 
-module clamp() { // clamp to z rod
-	difference() {
-		color("white") minkowski() {
-			cube([length,width,thickness]);
-			cylinder(h=1,r=3);
-		}
-		// mounting screws
-		translate([length/2-screw_dist/2,width/2,-1]) color("red") cylinder(h=thickness+3,r=screw5/2);
-		translate([length/2+screw_dist/2,width/2,-1]) color("blue") cylinder(h=thickness+3,r=screw5/2);
-		// rod
-		translate([length/2,width+5,-0.5]) rotate([90,0,0]) color("plum") cylinder(h=width+10,r=ZRodDiameter/2);
-		// countersinks for screws
-		translate([length/2-screw_dist/2,width/2,thickness-2]) color("gray") cylinder(h=thickness+3,r=screw5hd/2);
-		translate([length/2+screw_dist/2,width/2,thickness-2]) color("black") cylinder(h=thickness+3,r=screw5hd/2);
-	}
-}
-
-///////////////////////////////////////////////////////////////////////
-
-module clamp_v2(Screw=screw5) { // clamp to z rod
+module clamp(Screw=screw5) { // clamp to z rod
 	difference() {
 		color("white") cuboid([length,width,thickness],rounding=2,p1=[0,0]);
 		// mounting screws

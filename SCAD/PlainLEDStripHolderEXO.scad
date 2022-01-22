@@ -2,7 +2,7 @@
 // PlainLEDStripHolderEXO.scad
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // created 2/13/21
-// last update 10/19/21
+// last update 1/22/22
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // https://creativecommons.org/licenses/by-sa/4.0/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,12 +15,12 @@
 // 5/16/21	- Added another short led strip mount that goes between the hotend and bltouch
 // 9/25/21	- Made short LED mount able to be shifted or eliminated
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-$fn=100;
 include <inc/brassinserts.scad>
 include <BOSL2/std.scad> //inc/cubex.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// uses three pieces of led light strips
+// uses two or three led light strips
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+$fn=100;
 LEDStripWidth=8.5;
 LayerThickness=0.35;
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,12 +32,7 @@ PlainLEDStripHolder(1,0);
 module PlainLEDStripHolder(DoTabs=1,ShiftShortLEDTab=0) {
 	difference() {
 		translate([0,-10,0]) color("cyan") cuboid([110,45,4],rounding=2);
-		translate([-37,15,0]) {
-			translate([0,-10,-3])color("red") cylinder(h=10,d=screw4);
-			translate([40,-10,-3]) color("blue") cylinder(h=10,d=screw4);
-			translate([0,-10,1.5])color("blue") cylinder(h=5,d=screw4hd);
-			translate([40,-10,1.5]) color("red") cylinder(h=5,d=screw4hd);
-		}
+		translate([-37,15,0]) MountHoles();
 		translate([0,11,0]) ZipTieHoleSlot();
 		translate([-50,11,0]) ZipTieHoleSlot();
 		translate([-98,11,0]) ZipTieHoleSlot();
@@ -72,6 +67,15 @@ module PlainLEDStripHolder(DoTabs=1,ShiftShortLEDTab=0) {
 			translate([-99,10,0]) ZipTieHoleSlot();
 		}
 	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module MountHoles(Qty=1) {
+	translate([0,-10,-3])color("red") cylinder(h=10,d=screw4);
+	translate([40,-10,-3]) color("blue") cylinder(h=10,d=screw4);
+	translate([0,-10,1.5])color("blue") cylinder(h=5,d=screw4hd);
+	translate([40,-10,1.5]) color("red") cylinder(h=5,d=screw4hd);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////

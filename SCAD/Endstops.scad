@@ -33,13 +33,44 @@ LayerThickness=0.3;
 //XEndStop(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert),screw5,11.5); // CN0097
 //XEndStopV2(9.7,0,0,Yes2mmInsert(Use2mmInsert),8,0); // green microswitch inline mount
 //XEndStopV2(10,0,8,screw2,8,0); // black microswitch inline mount
-XEndStop2020(9.7,0,8,Yes2mmInsert(Use2mmInsert)); // green microswitch inline mount
+//XEndStop2020(9.7,0,8,Yes2mmInsert(Use2mmInsert)); // green microswitch inline mount
 //XEndStop2020(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert)); // CN0097
 //XEndStop2020(10,0,8,Yes2mmInsert(Use2mmInsert)); // black microswitch inline mount
 //XEndStopV2(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert),8,0); // CN0097
 //YEndStop(9.7,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // green microswitch
 //YEndStop(10,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // Black microswitch
 //YEndStop(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert),screw5,11.5); // CN0097
+//YEndStopMS(9.7,0,8,Yes2mmInsert(Use2mmInsert),2.3,1); // green microswitch
+YEndStopMS(10,0,8,Yes3mmInsert(Use3mmInsert,LargeInsert),11.5); // black microswitch
+translate([0,25,0])
+	YEndStopStrike();
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module YEndStopMS(Sep,DiagOffset,Offset,ScrewS,Adjust=0,Thickness=Switch_thk2) {
+	difference() {
+		if(DiagOffset) translate([7,7,0]) color("cyan") cuboid([33,35,5],rounding=2);
+		else color("cyan") cuboid([25,20,5],rounding=2);
+		if(DiagOffset) {
+			color("red") cyl(h=20,d=screw5);
+			translate([0,0,4]) color("blue") cyl(h=5,d=screw5hd);
+		} else {
+			translate([-4,0,0]) color("red") cyl(h=20,d=screw5);
+			translate([-4,0,4]) color("blue") cyl(h=5,d=screw5hd);
+		}
+		translate([8, SwitchShift-11,-1]) color("purple") cyl(h = 11, d=ScrewS);
+		translate([8+DiagOffset, SwitchShift+Sep-11,-1]) color("black") cyl(h = 11, d=ScrewS);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module YEndStopStrike(Screw=Yes5mmInsert(Use5mmInsert)) {
+	difference() {
+		color("cyan") cuboid([20,20,5],rounding=1);
+		color("red") cyl(h=20,d=Screw);
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

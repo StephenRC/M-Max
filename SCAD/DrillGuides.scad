@@ -37,17 +37,13 @@ LLength = bottom+15;	// total length of drill guide
 ///////////////////////////////////////////////////////////////////////////////
 
 //2020DrillGuide();
-//Long2020DrillGuide();
+Long2020DrillGuide();
 //translate([0,-30,0])
 //	MSDrillGuide();
-BedDrillClips(4); // used to hold the bed onto the 2020 to drill the adjusting mount holes
-				 // use #39 drill bit for all three mounting holes, drill through the 2020 and bed,
-				 // M3 tap the 2020, drill the bed holes 3mm and countersink
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//module cubeX(Size,Round=0) {
-//	cuboid(Size,rounding=Round,p1=[0,0]);
-//}
+translate([0,35,0]) 
+	BedDrillClips(4); // used to hold the bed onto the 2020 to drill the adjusting mount holes
+					  // use M2.5 drill bit for all three mounting holes, drill through the 2020 and bed,
+					  // M3 tap the 2020, drill the bed holes 3mm and countersink
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
