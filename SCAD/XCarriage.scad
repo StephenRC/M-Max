@@ -17,12 +17,12 @@
 // 1/9/21	- Added mount holes on top for a wirechain
 // 2/21/21	- Added two M4 holes into carriage for mounting of the exoslide BMG adapter
 // 4/6/21	- Began BOSL2 conversion
+// 1/25/22	- Now broken
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // uses http://www.thingiverse.com/thing:211344 for the y belt
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <MMAX_h.scad>
 include <inc/Brassinserts.scad>
-use <ybeltclamp.scad>
 use <TitanAero.scad>
 use <HorizontalXBeltDrive.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,21 +38,20 @@ HorizontallCarriageHeight=20;
 LayerThickness=0.3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//xcar(1,1,1);
+xcar(1,1,1);
 //cableholder();
-//Belt_Holder();
 //Carriage(); // front; Titan=0,Tshift=0,Rear=0
 //Carriage(0,0,0,0,0,1); // rear
 //XCarriageWithExtruder(1,1);
 //XCarriageFullAssemblySingle(1,0,1,0,35);  // StepperLength 35 (pancake) or 45
 //XCarriageFullAssemblyDual(1,1,0,35);
-XCarriageFullAssemblyNoExtruder(1,1,0,1,1);
+//XCarriageFullAssemblyNoExtruder(1,1,0,1,1);
 //Carriage(1,0,0,1,1,0);
 
 ///////////////
 // temp holder - remove when cubeX is no longer used
 module cubeX( size, radius=1, rounded=true, center=false ) {
-	cuboid(size,rounding=radius);//p1=[0,0]
+	cuboid(size,rounding=radius,p1=[0,0]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -294,23 +293,6 @@ module Carriage(Titan=0,Tshift=0,Rear=0,ExtMount=0,AeroMount=0,TopBeltMount=1) {
 module BeltHeads() { // belt mounting holes
 	//translate([0,-BeltShift,0])
 	Belt_Mount_Holes(screw3hd);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module Belt_Holder() {
-	union() {
-		difference() {
-			translate([-8,-15,0]) color("plum") cubeX([40.5,50,5],1);
-			translate([-7,-7,0]) Belt_Mount_Holes();
-			translate([-7,-7,4.5]) BeltHeads();
-		}
-		difference() {
-			translate([-26.5,-BeltShift,1.5]) beltClamp();
-			translate([-7,16,0]) Belt_Mount_Holes();
-			translate([-7,16,1]) BeltHeads();
-		}
-	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

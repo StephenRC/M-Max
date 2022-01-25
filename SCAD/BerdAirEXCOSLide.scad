@@ -26,10 +26,6 @@ E3DV6diameter=16+Clearance; // diameter of section right above heat sink
 
 //BerdAirBLTouchEXO(2,7,15); // rear mount
 //BerdAirEXORear(2,15); // rear mount
-//difference() {
-//Hose6mmUTurn();
-//translate([0,-5,-5]) cube([10,60,20]);
-//}
 E3DV6Mount(2,0);  // moount on the top section of the heatsink
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,34 +58,6 @@ module BAClamp(PipeSize=2) {
 			translate([-29,0,-8]) color("gray") cylinder(h=20,d=PipeSize);
 		}
 	}
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module cubeX(size,Rounding) { // temp module
-	cuboid(size,rouding=Rounding,p1=[0,0]);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module Hose6mmUTurn() {
-		difference() {
-			color("cyan") cylinder(h=15,d=6);
-			translate([0,0,-5]) color("red") cylinder(h=20,d=3);
-			translate([-5,3,8]) color("gray") rotate([45,0,0]) cube([10,10,10]);
-		}
-		translate([0,43,0]) difference() {
-			color("blue") cylinder(h=15,d=6);
-			translate([0,0,-5]) color("gray") cylinder(h=20,d=3);
-			translate([-5,-3,8]) color("red") rotate([45,0,0]) cube([10,10,10]);
-		}
-		translate([0,0,11]) rotate([90,0,0]) difference() {
-			translate([0,0,-50])color("green") cylinder(h=55,d=6);
-			translate([0,0,-55]) color("pink") cylinder(h=65,d=3);
-			translate([-5,-3,-3]) color("gray") rotate([45,0,0]) cube([10,15,10]);
-			translate([-5,-10.15,-47]) color("lightgray") rotate([-45,0,0]) cube([10,15,10]);
-		}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

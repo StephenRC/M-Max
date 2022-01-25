@@ -10,7 +10,7 @@
 // 2/20/21	- Added a 2020 X endstop mount
 // 1/6/22	- BOSL2
 /////////////////////////////////////////////////////////////////////////////////////////////
-include <mmax_h.scad>
+include <bosl2/std.scad>
 include <inc/NEMA17.scad>
 include <inc/brassinserts.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,6 +26,7 @@ Switch_thk2=7;	// thickness of spacer
 HolderWidth=34;	// width of holder
 SwitchShift=6;	// move switch mounting holes along width
 LayerThickness=0.3;
+TextFont="AdLib BT:style=Regular"; // "StarTrek Film BT:style=Regular";
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //XEndStop(10,0,8,Yes2mmInsert(Use2mmInsert),8,0); // black microswitch inline mount
@@ -33,7 +34,7 @@ LayerThickness=0.3;
 //XEndStop(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert),screw5,11.5); // CN0097
 //XEndStopV2(9.7,0,0,Yes2mmInsert(Use2mmInsert),8,0); // green microswitch inline mount
 //XEndStopV2(10,0,8,screw2,8,0); // black microswitch inline mount
-//XEndStop2020(9.7,0,8,Yes2mmInsert(Use2mmInsert)); // green microswitch inline mount
+XEndStop2020(9.7,0,8,Yes2mmInsert(Use2mmInsert)); // green microswitch inline mount
 //XEndStop2020(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert)); // CN0097
 //XEndStop2020(10,0,8,Yes2mmInsert(Use2mmInsert)); // black microswitch inline mount
 //XEndStopV2(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert),8,0); // CN0097
@@ -41,13 +42,14 @@ LayerThickness=0.3;
 //YEndStop(10,0,8,Yes2mmInsert(Use2mmInsert),screw5,2.3,1); // Black microswitch
 //YEndStop(22,10,8,Yes3mmInsert(Use3mmInsert,LargeInsert),screw5,11.5); // CN0097
 //YEndStopMS(9.7,0,8,Yes2mmInsert(Use2mmInsert),2.3,1); // green microswitch
-YEndStopMS(10,0,8,Yes3mmInsert(Use3mmInsert,LargeInsert),11.5); // black microswitch
-translate([0,25,0])
-	YEndStopStrike();
+translate([40,9,2.5])
+	YEndStopMS(10,0,8,Yes2mmInsert(Use2mmInsert),11.5); // black microswitch
+//translate([0,25,0])
+//	YEndStopStrike();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module YEndStopMS(Sep,DiagOffset,Offset,ScrewS,Adjust=0,Thickness=Switch_thk2) {
+module YEndStopMS(Sep,DiagOffset,Offset,ScrewS=Yes2mmInsert(Use2mmInsert),Adjust=0,Thickness=Switch_thk2) {
 	difference() {
 		if(DiagOffset) translate([7,7,0]) color("cyan") cuboid([33,35,5],rounding=2);
 		else color("cyan") cuboid([25,20,5],rounding=2);
@@ -58,9 +60,10 @@ module YEndStopMS(Sep,DiagOffset,Offset,ScrewS,Adjust=0,Thickness=Switch_thk2) {
 			translate([-4,0,0]) color("red") cyl(h=20,d=screw5);
 			translate([-4,0,4]) color("blue") cyl(h=5,d=screw5hd);
 		}
-		translate([8, SwitchShift-11,-1]) color("purple") cyl(h = 11, d=ScrewS);
-		translate([8+DiagOffset, SwitchShift+Sep-11,-1]) color("black") cyl(h = 11, d=ScrewS);
+		translate([8, SwitchShift-11,-1]) color("purple") cyl(h = 20, d=ScrewS);
+		translate([8+DiagOffset, SwitchShift+Sep-11,-1]) color("black") cyl(h = 20, d=ScrewS);
 	}
+	translate([2,-1,2]) printchar("Y");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +86,7 @@ module XEndStop2020(Sep,DiagOffset,Offset,ScrewS,Adjust=0,Thickness=Switch_thk2)
 		translate([4, SwitchShift-1,-1]) color("purple") cylinder(h = 11, d=ScrewS);
 		translate([4+DiagOffset, SwitchShift+Sep-1,-1]) color("black") cylinder(h = 11, d=ScrewS);
 	}
+	translate([14,2,6.5]) printchar("X");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,6 +204,12 @@ module baseV2(Sep,DiagOffset,Offset,ScrewT,Adjust) {
 			}
 		}
 	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+module printchar(String,TxtHeight=1,TxtSize=3.5) { // print something
+	color("darkgray") linear_extrude(height = TxtHeight) text(String,font=TextFont ,size=TxtSize);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
