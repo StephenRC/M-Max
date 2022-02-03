@@ -1,8 +1,8 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ZMotorMount.scad -  can shift the z motor mount up/down
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 8/21/2018
-// Last Update: 1/6/22
+// Last Update: 2/1/22
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // https://creativecommons.org/licenses/by-sa/3.0/
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,14 +15,17 @@
 // 8/9/20	- Added ZMotorMountExtended() to move motors higher
 // 1/6/22	- BOSL2
 // 1/11/22	- Belt drive with builtin Z rod holder
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2/1/22	- Final adjustment of zod position for belt drive mount, tweaked some code
+// 2/2/22	- Beltdrive motor mount now can use uses two M3 screws and M3 washers to hold bearing in place
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <bosl2/std.scad>
 include <inc/nema17.scad>
 include <inc/screwsizes.scad>
 include <inc/brassinserts.scad>
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
-///////////////////////////////////////////////////////////////////////////////////////////////////////
 Use5mmInsert=1;
+Use3mmInsert=1;
 Clearance = 0.7;		// allow threaded rod to slide without problem
 BaseWidth = 90;
 BaseLength = 100;
@@ -31,29 +34,68 @@ BaseThickness=5;
 Diameter608 = 22+Clearance;		// outside diameter of a 608
 Height608 = 7; 					// thickness of a 608
 LayerThickness=0.3;
-BearingHoleClearance = 17;			// Clearance for a 8mm nut
+BearingHoleClearance = 19;			// Clearance for a 8mm nut
+BrassInsertLength=6; // for M3 insert
 //----------------------------------------------------------------------------
-Show=0;		// show original steeper mount
-PrintPos=1;	// put Z rod clamp to print positon
-TwoZRodBaseSupports=1;  // have two supports on the Z Rod mount, if 0, you'll need to print supports
-/////////////////////////////////////////////////////////////////////////////////////////
+Show=0;		// show original stepper mount
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ZMotorMount(1,1,0,0,0,47);	// 1st arg:Quanity; 2nd arg: X position
-//ZMotorMountExtended(1);	// 1st arg:Quanity)
+ZMotorMount(1,1,0,1,0,0,47);	// 1st arg:Quanity; 2nd arg: X position
+//Collet(2);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module Collet(Qty=1) {
+	%translate([0,7.5,-5]) rotate([90,0,0]) cyl(h=BrassInsertLength,d=3); // show length of brass insert
+	echo("Collet outside diameter: ",screw8*2);
+	for(x=[0:Qty-1]) {
+		translate([0,x*28,0]) {
+			difference() {
+				union() {
+					translate([0,0,7]) color("cyan") cyl(h=Height608+2,d=screw8*2,rounding=2); // spacer
+					color("blue") cyl(h=Yes3mmInsert(Use3mmInsert)*2,d=screw8*2.7,rounding=2); // holder
+				}
+				color("red") cyl(h=30,d=screw8+0.3); // center hole
+				ColletScrews();
+			}
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ColletScrews(Screw=Yes3mmInsert(Use3mmInsert)) {
+	translate([0,-7,0]) rotate([90,0,0]) color("white") cyl(h=20,d=Screw);
+	translate([7,0,0]) rotate([90,0,90]) color("green") cyl(h=20,d=Screw);
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ZMotorMount(Qty=1,Bearing=0,RodAdjust=0,X=0,Y=0,Z=0) {
+module ZMotorMount(Qty=1,Bearing=0,RodAdjust=0,DoClamp=0,X=0,Y=0,Z=0) {
 	for(x = [0 : Qty-1]) {
 		translate([x*100,0,0]) {
 			if(Show) OldMount();
 			union() {
 				if(!Bearing) OriginalBase(X,Y,-Z-52.75,BaseThickness/10-1); // Z=-52.75 for original position
 				else BearingBase(X,Y,-Z-52.75,BaseThickness/10-1);
-				ZRodMount(RodAdjust,PrintPos);
+				ZRodMount(RodAdjust,DoClamp);
+				color("green") hull() {
+					translate([X+60,-Z+143,0]) cuboid([Thickness,5,10],rounding=2,p1=[0,0]);
+					translate([X+60,-Z+183,56+RodAdjust]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+				}
+				color("pink") hull() {
+					translate([X+25,-Z+161.5,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+					translate([X+25,-Z+183,56+RodAdjust]) cuboid([Thickness,10,6],rounding=2,p1=[0,0]);
+				}
 			}
+			translate([X+25,-Z+145,0]) color("blue") cuboid([Thickness,25,10],rounding=2,p1=[0,0]);
+			translate([X+27,-Z+167,0]) color("red") cylinder(h=LayerThickness,d=20);  // corner brim
 		}
-		if(Bearing) ZBeltDrive(X,Y,-Z-52.75,RodAdjust);
+		if(Bearing) {
+			ZBeltDrive(0,0,-99.75);
+			translate([43,28,4.7]) Collet(1);
+		}
 	}
 }
  
@@ -75,42 +117,23 @@ module ZBeltDrive(X=0,Y=0,Z=0,Adjust=0) {
 		translate([-49,90,6]) color("red") cyl(h=5,d=screw5hd);
 	}
 	SingleSideBaseSupport(X,Y,Z,0,BaseLength);
-	union() {
-		OriginalSupportSingle(X,Y,Z);
-		difference() {
-			color("green") hull() {
-				translate([X+60,-Z-9,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
-				translate([X+60,-Z+36.25,58+Adjust]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
-			}
-			translate([X+55,-Z-10.25,0]) color("gray") cuboid([10,10,10],p1=[0,0]);
-		}
-		if(TwoZRodBaseSupports) {
-			translate([-54,0,0]) color("khaki") hull() {
-				translate([X+79,-Z+15,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
-				translate([X+79,-Z+36.25,58+Adjust]) cuboid([Thickness,10,6],rounding=2,p1=[0,0]);
-			}
-			translate([X+25,-Z-3,0]) color("blue") cuboid([Thickness,25,10],rounding=2,p1=[0,0]);
-			translate([X+27,-Z+20,0]) color("red") cylinder(h=LayerThickness,d=20);  // corner brim
-		}
-	}
+	MotorMountSupportSingle(X,Y,Z);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-module ZRodMount(Adjust=0,Print=0,ZRodSize=10,UpDown=0) {
+
+module ZRodMount(Adjust=0,DoClamp=0,ZRodSize=10,UpDown=0) {
 	if(Show) %translate([45,BaseLength+20,33]) rotate([90,0,0]) cylinder(h=19,d=28);
 	translate([0,44,0]) {
 		difference() {
-			translate([BaseWidth/2,77+UpDown,62+Adjust]) color("blue") cuboid([40,50+UpDown,8],rounding=2);
+			translate([BaseWidth/2,77.25+UpDown,60+Adjust]) color("blue") cuboid([40,51+UpDown,8],rounding=2);
 			ZRodMountHoles();
 			ZRod(Adjust,ZRodSize,UpDown);
 		}
-		ClampScrewHoleSupport();
-		translate([BaseWidth/2-10,93,58.15]) color("gray") cyl(h=LayerThickness,d=screw5hd); // hole support
-		translate([BaseWidth/2+10,93,58.15]) color("green") cyl(h=LayerThickness,d=screw5hd); // hole support
-		translate([27,BaseLength-26,60]) color("gold") cuboid([4,42+UpDown,10],rounding=2);
-		translate([63,BaseLength-26,60]) color("salmon") cuboid([4,46+UpDown,10],rounding=2);
-		if(Print) translate([15,-15,-66.2]) ZRodClamp(Adjust,ZRodSize);
-		else ZRodClamp(Adjust,ZRodSize);
+		ClampScrewHoleSupport(Adjust);
+		translate([27,BaseLength-26,58+Adjust]) color("gold") cuboid([4,42+UpDown,10],rounding=2);
+		translate([63,BaseLength-26,58+Adjust]) color("salmon") cuboid([4,42+UpDown,10],rounding=2);
+		if(DoClamp) translate([15,150,-85.5]) rotate([90,0,0]) ZRodClamp(Adjust,ZRodSize);
 	}
 }
 
@@ -152,16 +175,11 @@ module ZRodMountHoles(Screw=Yes5mmInsert(Use5mmInsert)) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ClampScrewHoleSupport() {
-	translate([BaseWidth/2-12,93,58.15]) color("gray") cyl(h=LayerThickness,d=screw5hd); // hole support
-	translate([BaseWidth/2+12,93,58.15]) color("green") cyl(h=LayerThickness,d=screw5hd); // hole support
+module ClampScrewHoleSupport(Adjust=0) {
+	translate([BaseWidth/2-12,93,56.15+Adjust]) color("gray") cyl(h=LayerThickness,d=screw5hd); // hole support
+	translate([BaseWidth/2+12,93,56.15+Adjust]) color("green") cyl(h=LayerThickness,d=screw5hd); // hole support
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module ZMotorMountExtended(Qty=2) {
-	for(x = [0 : Qty-1]) translate([x*100,0,0]) base(0,0,-195,BaseThickness/10-1); // Z=-52.75 for original position
-}
  
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -213,11 +231,22 @@ module BearingSupport(X=0,Y=0,Z=0) {
 
 module BearingMount(X=0,Y=0,Z=0) {
 	difference() {
-		translate([X+14.6,-Z-4,0]) color("red") cuboid([BaseWidth-30.7,Thickness,BaseLength-39],rounding=2,p1=[0,0]);
+		translate([X+14.6,-Z-4,0]) color("red") cuboid([BaseWidth-30.7,Thickness,BaseLength-40],rounding=2,p1=[0,0]);
 		ZRod();
 		ZLeadScrew();
+		BearingHoldDown(Screw=screw3t);
 	}
-	translate([X+44.6,-Z-2,35]) rotate([-90,0,0]) BearingHole();
+	difference() {
+		translate([X+44.6,-Z-2,35]) rotate([-90,0,0]) BearingHole();
+		BearingHoldDown(Screw=screw3t);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BearingHoldDown(Screw=screw3t) { // uses two M3 screws and M3 washers
+	translate([45,100,22]) color("blue") rotate([90,0,0]) cyl(h=50,d=Screw);
+	translate([45,100,48]) color("cyan") rotate([90,0,0]) cyl(h=50,d=Screw);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -234,10 +263,9 @@ module BearingHole() {	// holds the bearing
 		translate([0,0,0]) color("red") cylinder(h=15,d=Diameter608);
 	}
 	difference() {
-		translate([0,0,-Height608-0.3]) color("white") cyl(h=Height608-2,d=Diameter608+10,rounding1=1);
+		translate([0,0,-Height608-0.3]) color("white") cyl(h=Height608-2,d=Diameter608+10,rounding1=2);
 		translate([0,0,-Height608]) color("black") cyl(h=15,d=BearingHoleClearance);
 	}
-	//BearingHole_support();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -258,10 +286,6 @@ module base(X=0,Y=0,Z=0,Z2=0,BaseLength=50) { // makes the motor mount holder
 		}
 		BaseHoles();
 		translate([0,95,-2]) InnerHole();
-		//translate([43.5,125,-2]) color("red") hull() {
-		//	cylinder(h=10,d=35);
-		//	translate([0,43,0]) cylinder(h=10,d=35);
-		//}	
 	}
 	union() {
 		NEMA_Holder(X,Y,Z);
@@ -341,20 +365,20 @@ module SideSlots() { // notches left & right of mounting base
 module OriginalSupports(X=0,Y=0,Z=0) { // the angled supports for the Nema17
 	translate([-54.5,-41,0]) color("gold") hull() {
 		translate([X+69,-Z-17,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
-		translate([X+69,-Z+31.75,56]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+		translate([X+69,-Z+36.75,50]) cuboid([Thickness,5,10],rounding=2,p1=[0,0]);
 	}
 	translate([-90.5+BaseWidth,-41,0]) color("lightcoral") hull() {
 		translate([X+69,-Z-17,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
-		translate([X+69,-Z+31.75,56]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+		translate([X+69,-Z+36.75,50]) cuboid([Thickness,5,10],rounding=2,p1=[0,0]);
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module OriginalSupportSingle(X=0,Y=0,Z=0) { // the angled supports for the Nema17
+module MotorMountSupportSingle(X=0,Y=0,Z=0) { // the angled supports for the Nema17
 	translate([-129,-41,0]) color("purple") hull() {
 		translate([X+69,-Z-17,0]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
-		translate([X+69,-Z+31.75,55]) cuboid([Thickness,10,5],rounding=2,p1=[0,0]);
+		translate([X+69,-Z+36.75,50]) cuboid([Thickness,5,10],rounding=2,p1=[0,0]);
 	}
 }
 
@@ -365,7 +389,6 @@ module Supports(X=0,Y=0,Z=0) { // the angled supports for the Nema17
 		translate([14.5,-Z-55,-10]) rotate([45,0,0]) color("gold") cuboid([Thickness,90,10],rounding=2,p1=[0,0]);
 		translate([13,-Z-70,-25]) color("ivory") cube([Thickness*2,40,40]);
 		translate([12,-Z-3,26]) color("gray") cube([Thickness*2,20,40]);
-		
 	}
 	translate([BaseWidth-38,0,0]) difference() {
 		translate([16.5,-Z-55,-10]) rotate([45,0,0]) color("lightcoral") cuboid([Thickness,90,10],rounding=2,p1=[0,0]);
@@ -397,4 +420,4 @@ module InnerHoleBearingSide(X=0,Y=0,Z=0) { // the big hole in the middle of the 
 	translate([BaseWidth/2-1,BaseLength/2-23,Thickness/2]) color("pink") cyl(h=Thickness+0.2,d=40,rounding=-2);
 }
 
-//////////////// end of msmax_shift_z_motor_mount.scad //////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

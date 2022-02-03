@@ -32,8 +32,8 @@ LEDLight=1; // print LED ring mounting with spacer
 LEDSpacer=0;//8;  // length need for titan is 8; length need for aero is 0
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//Dual(1,35);
-Single(1,35);
+Dual(1,35);
+//Single(1,35);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -117,16 +117,16 @@ module TitanDual(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0,Brac
 		}
 	}
 	if(BraceAttachment) {
-		translate([-14,63,52]) {
+		translate([-14,60,52]) {
 			difference() {
-				color("blue") rotate([90,0,0]) cylinder(h=4,d=screw5hd+1);
-				translate([0,1,0]) color("pink") rotate([90,0,0]) cylinder(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+				color("blue") rotate([90,0,0]) cyl(h=4,d=screw5hd+1,rounding=2);
+				 color("pink") rotate([90,0,0]) cyl(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 			}
 		}
-		translate([-14,-29,52]) {
+		translate([-14,-31,52]) {
 			difference() {
-				color("pink") rotate([90,0,0]) cylinder(h=4,d=screw5hd+1);
-				translate([0,1,0]) color("blue") rotate([90,0,0]) cylinder(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
+				color("pink") rotate([90,0,0]) cyl(h=4,d=screw5hd+1,rounding=2);
+				color("blue") rotate([90,0,0]) cyl(h=6,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
 			}
 		}
 	}

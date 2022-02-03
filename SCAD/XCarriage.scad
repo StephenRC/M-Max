@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // XCarriage - x carriage for M-Max using makerslide
 // created: 2/3/2014
-// last modified: 4/6/21
+// last modified: 1/29/22
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// https://creativecommons.org/licenses/by-sa/3.0/
+// https://creativecommons.org/licenses/by-sa/4.0/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 9/2/18	- Original file modified for MMAX, extruder plate and top mounting belt removed
 // 12/10/18	- Changed to loop type bel holder on carraiage
@@ -18,6 +18,7 @@
 // 2/21/21	- Added two M4 holes into carriage for mounting of the exoslide BMG adapter
 // 4/6/21	- Began BOSL2 conversion
 // 1/25/22	- Now broken
+// 1/29/22	- BOSL2 and fixed broken modules
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // uses http://www.thingiverse.com/thing:211344 for the y belt
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,61 +39,51 @@ HorizontallCarriageHeight=20;
 LayerThickness=0.3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-xcar(1,1,1);
+//xcar(1,1,1);
 //cableholder();
-//Carriage(); // front; Titan=0,Tshift=0,Rear=0
-//Carriage(0,0,0,0,0,1); // rear
+//Carriage(); // front
+//Carriage(0,0,1,0,0,1); // rear
 //XCarriageWithExtruder(1,1);
-//XCarriageFullAssemblySingle(1,0,1,0,35);  // StepperLength 35 (pancake) or 45
+XCarriageFullAssemblySingle(1,0,1,0,35);  // StepperLength 35 (pancake) or 45
 //XCarriageFullAssemblyDual(1,1,0,35);
 //XCarriageFullAssemblyNoExtruder(1,1,0,1,1);
-//Carriage(1,0,0,1,1,0);
-
-///////////////
-// temp holder - remove when cubeX is no longer used
-module cubeX( size, radius=1, rounded=true, center=false ) {
-	cuboid(size,rounding=radius,p1=[0,0]);
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module XCarriageFullAssemblySingle(Titan,Stiffner=0,DoTab=0,AeroMount=0,StepperLength=45) {
-	difference() {
-//		translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0,0,0,0); // front
-		translate([23,0,90]) WirechainMount();
-	}
-	// Titan=0,Tshift=0,Rear=0,ExtMount=0,AeroMount=0,TopBeltMount=1
 	if(StepperLength==35)
-		translate([31,StepperLength-65,0]) rotate([0,0,90]) SingleAero(1,1,1,StepperLength,0,1);
-	
+		translate([-6,StepperLength-61,-10]) rotate([0,0,90]) SingleAero(1,1,1,StepperLength,0,1);
 	else if(StepperLength==45)
-		translate([31,StepperLength-86,0]) rotate([0,0,90]) SingleAero(0,1,1,StepperLength,0,1);
-	//														Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0
-	if(Stiffner) translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connect extruder top to xcarriage
+		translate([-6,StepperLength-81,-10]) rotate([0,0,90]) SingleAero(0,1,1,StepperLength,0,1);
+	if(Stiffner) translate([45.8,-13,40]) color("blue") cuboid([10,10,10],rounding=2,p1=[0,0]); // connect extruder top to xcarriage
+	translate([0,0,1]) rotate([90,0,0]) Carriage(0,0,0,0,0,0); // rear
 	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1,0,0,0); // rear
-	difference() {
-		union() {
-			translate([9.5,-wall,80]) rotate([180,0,0]) BeltCarriageMount(0);
-			translate([12,-wall,80]) color("red") cubeX([10,wall,13],2);
-			translate([12,33.3,80]) color("pink") cubeX([10,wall,13],2);
-			translate([52,-wall,80]) color("blue") cubeX([10,wall,13],2);
-			translate([52,33.3,80]) color("green") cubeX([10,wall,13],2);
+	translate([-34,4.15,-3]) {
+		difference() {
+			union() {
+				translate([35,16.5,90]) rotate([180,0,0]) BeltCarriageMount(0);
+				translate([12,-wall-0.15,80]) color("red") cuboid([10,wall,13],rounding=2,p1=[0,0]);
+				translate([12,33.15,80]) color("pink") cuboid([10,wall,13],rounding=2,p1=[0,0]);
+				translate([52.5,-wall-0.15,80]) color("blue") cuboid([10,wall,13],rounding=2,p1=[0,0]);
+				translate([52,33.15,80]) color("green") cuboid([10,wall,13],rounding=2,p1=[0,0]);
+			}
+			translate([16,-10,70]) color("khaki") rotate([0,-45,0]) cuboid([10,55,25],rounding=2,p1=[0,0]);
+			translate([52,-10,78]) color("gray") rotate([0,45,0]) cuboid([10,55,25],rounding=2,p1=[0,0]);
+			translate([20,0,90]) WirechainMount();
 		}
-		translate([16,-10,70]) color("khaki") rotate([0,-45,0]) cubeX([10,55,25],2);
-		translate([52,-10,78]) color("gray") rotate([0,45,0]) cubeX([10,55,25],2);
-		translate([23,0,90]) WirechainMount();
-	}
-	difference() {
-		translate([15,0,90]) color("gray") cube([40,40,LayerThickness]);
-		translate([23,0,90]) WirechainMount();
+		//difference() {
+			translate([15,0,89.5]) color("gray") cube([40,40,LayerThickness]);
+		//	translate([20,0,85]) WirechainMount();
+		//}
 	}
 	// make rear xcarriage bottom level with front
-	translate([0,33.3,-4]) color("black") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
+	translate([-37.5,37.3,-14]) color("black") cuboid([VerticalCarriageWidth*2+0.6,wall,10],rounding=2,p1=[0,0]);
 	// neaten up exterude mount to xcarriage
-	translate([0.25,-wall,-4]) color("white") cubeX([VerticalCarriageWidth*2+0.6,wall,8.5],1);
+	translate([-37.5,-wall+4,-14]) color("white") cuboid([VerticalCarriageWidth*2+0.6,wall,8.5],rounding=2,p1=[0,0]);
+	translate([-53,15,-14]) Brace(1);
 	if(DoTab) {
-		translate([0,37,-4]) color("green") cylinder(h=LayerThickness,d=20);
-		translate([75,37,-4]) color("plum") cylinder(h=LayerThickness,d=20);
+		translate([-37,41,-14]) color("green") cylinder(h=LayerThickness,d=20);
+		translate([35,41,-14]) color("plum") cylinder(h=LayerThickness,d=20);
 	}
 }
 
@@ -106,22 +97,19 @@ module WirechainMount(Screw=screw5) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module XCarriageFullAssemblyNoExtruder(Titan,ExtruderMountType=1,Stiffner=0,DoTab=0,AeroMount=0) {
-	difference() {	
-		translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0,1,AeroMount,0); // front
-		translate([-16,1.5,77]) WirechainMount();
-	}
-	if(Stiffner) translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connect extruder top to xcarriage
+	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0,1,AeroMount,0); // front
+	if(Stiffner) translate([45.8,-13,40]) color("blue") cuboid([10,10,10],rounding=2,p1=[0,0]); // connect extruder top to xcarriage
 	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1,0,0,0); // rear
 	difference() {
 		union() {
 			translate([0,20.65,85]) rotate([180,0,0]) BeltCarriageMount(0);
-			translate([-19,0,86]) color("red") cubeX([10,wall,13],2);
-			translate([-19,41.3,86.5]) color("pink") cubeX([10,wall,13],2);
-			translate([19,0,86]) color("blue") cubeX([10,wall,13],2);
-			translate([19,41.3,86]) color("green") cubeX([10,wall,13],2);
+			translate([-25,-4,70]) color("red") cuboid([10,wall,18],rounding=2,p1=[0,0]);
+			translate([-25,37.3,70]) color("pink") cuboid([10,wall,18],rounding=2,p1=[0,0]);
+			translate([15,-4,70]) color("blue") cuboid([10,wall,18],rounding=2,p1=[0,0]);
+			translate([15,37.3,70]) color("green") cuboid([10,wall,18],rounding=2,p1=[0,0]);
 		}
-		translate([-25,20,80]) color("khaki") rotate([0,-45,0]) cubeX([10,55,25],2);
-		translate([25,20,80]) color("gray") rotate([0,45,0]) cubeX([10,55,25],2);
+		translate([-20,-7,61]) color("khaki") rotate([0,-45,0]) cuboid([10,55,25]);
+		translate([14,-7,69]) color("gray") rotate([0,45,0]) cuboid([10,55,25]);
 		translate([-16,1.5,80]) WirechainMount();
 	}
 	if(DoTab) {
@@ -143,68 +131,52 @@ module XCarriageFullAssemblyNoExtruder(Titan,ExtruderMountType=1,Stiffner=0,DoTa
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module XCarriageFullAssemblyDual(Titan,ExtruderMountType=1,Stiffner=0,StepperLength=45) {
+module XCarriageFullAssemblyDual(Titan,ExtruderMountType=1,Stiffner=0,StepperLength=45,DoTab=1) {
 	difference() {
 		translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0); // front
 		translate([23,0,90]) WirechainMount();
 	}
-	//												Titan=0,Tshift=0,Rear=0,ExtMount=0
 	if(StepperLength==35)
-		translate([53,StepperLength-65,0]) rotate([0,0,90]) TitanDual(0,1,0,StepperLength);
+		translate([16,StepperLength-61,-10]) rotate([0,0,90]) TitanDual(0,1,1,StepperLength,0,1);
 	
 	else if(StepperLength==45)
-		translate([53,StepperLength-86,0]) rotate([0,0,90]) TitanDual(0,1,0,StepperLength);
-	//translate([53,-43,0]) rotate([0,0,90]) TitanDual(0,1,0,StepperLength);
-	//										TitanDual(Mounting=1,DoTab=1,DoNotch=0,StepperLength=45,ShowLength=0
-	if(Stiffner) translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connect extruder top to xcarriage
+		translate([16,StepperLength-81,-10]) rotate([0,0,90]) TitanDual(0,1,1,StepperLength);
+	if(Stiffner) translate([45.8,-13,40]) color("blue") cuboid([10,10,10],rounding=2,p1=[0,0]); // connect extruder top to xcarriage
 	translate([0,41.3,1]) rotate([90,0,0]) Carriage(0,0,1); // rear
-	difference() {
-		union() {
-			translate([9.5,-wall,80]) rotate([180,0,0]) BeltCarriageMount(0);
-			translate([12,-wall,80]) color("red") cubeX([10,wall,13],2);
-			translate([12,33.3,80]) color("pink") cubeX([10,wall,13],2);
-			translate([52,-wall,80]) color("blue") cubeX([10,wall,13],2);
-			translate([52,33.3,80]) color("green") cubeX([10,wall,13],2);
+	translate([-35,4.15,-3]) {
+		difference() {
+			union() {
+				translate([35,16.5,90]) rotate([180,0,0]) BeltCarriageMount(0);
+				translate([12,-wall-0.15,80]) color("red") cuboid([10,wall,13],rounding=2,p1=[0,0]);
+				translate([12,33.15,80]) color("pink") cuboid([10,wall,13],rounding=2,p1=[0,0]);
+				translate([52.5,-wall-0.15,80]) color("blue") cuboid([10,wall,13],rounding=2,p1=[0,0]);
+				translate([52,33.15,80]) color("green") cuboid([10,wall,13],rounding=2,p1=[0,0]);
+				translate([15,0,89.5]) color("gray") cube([40,40,LayerThickness]);
+			}
+			translate([16,-10,70]) color("khaki") rotate([0,-45,0]) cuboid([10,55,25],rounding=2,p1=[0,0]);
+			translate([52,-10,78]) color("gray") rotate([0,45,0]) cuboid([10,55,25],rounding=2,p1=[0,0]);
+			translate([20,0,90]) WirechainMount();
 		}
-		translate([16,-10,70]) color("khaki") rotate([0,-45,0]) cubeX([10,55,25],2);
-		translate([52,-10,78]) color("gray") rotate([0,45,0]) cubeX([10,55,25],2);
-		translate([23,0,90]) WirechainMount();
 	}
-	// make rear xcarriage bottom level with front
-	translate([0,33.3,-4]) color("black") cubeX([VerticalCarriageWidth*2+0.6,wall,10],1);
-	difference() {
-		translate([15,0,90]) color("gray") cube([40,40,LayerThickness]);
-		translate([23,0,90]) WirechainMount();
+	translate([-37.5,37.3,-14]) color("black") cuboid([VerticalCarriageWidth*2+0.6,wall,10],rounding=2,p1=[0,0]);
+	translate([-53,15,-14]) Brace(1,1);
+	if(DoTab) {
+		translate([-37,41,-14]) color("green") cylinder(h=LayerThickness,d=20);
+		translate([35,41,-14]) color("plum") cylinder(h=LayerThickness,d=20);
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module XCarriageWithExtruder(Titan,DoRear=1) {
-	translate([0.25,0,1]) rotate([90,0,0]) Carriage(Titan,0,0); // front
-	translate([37.5,-31,0]) Extruder(1,5,1);
-	translate([45.8,-13,40]) color("blue") cubeX([10,10,10],2); // connector
-	// plug uneeded screw holes
-	difference() {
-		translate([5,-wall/2,-wall/2]) color("red") cylinder(h=25,d=screw3+2);
-		translate([12,-3.5,11.6]) rotate([90,0,0]) color("white") cylinder(h=10,d=screw5hd+1.5);
-	}
-	translate([21,-wall/2,-wall/2]) color("blue") cylinder(h=29,d=screw3+2);
-	difference() {
-		translate([38,-wall/2,-wall/2]) color("plum") cylinder(h=13,d=screw3+2);
-		translate([38.25,wall/2-2,wall+6]) rotate([90,0,0]) color("black") cylinder(h=10,d=12);
-	}
-	translate([54,-wall/2,-wall/2]) color("pink") cylinder(h=35,d=screw3+2);
-	difference() {
-		translate([70,-wall/2,-wall/2]) color("green") cylinder(h=25,d=screw3+2);
-		translate([62.9,-3.5,11.6]) rotate([90,0,0]) color("black") cylinder(h=10,d=screw5hd+1.5);
-	}
-	if(DoRear) translate([-10,10,-wall/2]) Carriage(0,0,1); // rear
+	translate([0,-15,1]) rotate([-180,0,0]) Carriage(Titan,0,0); // front
+	translate([-85,30,0]) rotate([0,0,90]) Single(1,35);//Extruder(1,5,1);
+	if(DoRear) translate([0,10,-wall/2]) Carriage(0,0,1); // rear
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module xcar(WhichOne=0,Titan=0,Aero=0) // makerslide version
+module xcar(WhichOne=0,Titan=0,Aero=0) // makerslide
 {
 	//if($preview) %translate([-100,-100,-5]) cube([200,200,5]);
 	if(WhichOne==0) { // front,rear,beltholder
@@ -358,7 +330,7 @@ module print_support()
 module belt_drive() // something to attach the x-axis belt
 {
 	difference() {
-		color("cyan") cubeX([44,48,wall],1,center=true);
+		color("cyan") cuboid([44,48,wall],1,center=true);
 		// mounting screw holes
 		translate([-(HorizontallCarriageWidth/4-5),-(25 - wall/2),-9]) rotate([0,0,0]) color("red") cylinder(h = 15, r = screw3/2, $fn = 50);
 		translate([HorizontallCarriageWidth/4-5,-(25 - wall/2),-9]) rotate([0,0,0]) color("blue") cylinder(h = 15, r = screw3/2, $fn = 50);
@@ -388,7 +360,7 @@ module belt() // belt mount plate or if MkrSld: top plate
 module belt_clamp(Nuts)
 {
 	difference() {
-		translate([0,0,-wall/2+1.5]) color("red") cubeX([8,19,3],1,center=true);
+		translate([0,0,-wall/2+1.5]) color("red") cuboid([8,19,3],1,center=true);
 		translate([0,6,-5]) color("cyan") cylinder(h = 2*wall, r = screw3/2,$fn=50);
 		translate([0,-6,-5]) color("gray") cylinder(h = 2*wall, r = screw3/2,$fn=50);
 		if(Nuts) {
@@ -403,7 +375,7 @@ module belt_clamp(Nuts)
 module belt_adjuster()
 {
 	difference() {
-		translate([0,0,-wall/2+4.5]) color("blue") cubeX([8,19,9],1,center=true);
+		translate([0,0,-wall/2+4.5]) color("blue") cuboid([8,19,9],1,center=true);
 		translate([0,0,5]) color("gray") cube([11,7,3.5],true);
 		translate([0,6,-5]) color("black") cylinder(h = 2*wall, r = screw3/2,$fn=50);
 		translate([0,-6,-5]) color("red") cylinder(h = 2*wall, r = screw3/2,$fn=50);
@@ -440,7 +412,7 @@ module SensorMount(Shift=0) { // four mounting holes for mounting of sensor brac
 
 module cableholder() {
 	difference() {
-		color("red") cubeX([15,10,3],1);
+		color("red") cuboid([15,10,3],rounding=1,p1=[0,0]);
 		translate([7.5,5,-5]) color("plum") cylinder(h=10,d=screw3);
 		translate([7.5,5,2]) color("khaki") cylinder(h=10,d=screw3hd);
 	}

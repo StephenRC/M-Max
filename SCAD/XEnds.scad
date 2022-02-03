@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////
-// MMAX-X-Ends.scad - http://creativecommons.org/licenses/by-sa/3.0/
+// XEnds.scad - XEnds for 10mm rod and TR8 or Misumi MTSSR8
 //////////////////////////////////////////////////////////////////////////////////////////
 // created 3/1/16
 // last update 1/18/22
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// https://creativecommons.org/licenses/by-sa/3.0/
+// https://creativecommons.org/licenses/by-sa/4.0/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 3/1/16	- SCAD version of zXEnd_4off.stl & x-bracket_1off.stl
 //			  at http://www.thingiverse.com/thing:12609
@@ -50,43 +50,41 @@
 // Each side uses two self-aligning bearings each on the z axis rods.
 // Currently set to use Misumi MTSSR8 nuts and SDI/SP 3A 7Z41MPSB10M bronze bearings on 10mm z rods.
 // If the holes for the bearings are out of round, use a heat gun to get the bearings in
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ***** Use a brim for printing *****
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <bosl2/std.scad>
 include <inc/nema17.scad>
 include <inc/screwsizes.scad>
 include <inc/brassinserts.scad>
-///////////////////////////////////////////////////////////////////////////////////////////
-//vars
-///////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100; // lower this to speed up rendering
 Use3mmInsert=1;
 LargeInsert=1;
 //------------------------------------------------------------
 // bearings, change them if you are using a different bearings
-AdjustCF = 0.1;	// adjust the clamping force
+AdjustCF = 0.1;								// adjust the clamping force of split shell
 X_Motor_Bearing_clearance = 15.5;
 // bearings, change them if you are using a different bearings
-SABBClearance = 2;					// clearance under self-aligning bronze bearing
-SABBLength = 10 + SABBClearance;		// self-aligning bronze bearing dimensions
-SABBDiameterClearance = 0.5;		// clearance needed to fit the self-aligning bearing in the pla hole
+SABBClearance = 2;							// clearance under self-aligning bronze bearing
+SABBLength = 10 + SABBClearance;			// self-aligning bronze bearing dimensions
+SABBDiameterClearance = 0.5;				// clearance needed to fit the self-aligning bearing in the pla hole
 SABBDiameter = 16.3 + SABBDiameterClearance;	// I used: http://shop.sdp-si.com/catalog/product/?id=A_7Z41MPSB10M
 Length = 74;
-ShellThickness = 5;			// thickness of shell
-BoltFlatWidth = 17; 		// width of flat to bolt together
+ShellThickness = 5;							// thickness of shell
+BoltFlatWidth = 17; 						// width of flat to bolt together
 Thickness = 5;
-ZDriveOffset = 30;			// distance between z rod and z screw
-ZNutLength = 30;			// length of znut section
-ZNutWidth = 22;			// width of znut section
-ZNutThickness = 15.2+ShellThickness;// thickness of znut section
-znutd = 14.5;		// z-nut diameter (point to point, not flats)
-znutdt = 6.4;		// nut thickness
-clearance = 1.5;	// clearance around zrod
-ZRodDiameter = 10 + clearance+AdjustCF;	// z smooth rod diameter
+ZDriveOffset = 30;							// distance between z rod and z screw
+ZNutLength = 30;							// length of znut section
+ZNutWidth = 22;								// width of znut section
+ZNutThickness = 15.2+ShellThickness;		// thickness of znut section
+znutd = 14.5;								// z-nut diameter (point to point, not flats)
+znutdt = 6.4;								// nut thickness
+clearance = 1.5;							// clearance around zrod
+ZRodDiameter = 10 + clearance+AdjustCF;		// z smooth rod diameter
 ZScrewDiameter = 8 + clearance+AdjustCF;	// z screw diameter
-ExtrusionSlotDistance = 20;	// distance between slots on the rear extrusion
-ExtrusionSlotLength=32;			// guide for extrusion
+ExtrusionSlotDistance = 20;					// distance between slots on the rear extrusion
+ExtrusionSlotLength=32;						// guide for extrusion
 ExtrusionSlotWidth=screw5-0.1;
 ExtrusionSlotThickness=2;
 ExtrusionSpacerThickness = 4.4;
@@ -94,8 +92,8 @@ ExtrusionSpacerThickness = 4.4;
 MotorMountLength = 85;
 MotorMountWidth = 44;
 MotorMountThickness = 12;
-MTSSR8d = 15.5;	// outside diameter of Misumi MTSSR8
-MTSSR8l = 21.5;	// length of MTSSR8
+MTSSR8d = 15.5;								// outside diameter of Misumi MTSSR8
+MTSSR8l = 21.5;								// length of MTSSR8
 BearingShellOffset=16;
 //--------------------------------
 TR8Height=34;
@@ -106,32 +104,33 @@ TR8FlangeThickness=4;
 TR8MountingHoleOffset=16;
 //----------------------------------------------------------------
 LayerThickness=0.3;
-/////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//SplitXEnd(0,1,1,0,0);	// Bearing=0,Extrusion2040=0,MisumiMTSSR8=0,Full=0,Left=0
-XEndSet(0,0,0,1,1);	// Bearing=0,Extrusion2040=0,MisumiMTSSR8=0,Full=0,Left=0,EXOSlide=0
+//SplitXEnd(0,1,1,0,0);
+XEndSet(0,0,0,1,1,0,0);
 //StepperMotorMount();
-//XEnd(0,1,0,1,1);		// Bearing=0,Extrusion2040=0,MisumiMTSSR8=0,Full=0,Left=0
+//XEnd(0,1,0,1,1,0);
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module XEndSet(Bearing=0,Extrusion2040=0,MisumiMTSSR8=0,Full=0,EXOSLide=0) {
-	rotate([90,0,0]) XEnd(Bearing,Extrusion2040,MisumiMTSSR8,Full,0,EXOSLide);
-	translate([0,35,0]) rotate([90,0,0]) XEnd(Bearing,Extrusion2040,MisumiMTSSR8,Full,1,EXOSLide);
+module XEndSet(Bearing=0,Extrusion2040=0,MisumiMTSSR8=0,Full=0,EXOSLide=0,MotorMount=0,AllTR8Mounting=0) {
+	rotate([90,0,0]) XEnd(Bearing,Extrusion2040,MisumiMTSSR8,Full,0,EXOSLide,AllTR8Mounting);
+	translate([0,35,0]) rotate([90,0,0]) XEnd(Bearing,Extrusion2040,MisumiMTSSR8,Full,1,EXOSLide,AllTR8Mounting);
+	if(MotorMount) translate([0,55,-10.9]) StepperMotorMount();
 }
 
-//////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module SplitXEnd(Bearing=0,Extrusion2040=1,MisumiMTSSR8=1,Mount=1,EXOSLide=0) {
+module SplitXEnd(Bearing=0,Extrusion2040=0,MisumiMTSSR8=0,MotorMount=0,EXOSLide=0) {
 	XEnd(Bearing,Extrusion2040,MisumiMTSSR8,0,0,EXOSLide);  // Extrusion2040_spacers
 	translate([0,-52,0]) XEnd(Bearing,Extrusion2040,MisumiMTSSR8,0,1,EXOSLide);  //Extrusion2040_spacers
 	translate([78,-52,0]) XEnd(Bearing,0,MisumiMTSSR8,0,EXOSLide);  // no Extrusion2040_spacers
 	translate([78,0,0]) XEnd(Bearing,0,MisumiMTSSR8,0,EXOSLide);  // no Extrusion2040_spacers
-	if(Mount == 1) translate([0,45,0]) StepperMotorMount();
-	if(Mount == 2) translate([0,45,0]) testStepperMotorMount();
+	if(MotorMount == 1) translate([0,45,0]) StepperMotorMount();
+	if(MotorMount == 2) translate([0,45,0]) testStepperMotorMount();
 }
 
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module TestStepperMotorMount() {	// for making a test print of the StepperMotorMount section that
 	difference() {					// mounts against the XEnd
@@ -140,7 +139,7 @@ module TestStepperMotorMount() {	// for making a test print of the StepperMotorM
 	}
 }
 
-//////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module StepperMotorMount(Extrusion2040=0) { // this holds the stepper motor
 	difference() {
@@ -151,7 +150,7 @@ module StepperMotorMount(Extrusion2040=0) { // this holds the stepper motor
 	}
 }
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module StepperMotorSlot(Extrusion2040) { // add mount to XEnd, removes the area the XEnd fits into
 	translate([ZDriveOffset*2-35,MotorMountWidth+1,MotorMountThickness+4.5]) rotate([90,0,0]) color("gray")
@@ -159,9 +158,9 @@ module StepperMotorSlot(Extrusion2040) { // add mount to XEnd, removes the area 
 	translate([-2.9,MotorMountWidth/4-1.5,MotorMountThickness-5.5]) color("plum") cube([ZNutLength,ZNutWidth+2,znutdt]);
 }
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module XEnd(Bearing=0,Extrusion2040=0,MisumiMTSSR8=0,Full=0,Left=0,EXOSlide=0) { // screw clamp on MTSSR8 missing
+module XEnd(Bearing=0,Extrusion2040=0,MisumiMTSSR8=0,Full=0,Left=0,EXOSlide=0,AllTR8Mounting=0) {
 	difference() {
 		union() {	
 			difference() {
@@ -180,7 +179,7 @@ module XEnd(Bearing=0,Extrusion2040=0,MisumiMTSSR8=0,Full=0,Left=0,EXOSlide=0) {
 						if(!MisumiMTSSR8) {
 							translate([Length/2-ZNutWidth/2,ZDriveOffset,0]) color("white") ZNutScrew(MisumiMTSSR8);
 							if(!MisumiMTSSR8) translate([Length/2-ZNutWidth/2,ZDriveOffset,0]) rotate([0,90,0])
-								TR8MountingHoles();
+								TR8MountingHoles(AllTR8Mounting);
 						}
 						if(MisumiMTSSR8) translate([37,45,0]) rotate([90,0,0]) color("pink")
 							cylinder(h=10,d=Yes3mmInsert(Use3mmInsert,LargeInsert));
@@ -190,13 +189,15 @@ module XEnd(Bearing=0,Extrusion2040=0,MisumiMTSSR8=0,Full=0,Left=0,EXOSlide=0) {
 						if(Left) translate([Length/2-ZNutWidth/2+ZNutWidth,ZDriveOffset,0]) rotate([0,180,0]) 
 							ZNutScrew(MisumiMTSSR8);
 						else translate([Length/2-ZNutWidth/2-2.7,ZDriveOffset,0]) ZNutScrew(MisumiMTSSR8);
-						if(!MisumiMTSSR8) translate([Length/2-ZNutWidth/2,ZDriveOffset,0]) rotate([0,90,0]) TR8MountingHoles();
+						if(!MisumiMTSSR8) translate([Length/2-ZNutWidth/2,ZDriveOffset,0]) rotate([0,90,0])
+								TR8MountingHoles(AllTR8Mounting);
 					}
 				}
 			}
 			difference() {
 				LongFlange(Extrusion2040,Bearing,MisumiMTSSR8,Left,EXOSlide);
-				if(!MisumiMTSSR8) translate([Length/2-ZNutWidth/2-0.7,ZDriveOffset,0]) rotate([0,90,0]) TR8MountingHoles();
+				if(!MisumiMTSSR8) translate([Length/2-ZNutWidth/2-0.7,ZDriveOffset,0]) rotate([0,90,0])
+						TR8MountingHoles(AllTR8Mounting);
 				FlangeBearingClamp();
 			}
 			FlangeBearingClampSupport();
@@ -236,8 +237,8 @@ module FlangeBearingClampSupport() {
 
 /////////////////////////////////////////////////////////////////////////
 
-module BearingSpacer(Left=0,Extrusion2040=0,Bearing=0,MisumiMTSSR8=0,EXOSLide=0) { // spacers for the makerslide side, so the XEnds sit flat
-	if(Left) {
+module BearingSpacer(Left=0,Extrusion2040=0,Bearing=0,MisumiMTSSR8=0,EXOSLide=0) {
+	if(Left) { // spacers for the makerslide side, so the XEnds sit flat
 		difference() {
 			color("yellow") hull() {
 				translate([ExtrusionSlotDistance-3,BoltFlatWidth/1.1,ExtrusionSpacerThickness+3])
@@ -324,13 +325,13 @@ module BearingSpacer(Left=0,Extrusion2040=0,Bearing=0,MisumiMTSSR8=0,EXOSLide=0)
 	}
 }
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CutItInHalf(Full=0) {	// remove everything below Z0
 	if(!Full) translate([-1,-15,-20+AdjustCF]) color("cyan") cube([Length+2,Length-15,20]);
 }
 
-//////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module LongFlange(Extrusion2040,Bearing,MisumiMTSSR8,Left=0,EXOSLide=0) {  // the part that holds it together
 	difference() {
@@ -354,7 +355,7 @@ module LongFlange(Extrusion2040,Bearing,MisumiMTSSR8,Left=0,EXOSLide=0) {  // th
 	}
 }
 
-////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module MotorMountScrewHoles() {
 	color("cyan") hull() {
@@ -368,7 +369,7 @@ module MotorMountScrewHoles() {
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module FlangeScrewHoles(Extrusion2040=1,Left=0,EXOSlide=0) { // screw holes for makerslide or the round rod XEnds
 	if(!EXOSlide) translate([ExtrusionSlotDistance-3,BoltFlatWidth/1.1,-ZNutThickness/2-5]) color("gray")
@@ -379,7 +380,7 @@ module FlangeScrewHoles(Extrusion2040=1,Left=0,EXOSlide=0) { // screw holes for 
 					cylinder(h=Thickness*6,r=screw5/2);
 }
 
-///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CenterFlange(Extrusion2040,Bearing,MisumiMTSSR8) { // connect bearing and ZScrewDiameter sections
 	difference() {
@@ -391,7 +392,7 @@ module CenterFlange(Extrusion2040,Bearing,MisumiMTSSR8) { // connect bearing and
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CenterFlangeFlat(Extrusion2040,MisumiMTSSR8) { // raised section between z rod and z nut
 	if(!MisumiMTSSR8) {
@@ -424,13 +425,13 @@ module CenterFlangeFlat(Extrusion2040,MisumiMTSSR8) { // raised section between 
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module ZRodHole(Diameter=ZRodDiameter) { // through hole for the z rod
 	translate([-2,0,0]) rotate([0,90,0]) color("orange") cylinder(h=Length+4,d=Diameter+1);
 }
 
-/////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module ZNutShell(MisumiMTSSR8,TR8=0) { // part to hold the z nut
 	if(!MisumiMTSSR8) {
@@ -439,19 +440,19 @@ module ZNutShell(MisumiMTSSR8,TR8=0) { // part to hold the z nut
 		translate([11.5,0,0]) rotate([0,90,0]) color("khaki") cyl(h=MTSSR8l+2.5, d=MTSSR8d+ShellThickness+0.5,rounding=2);
 }
 
-/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module BearingShell() { // part to hold the z rod bearings
 	translate([37,0,0]) rotate([0,90,0]) color("white") cyl(h=Length,d=ShellThickness+SABBDiameter,rounding=2);
 }
 
-///////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module ZNut() { // z nut, no hole
 	color("gray") cylinder(h = ZNutThickness, r=znutd/2,$fn=6);
 }
 
-//////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module SABRonzeBearing() { // self-aligning bronze bearing, no hole
 	color("brown") cylinder(h=SABBLength+1,r=SABBDiameter/2);
@@ -464,7 +465,7 @@ module DualSABRonzeBearing() { // dual bearings on z rod
 	translate([Length-SABBLength,0,0]) rotate([0,90,0]) SABRonzeBearing();
 }
 
-////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module ZNutScrew(MisumiMTSSR8) { // z-nut section
 	if(!MisumiMTSSR8) {
@@ -477,7 +478,7 @@ module ZNutScrew(MisumiMTSSR8) { // z-nut section
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module TR8Nut() {
 	color("cyan") cylinder(h=TR8Height,d=TR8SmallDiameter,$fn=100); // center nut
@@ -485,14 +486,16 @@ module TR8Nut() {
 	translate([0,0,-24]) color("plum") cylinder(h=30,d=TR8FlangeDiameter);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TR8MountingHoles() {
+module TR8MountingHoles(AllTR8Mounting=1) {
 	translate([0,TR8MountingHoleOffset/2,-2]) color("blue") cylinder(h=30,d=screw3,$fn=100);
 	translate([0,-TR8MountingHoleOffset/2,-2]) color("cyan") cylinder(h=30,d=screw3,$fn=100);
-	translate([TR8MountingHoleOffset/2,0,-2]) color("gray") cylinder(h=30,d=screw3,$fn=100);
-	translate([-TR8MountingHoleOffset/2,0,-2]) color("white") cylinder(h=30,d=screw3,$fn=100);
+	if(AllTR8Mounting) {
+		translate([TR8MountingHoleOffset/2,0,-2]) color("gray") cylinder(h=30,d=screw3,$fn=100);
+		translate([-TR8MountingHoleOffset/2,0,-2]) color("white") cylinder(h=30,d=screw3,$fn=100);
+	}
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
