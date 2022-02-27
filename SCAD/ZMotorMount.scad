@@ -36,18 +36,19 @@ Height608 = 7; 					// thickness of a 608
 LayerThickness=0.3;
 BearingHoleClearance = 19;			// Clearance for a 8mm nut
 BrassInsertLength=6; // for M3 insert
+StepperBossDiameter=23; // 22 plus some clearance
 //----------------------------------------------------------------------------
 Show=0;		// show original stepper mount
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ZMotorMount(1,1,0,1,0,0,47);	// 1st arg:Quanity; 2nd arg: X position
 //Collet(2);
+//ZRodClamp();
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module Collet(Qty=1) {
 	%translate([0,7.5,-5]) rotate([90,0,0]) cyl(h=BrassInsertLength,d=3); // show length of brass insert
-	echo("Collet outside diameter: ",screw8*2);
 	for(x=[0:Qty-1]) {
 		translate([0,x*28,0]) {
 			difference() {
@@ -109,7 +110,7 @@ module ZBeltDrive(X=0,Y=0,Z=0,Adjust=0) {
 			translate([X-20,-Z-1.5,30]) color("lightblue") cuboid([80,BaseThickness,60],rounding=2);
 		}
 		MountingHoles(X,Y,0);
-		translate([X-25,-Z+2,35]) rotate([90,0,0]) color("white") NEMA17_parallel_holes(10,8);
+		translate([X-25,-Z+2,35]) rotate([90,0,0]) color("white") NEMA17_parallel_holes(10,8,StepperBossDiameter);
 		translate([X-70,Z/4+25,BaseThickness/2-BaseThickness/2]) InnerHoleBearingSide();
 		translate([-49,10,0]) color("green") cyl(h=20,d=screw5);
 		translate([-49,90,0]) color("blue") cyl(h=20,d=screw5);
@@ -159,7 +160,7 @@ module ZRodClamp(Adjust=0,ZRodSize=10,Updown=0) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module ZRod(Adjust=0,Size=10,UpDown=0) {
-	translate([BaseWidth/2,100+UpDown,66+Adjust]) color("cyan") rotate([90,0,0]) cyl(h=50+UpDown,d=Size); // Z Rod hole
+	translate([BaseWidth/2,100+UpDown,66+Adjust]) color("cyan") rotate([90,0,0]) cyl(h=50+UpDown,d=Size,rounding2=2); // Z Rod hole
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,14 +219,8 @@ module BearingBase(X=0,Y=0,Z=0,Z2=0,Length=BaseLength,Adjust) { // makes the mot
 		BearingMount(X,Y,Z);
 		OriginalSupports(X,Y,Z);
 	}
-	BearingSupport(X,Y,Z);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module BearingSupport(X=0,Y=0,Z=0) {
-	translate([X+39,Y+BaseLength-11.5,Z+100]) color("green") cuboid([Diameter608/2,4,25],rounding=2,p1=[0,0]);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -258,20 +253,11 @@ module ZLeadScrew(X=0,Y=0,Z=0,Size=Diameter608) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module BearingHole() {	// holds the bearing
-	translate([0,0,-6.5]) difference() {
-		translate([0,0,Thickness/3-1]) color("red") cylinder(h=Height608+1,d=Diameter608+10);
-		translate([0,0,0]) color("red") cylinder(h=15,d=Diameter608);
-	}
 	difference() {
-		translate([0,0,-Height608-0.3]) color("white") cyl(h=Height608-2,d=Diameter608+10,rounding1=2);
+		translate([0,0,-Height608+3]) color("white") cyl(h=Height608+4,d1=Diameter608+5,d2=Diameter608+14.5,rounding1=2);
 		translate([0,0,-Height608]) color("black") cyl(h=15,d=BearingHoleClearance);
+		translate([0,0,-Height608+2]) color("gray") cylinder(h=15,d=Diameter608);
 	}
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module BearingHole_support(LDAdjust=0) { // print support for bearing hole
-	translate([0,0,-5.05]) color("pink") cylinder(h=LayerThickness,d=Diameter608+5);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

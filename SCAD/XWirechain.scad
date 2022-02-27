@@ -2,14 +2,18 @@
 //	XWirechain.scad
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // created 1/7/2021
-// last update 3/2/21
+// last update 2/17/22
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // https://creativecommons.org/licenses/by-sa/4.0/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 1/9/21	- Added vertical wirechain - length need adjusting when the wirechain for the vertical has arrived
 // 2/11/21	- Added supoorts for the wirechain
 // 2/15/21	- Added carriage wirechain mount for EXOSlide
+// 2/17/22	- Beefed them up, added wc slot holder for X direction, added amazon link
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// uses two https://www.amazon.com/gp/product/B07QVKL9VL
+// 7mm x 7mm(Inner H x Inner W) Black Plastic Cable Wire Carrier Drag Chain 1M Length
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <inc/screwsizes.scad>
 include <inc/brassinserts.scad>
 include <bosl2/std.scad>
@@ -17,24 +21,26 @@ $fn=100;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Use3mmInsert=1;
 WirechainMountOffset=30;
-Thickness=5;
+Thickness=6;
 WCEndOffset=11.5-3;
 LayerThickness=0.3;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//XWirechain();  // both
-//WCXCarriage();
-//WCXEnd();
 //WCXBottomZ();
+//WCXEndEXO(1,0);
 //WCXCarriageEXOSlide();
-//WCXEnd2020();
-WCEXOSlide();
+WCEXOSlide(); // all three brackets
+// printed carriage on makerslide
+//XWirechain();  // both
+//WCXCarriage()
+//WCXEnd();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module WCEXOSlide() {
 	rotate([0,90,0]) WCXEndEXO();
 	translate([-25,10,10]) rotate([0,90,0]) WCXCarriageEXOSlide();
+	translate([25,30,-20]) rotate([0,-90,0]) WCXBottomZ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,16 +62,38 @@ module WCXCarriageEXOSlide(DoTab=1) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module WCXEndEXO(DoTab=1) { // height may need changing
+module WCXEndEXO(DoTab=1,Post=0) { // height may need changing
 	difference() {
 		union() {
-			translate([0,0,-5]) color("cyan") cuboid([20,Thickness*1.5,100],rounding=2,p1=[0,0]);
-			translate([0,-45,90]) color("gray") cuboid([20,50,Thickness],rounding=2,p1=[0,0]);
+			translate([0,0,-5]) color("cyan") cuboid([20,Thickness*1.5,105],rounding=2,p1=[0,0]);
+			translate([0,-46,94]) color("gray") cuboid([20,50,Thickness],rounding=2,p1=[0,0]);
 			translate([0,-55,55]) color("lightgray") cuboid([20,60,Thickness],rounding=2,p1=[0,0]);
 			translate([0,-55,75]) color("white") cuboid([20,60,Thickness],rounding=2,p1=[0,0]);
-			translate([-40,-45,75]) color("green") cuboid([60,Thickness,20],rounding=2,p1=[0,0]);
+			translate([-10,-45,88]) color("green") cuboid([60,Thickness,24],rounding=2);
 			translate([0,-55,55]) color("blue") cuboid([20,Thickness,25],rounding=2,p1=[0,0]);
-	
+			color("khaki") hull() {
+				translate([10,-10,59]) cuboid([Thickness-1,30,Thickness-2],rounding=2);
+				translate([10,2,13]) cuboid([Thickness-1,Thickness-1,Thickness-2],rounding=2);
+			}
+			translate([15,-6,38]) color("purple") cuboid([10,17,LayerThickness]); // support for above
+			translate([-22,-50,80.5]) {
+				difference() {
+					union() {
+						%translate([0,-6,8]) cuboid([5,15,15]);
+						translate([0,-1.6,0]) color("purple") hull() {
+							translate([0,-3.5,17.5]) cyl(h=Thickness-2,d=25,rounding=2);
+							translate([0,8,17.5]) cyl(h=Thickness-2,d=35,rounding=2);
+						}
+						translate([0,-1.6,-1.5]) color("white") hull() {
+							translate([0,-3.5,0]) cyl(h=Thickness-2,d=25,rounding=2);
+							translate([0,8,0]) cyl(h=Thickness-2,d=35,rounding=2);
+						}
+						if(Post) translate([0,-15.5,8.25]) color("pink") cuboid([5,Thickness-2,22],rounding=2);
+					}
+					if(!Post) translate([0,-15.5,8.25]) color("pink") cyl(h=30,d=3); // zip tie hole
+					translate([0,21,7.5]) color("gold") cuboid([40,30,30]);
+				}
+			}
 		}
 		translate([10,10,5]) rotate([90,0,0]) color("white") cylinder(h=Thickness*3,d=screw5);
 		translate([10,0.5,5]) rotate([90,0,0]) color("black") cylinder(h=Thickness,d=screw5hd);
@@ -90,12 +118,14 @@ module WCXBottomZ() {
 	difference() {
 		union() {
 			color("cyan") cuboid([21,20,Thickness],rounding=2,p1=[0,0]);
-			color("pink") cuboid([Thickness,20,65],rounding=2,p1=[0,0]);
-			translate([0,-40,45]) color("red") cuboid([Thickness,50,20],rounding=2,p1=[0,0]);
+			color("pink") cuboid([Thickness,20,80],rounding=2,p1=[0,0]);
+			translate([0,-40,60]) color("red") cuboid([Thickness,50,20],rounding=2,p1=[0,0]);
+			translate([12.5,-38,70]) color("blue") cuboid([25,Thickness-1,20],rounding=2); // circuit breaker mount
 		}
 		translate([11,10,-5]) color("red") cylinder(h=Thickness*3,d=screw5);
 		translate([11,10,4]) color("blue") cylinder(h=Thickness,d=screw5hd);
-		translate([-5,6,58]) rotate([90,0,90]) WCEndMount();
+		translate([-5,6,70]) rotate([90,0,90]) WCEndMount();
+		translate([14,-38,70]) rotate([90,0,0]) color("gold") cyl(h=20,d=11.5); // circuit breaker mount
 	}
 }
 

@@ -54,6 +54,7 @@ SwitchShift=6;	// move switch mounting holes along width
 ExoSlideThickness=12.8;
 Clearance=0.2;
 IdlerBearingThickess=11.7+Clearance;
+StepperBossDiameter=23;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //XEndHorizontalBeltEnds();		// makerslide
@@ -86,8 +87,10 @@ module TensionIdler(IdlerScrew=Yes5mmInsert(Use5mmInsert),DoTab=1) {
 			translate([20,-2,-19]) color("gray") cuboid([StepperMountThickness,22,23],rounding=2,p1=[0,0]);
 			translate([-StepperMountThickness-1,-2,-19]) color("lightgray") 
 				cuboid([StepperMountThickness,22,23],rounding=2,p1=[0,0]);
-			translate([-2,StepperMountThickness+16,-18]) color("pink") rotate([90,-60,0])
-				cuboid([StepperMountThickness,37,StepperMountThickness],rounding=2,p1=[0,0]);
+			translate([-3,StepperMountThickness-1,-18]) color("pink") rotate([90,-60,0])
+				cuboid([StepperMountThickness,39,StepperMountThickness],rounding=2,p1=[0,0]);
+			translate([-3,StepperMountThickness+16,-18]) color("white") rotate([90,-60,0])
+				cuboid([StepperMountThickness,39,StepperMountThickness],rounding=2,p1=[0,0]);
 			translate([-14.51,-1,0]) color("lightblue")
 				cuboid([13+StepperMountThickness,IdlerBearingThickess+(StepperMountThickness*2),StepperMountThickness]
 					,rounding=2,p1=[0,0]);
@@ -276,7 +279,7 @@ module MotorMountExo2020(DoTab=1) {
 			translate([-20,-21,58]) color("cyan") cuboid([24,25,StepperMountThickness],rounding=2,p1=[0,0]);
 			translate([-20,-21,33.5]) color("plum") cuboid([24,25,StepperMountThickness],rounding=2,p1=[0,0]);
 		}
-		translate([35,6,12]) color("blue") rotate([90,0,0]) NEMA17_parallel_holes(8,8);
+		translate([35,6,12]) color("blue") rotate([90,0,0]) NEMA17_parallel_holes(8,8,StepperBossDiameter);
 		translate([0,-7,32+StepperShaftOffset]) 2040ScrewHolesExo(screw5,1);
 		translate([-3,-16,StepperMountThickness-2]) color("gray") cuboid([12,13,26],rounding=2,p1=[0,0]);
 		translate([-10,-7,30]) color("red") cylinder(h=40,d=screw5);
@@ -287,9 +290,9 @@ module MotorMountExo2020(DoTab=1) {
 			translate([20,5,0]) rotate([90,0,0]) cylinder(h=10,d=20);
 		}
 	}
-	translate([1,-2,-15]) color("green") rotate([0,0,20]) 
+	translate([1,-5.5,-15]) color("green") rotate([0,0,24]) 
 		cuboid([54.5,StepperMountThickness,StepperMountThickness],rounding=2,p1=[0,0]);
-	translate([1,-2,55]) color("lightgray") rotate([0,0,20])
+	translate([1,-5.5,55]) color("lightgray") rotate([0,0,24])
 		cuboid([54.5,StepperMountThickness,StepperMountThickness],rounding=2,p1=[0,0]);
 	translate([0,16,-15]) color("red") rotate([0,-22,0])
 		cuboid([StepperMountThickness,StepperMountThickness,52],rounding=2,p1=[0,0]);
@@ -359,28 +362,26 @@ module XEndHorizontalBeltEnds() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module BeltCarriageMount(MountingScrewHoles=1) {
-	//rotate([180,0,0]) {
-		difference() {
-			color("cyan") cuboid([55,49.3,20],rounding=2);
-			translate([0,0,8]) color("plum") cuboid([40,53,15],rounding=1);
-			translate([-27.5,-24.5,-20]) {
-				if(MountingScrewHoles) {
-					translate([14,3.5,5]) TopMountBeltHoles(screw3); // mounting screw
-					translate([14,45.5,5]) TopMountBeltHoles(screw3); // mounting screw
-					translate([14,3.5,-6]) TopMountBeltHoles(screw3hd); // countersink
-					translate([14,45.5,-6]) TopMountBeltHoles(screw3hd); // countersink
-				}
-				translate([-35,26,15.5]) color("red") rotate([0,90,0])
-					cylinder(h=130,d=Yes5mmInsert(Use5mmInsert)); // belt mount screw
-				color("red") hull() { // plastic reduction
-					translate([26,24.75,-2]) cylinder(h=25,d=28);
-					translate([30,24.75,-2]) cylinder(h=25,d=28);
-				}
+	difference() {
+		color("cyan") cuboid([55,49.3,20],rounding=2);
+		translate([0,0,8]) color("plum") cuboid([40,53,15],rounding=1);
+		translate([-27.5,-24.5,-20]) {
+			if(MountingScrewHoles) {
+				translate([14,3.5,5]) TopMountBeltHoles(screw3); // mounting screw
+				translate([14,45.5,5]) TopMountBeltHoles(screw3); // mounting screw
+				translate([14,3.5,-6]) TopMountBeltHoles(screw3hd); // countersink
+				translate([14,45.5,-6]) TopMountBeltHoles(screw3hd); // countersink
+			}
+			translate([-35,26,15.5]) color("red") rotate([0,90,0])
+				cylinder(h=130,d=Yes5mmInsert(Use5mmInsert)); // belt mount screw
+			color("red") hull() { // plastic reduction
+				translate([26,24.75,-2]) cylinder(h=25,d=28);
+				translate([30,24.75,-2]) cylinder(h=25,d=28);
 			}
 		}
-		translate([-20,15,-5.95]) color("darkgray") cube([40,9,LayerThickness]);
-		translate([-20,-24,-5.95]) color("white") cube([40,10,LayerThickness]);
-	//}
+	}
+	translate([-20,15,-5.95]) color("darkgray") cube([40,9,LayerThickness]);
+	translate([-20,-24,-5.95]) color("white") cube([40,10,LayerThickness]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

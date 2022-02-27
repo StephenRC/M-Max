@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 // ZSupport.scad - modifiy the TMAX Z supports
 // created: 2/16/14
-// last modified: 2/1/22
+// last modified: 2/10/22
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // https://creativecommons.org/licenses/by-sa/3.0/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13,6 +13,7 @@
 // 6/29/20	- Can now use 5mm brass inserts
 // 4/10/21	- Converted to BOSL2
 // 2/1/22	- Beefed up z rod clamp; renamed modules
+// 2/10/22	- Added end screw on horizontal support on top bracket
 ////////////////////////////////////////////////////////////////////////////////////////
 include <inc/screwsizes.scad>
 include <bosl2/std.scad>
@@ -29,10 +30,10 @@ $fn=100;
 Use5mmInsert=1;
 /////////////////////////////////////////////////////////////////////////////////////////
 
-//TopBracket(2,Yes5mmInsert(Use5mmInsert));
+TopBracket(2,Yes5mmInsert(Use5mmInsert));
 //BottomBracket(2,Yes5mmInsert(Use5mmInsert)); // bottom not need for z belt drive
 //two(1,Yes5mmInsert(Use5mmInsert)); // 0 = bottom; 1 = top
-Clamps(2);
+//Clamps(2);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -61,6 +62,7 @@ module TopBracket(Quanity=1,Screw=Yes5mmInsert(Use5mmInsert)) { // top z support
 			OriginalPart();
 			translate([45,-26,25]) NewZRod(); // resize rod notch
 			RedoScrewHoles(Screw);
+			translate([44,-30,44]) rotate([90,0,0]) color("green") cyl(h=50,d=screw5); // acess hole for end screw
 		}
 		NewNutHole(Yes5mmInsert(Use5mmInsert));
 		Top2020Mount(); // add mount for a brace between left & right tops
@@ -149,11 +151,14 @@ module NewCouplerHole() { // new surround were the coupler & z screw goes throug
 module Top2020Mount()  // for top horizontal brace between left & right sides
 {
 	difference() {
-		translate([30.5,38.5,26]) color("pink") cuboid([extr20+7,extr20,1.5*extr20],rounding=2,p1=[0,0]);
-		translate([44.3,52,2*extr20]) color("red") cuboid([extr20,extr20,2.5*extr20]);
-		translate([25,49,44]) rotate([0,90,0]) color("black") cylinder(h = 2*extr20, r = screw5/2, $fn = 50);
+		translate([30.5,35,26]) color("pink") cuboid([extr20+7,extr20+3,1.5*extr20],rounding=2,p1=[0,0]);
+		translate([44.3,49,2*extr20]) color("red") cuboid([extr20,extr20,2.5*extr20]);
+		translate([25,49,44]) rotate([0,90,0]) color("black") cylinder(h = 2*extr20,d=screw5);
+		translate([29,49,44]) rotate([0,90,0]) color("white") cyl(h=5,d=screw5hd);
+		translate([60,49,44]) rotate([0,90,0]) color("gray") cyl(h=5,d=screw5hd);
+		translate([44,30,44]) rotate([90,0,0]) color("green") cyl(h=50,d=screw5);
+		translate([44,33,44]) rotate([90,0,0]) color("gold") cyl(h=5,d=screw5hd);
 	}
-
 }
 
 //////////////////////////////////////////////////////////////////////////
