@@ -62,7 +62,7 @@ module WCXCarriageEXOSlide(DoTab=1) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module WCXEndEXO(DoTab=1,Post=0) { // height may need changing
+module WCXEndEXO(DoTab=1) { // height may need changing
 	difference() {
 		union() {
 			translate([0,0,-5]) color("cyan") cuboid([20,Thickness*1.5,105],rounding=2,p1=[0,0]);
@@ -79,18 +79,18 @@ module WCXEndEXO(DoTab=1,Post=0) { // height may need changing
 			translate([-22,-50,80.5]) {
 				difference() {
 					union() {
-						%translate([0,-6,8]) cuboid([5,15,15]);
-						translate([0,-1.6,0]) color("purple") hull() {
+						%translate([0,-4,8]) cuboid([5,13,15]); // show wire chain size
+						translate([0,0,0]) color("purple") hull() {
 							translate([0,-3.5,17.5]) cyl(h=Thickness-2,d=25,rounding=2);
 							translate([0,8,17.5]) cyl(h=Thickness-2,d=35,rounding=2);
 						}
-						translate([0,-1.6,-1.5]) color("white") hull() {
+						translate([0,0,-1.5]) color("white") hull() {
 							translate([0,-3.5,0]) cyl(h=Thickness-2,d=25,rounding=2);
 							translate([0,8,0]) cyl(h=Thickness-2,d=35,rounding=2);
 						}
-						if(Post) translate([0,-15.5,8.25]) color("pink") cuboid([5,Thickness-2,22],rounding=2);
 					}
-					if(!Post) translate([0,-15.5,8.25]) color("pink") cyl(h=30,d=3); // zip tie hole
+					translate([0,-12.5,18]) color("pink") cyl(h=10,d=screw3); // hold down
+					translate([0,-12.5,0]) color("green") cyl(h=10,d=Yes3mmInsert(Use3mmInsert)); // hold down
 					translate([0,21,7.5]) color("gold") cuboid([40,30,30]);
 				}
 			}
