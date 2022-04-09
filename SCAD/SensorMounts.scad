@@ -62,9 +62,16 @@ StepperHoleOffset=31;
 //BLTouchEXO(7); // rear mount
 //BLTouchEXO(9,27); // front mount
 //SpacerV2(2,10,screw4+0.1,7,7);// exoslide spacer, don't have right size of M4
-BMGBLTMount(6); // uses 50mm M3 screws to mount to extruder
+//BMGBLTMount(7); 	// uses 50mm M3 screws to mount to extruder
+BMGBLTPrint(7); // uses 50mm M3 screws to mount to extruder
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BMGBLTPrint(Offset=5) {
+	rotate([0,-90,0]) BMGBLTMount(Offset);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module BMGBLTMount(Offset=5) {   // x-24 Y0 ; 230/80: Z1
 	difference() {

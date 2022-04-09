@@ -56,7 +56,7 @@ module two(Top=0,Screw=Yes5mmInsert(Use5mmInsert)) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 	
-module TopBracket(Quanity=1,Screw=Yes5mmInsert(Use5mmInsert)) { // top z support
+module TopBracket(Quanity=1,Screw=Yes5mmInsert(Use5mmInsert),AllHoles=0) { // top z support
 	for(x=[0:Quanity-1]) translate([x*95,0,0]) {
 		difference() {
 			OriginalPart();
@@ -65,7 +65,7 @@ module TopBracket(Quanity=1,Screw=Yes5mmInsert(Use5mmInsert)) { // top z support
 			translate([44,-30,44]) rotate([90,0,0]) color("green") cyl(h=50,d=screw5); // acess hole for end screw
 		}
 		NewNutHole(Yes5mmInsert(Use5mmInsert));
-		Top2020Mount(); // add mount for a brace between left & right tops
+		Top2020Mount(AllHoles); // add mount for a brace between left & right tops
 		translate([45,-35,32]) rotate([90,0,0]) Clamp();
 	}
 }
@@ -148,15 +148,17 @@ module NewCouplerHole() { // new surround were the coupler & z screw goes throug
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-module Top2020Mount()  // for top horizontal brace between left & right sides
+module Top2020Mount(AllHoles=0)  // for top horizontal brace between left & right sides
 {
 	difference() {
 		translate([30.5,35,26]) color("pink") cuboid([extr20+7,extr20+3,1.5*extr20],rounding=2,p1=[0,0]);
 		translate([44.3,49,2*extr20]) color("red") cuboid([extr20,extr20,2.5*extr20]);
-		translate([25,49,44]) rotate([0,90,0]) color("black") cylinder(h = 2*extr20,d=screw5);
-		translate([29,49,44]) rotate([0,90,0]) color("white") cyl(h=5,d=screw5hd);
-		translate([60,49,44]) rotate([0,90,0]) color("gray") cyl(h=5,d=screw5hd);
-		translate([44,30,44]) rotate([90,0,0]) color("green") cyl(h=50,d=screw5);
+		if(AllHoles) {
+            translate([25,49,44]) rotate([0,90,0]) color("black") cylinder(h = 2*extr20,d=screw5);
+            translate([29,49,44]) rotate([0,90,0]) color("white") cyl(h=5,d=screw5hd);
+            translate([60,49,44]) rotate([0,90,0]) color("gray") cyl(h=5,d=screw5hd);
+		}
+        translate([44,30,44]) rotate([90,0,0]) color("green") cyl(h=50,d=screw5); // end hole
 		translate([44,33,44]) rotate([90,0,0]) color("gold") cyl(h=5,d=screw5hd);
 	}
 }
