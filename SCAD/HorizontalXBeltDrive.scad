@@ -2,7 +2,7 @@
 // HorizontalXBeltDrive.scad - belt drive on top of the 2040
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 9/23/2020
-// Last Update: 10/16/21
+// Last Update: 4/10/22
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // https://creativecommons.org/licenses/by-sa/4.0/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,10 +21,9 @@
 // 4/6/21	- Began BOSL2 conversion
 // 5/20/21	- Added an adjustable idler mount
 // 10/16/21	- Adjusted distance bearing can move for tension on TensionIdler()
+// 4/10/22	- Tweaked rounding for ajustabl4e idler
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <mmax_h.scad>
-include <inc/NEMA17.scad>
-include <inc/brassinserts.scad>
 use <yBeltClamp.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
@@ -58,8 +57,6 @@ StepperBossDiameter=23;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //XEndHorizontalBeltEnds();		// makerslide
-//AxisBrace(4);					// arg is Quanity
-//AxisBrace(4,65,0);			// arg is Quanity; args 2&3 are X,Y
 //BeltCarriageMount(1);			// arg 1: 0 no mounting holes; 1 mounting holes
 BeltEndsExo2020(1);				// exoslide
 translate([0,100,0])
@@ -69,12 +66,13 @@ translate([0,100,0])
 //XIdlerExo2020();  			// fixed in place idler
 //MotorMountExo2020(1);			// motor mount
 //TensionIdler();				// tensionable idler
+//AxisBrace(4);					// arg is Quanity
+//AxisBrace(4,65,0);			// arg is Quanity; args 2&3 are X,Y
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module TensionIdler(IdlerScrew=Yes5mmInsert(Use5mmInsert),DoTab=1) {
-	//%translate([-25,StepperMountThickness+12,10]) rotate([90,0,0])
-	//	cylinder(h=IdlerBearingThickess,d=IdlerBearingThickess+5); // fit idler
+	%translate([0,-2,-20]) cuboid([20,20,20],rounding=2,p1=[0,0]); // show 2020
 	difference() {
 		union() {
 			translate([-5,-2,0]) color("blue") cuboid([29,22,StepperMountThickness],rounding=2,p1=[0,0]);
@@ -83,7 +81,7 @@ module TensionIdler(IdlerScrew=Yes5mmInsert(Use5mmInsert),DoTab=1) {
 			translate([20,StepperMountThickness-3.5,0]) color("white") rotate([46,0,0])
 				cuboid([StepperMountThickness,28,StepperMountThickness],rounding=2,p1=[0,0]);
 			translate([-38,24-(StepperMountThickness*2),0]) color("purple")
-				cuboid([62,StepperMountThickness,23],rounding=2,p1=[0,0]);
+				cuboid([62,StepperMountThickness,30],rounding=2,p1=[0,0]);
 			translate([20,-2,-19]) color("gray") cuboid([StepperMountThickness,22,23],rounding=2,p1=[0,0]);
 			translate([-StepperMountThickness-1,-2,-19]) color("lightgray") 
 				cuboid([StepperMountThickness,22,23],rounding=2,p1=[0,0]);
@@ -94,11 +92,12 @@ module TensionIdler(IdlerScrew=Yes5mmInsert(Use5mmInsert),DoTab=1) {
 			translate([-14.51,-1,0]) color("lightblue")
 				cuboid([13+StepperMountThickness,IdlerBearingThickess+(StepperMountThickness*2),StepperMountThickness]
 					,rounding=2,p1=[0,0]);
-			translate([-37.5,-1,19]) color("blue")
-				cuboid([24+StepperMountThickness,1.1+IdlerBearingThickess+(StepperMountThickness*2),StepperMountThickness+8]
-					,rounding=2,p1=[0,0]);
+			translate([-37.5,-1.1,19]) color("blue")
+				cuboid([24+StepperMountThickness,
+					1.1+IdlerBearingThickess+(StepperMountThickness*2+0.1),StepperMountThickness+8]
+					,rounding=3,p1=[0,0]);
 			translate([-37.5,-13+IdlerBearingThickess,0]) color("plum")
-				cuboid([28,StepperMountThickness,23],rounding=2,p1=[0,0]);
+				cuboid([28,StepperMountThickness,30],rounding=2,p1=[0,0]);
 			translate([-14,-12+IdlerBearingThickess,0]) color("green")
 				cuboid([StepperMountThickness,20,23],rounding=2,p1=[0,0]);
 			translate([-36,19,1.5]) rotate([90,0,0]) color("red") cylinder(h=17,d=2);
@@ -123,7 +122,7 @@ module TensionIdler(IdlerScrew=Yes5mmInsert(Use5mmInsert),DoTab=1) {
 		translate([-(ExoSlideThickness+4+F625ZZ_dia/2),StepperMountThickness-0.1,F625ZZ_dia/2+1]) rotate([90,0,0])
 			cylinder(h=LayerThickness*2,d=screw5hd);
 	}
-	translate([25,20,23]) rotate([90,0,0]) AdjustingBracket(DoTab);
+	translate([80,20,-30]) rotate([90,0,0]) AdjustingBracket(DoTab);
 	if(DoTab) {
 		translate([23,20,-19]) color("green") rotate([90,0,0]) cylinder(h=LayerThickness,d=15); // tab
 		translate([-3,20,-19]) color("plum") rotate([90,0,0]) cylinder(h=LayerThickness,d=15); // tab
@@ -133,14 +132,16 @@ module TensionIdler(IdlerScrew=Yes5mmInsert(Use5mmInsert),DoTab=1) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module AdjustingBracket(DoTab) {
+	%translate([-100,StepperMountThickness+35,10.5]) rotate([0,0,0])
+		cyl(h=IdlerBearingThickess+1,d=IdlerBearingThickess); // show idler
 	difference() {
 		union() {
-			translate([-47,IdlerBearingThickess-1,0]) color("cyan")
-				cuboid([StepperMountThickness+2,21.1+StepperMountThickness*2,22],rounding=2,p1=[0,0]);
+			translate([-47,IdlerBearingThickess-2,0]) color("cyan")
+				cuboid([StepperMountThickness+2,23+StepperMountThickness*2,22],rounding=2.3,p1=[0,0]);
 			translate([-47,IdlerBearingThickess-3.1,0]) color("blue")
-				cuboid([27+StepperMountThickness*2+2,StepperMountThickness+2,22],rounding=2,p1=[0,0]);
+			cuboid([27+StepperMountThickness*2+2,StepperMountThickness+2,22],rounding=3,p1=[0,0]);
 			translate([-47,24.4+IdlerBearingThickess,0]) color("gray")
-				cuboid([27+StepperMountThickness*2+2,StepperMountThickness+2,22],rounding=2,p1=[0,0]);
+				cuboid([27+StepperMountThickness*2+2,StepperMountThickness+2,22],rounding=3,p1=[0,0]);
 		}
 		translate([-52,26,12]) color("blue") rotate([0,90,0]) cylinder(h=15,d=Yes5mmInsert(Use5mmInsert));
 		translate([-19,19,12]) color("white") rotate([90,0,0]) cylinder(h=15,d=screw5);
@@ -155,11 +156,11 @@ module AdjustingBracket(DoTab) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module BeltEndsExo2020(Tension=0,Screw=Yes5mmInsert(Use5mmInsert)) {
+module BeltEndsExo2020(Tensioner=0,Screw=Yes5mmInsert(Use5mmInsert)) {
 	translate([61,30,20]) rotate([-90,0,90])
 		MotorMountExo2020(1);
-	translate([26,-10,20]) rotate([90,180,0])
-		if(Tension) TensionIdler();
+	translate([26,-30,20]) rotate([90,180,0])
+		if(Tensioner) TensionIdler();
 		else XIdlerExo2020(Screw,0);
 }
 
@@ -275,7 +276,7 @@ module MotorMountExo2020(DoTab=1) {
 		union() {
 			translate([0,0,-12]) color("red") cuboid([65,StepperMountThickness,74],rounding=2,p1=[0,0]);
 			translate([0,-21,-12]) color("blue") cuboid([StepperMountThickness,25,74],rounding=2,p1=[0,0]);
-			%translate([-20,-21,38]) cuboid([20,20,20],rounding=2,p1=[0,0]);
+			%translate([-20,-21,38]) cuboid([20,20,20],rounding=2,p1=[0,0]); // show 2020
 			translate([-20,-21,58]) color("cyan") cuboid([24,25,StepperMountThickness],rounding=2,p1=[0,0]);
 			translate([-20,-21,33.5]) color("plum") cuboid([24,25,StepperMountThickness],rounding=2,p1=[0,0]);
 		}

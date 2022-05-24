@@ -60,6 +60,7 @@ module WCXCarriageEXOSlide(DoTab=1) {
 		}
 		translate([0,20,58]) rotate([90,0,0]) WCEndMount();
 		translate([-10,-3,-38]) EXOSlideMountHoles(1);
+		translate([-10,6,53]) color("cyan") cube([5,0.5,20]); // metal zip tie slot
 	}
 	if(DoTab) {
 		translate([-5,-8,0]) EndSupport();

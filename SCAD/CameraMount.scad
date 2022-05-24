@@ -69,16 +69,10 @@ LargeInsert=1;
 
 //PICameraBracket(1);
 //PICameraBracketNoPi(0,1);
-////translate([18,10,-30.8]) CameraHolder();
+//translate([18,10,-30.8]) CameraHolder();
 //MSWebCameraBracket(0); // must use support
 //MSWebCameraBracketV2(0); // must use support
 PICamera2020(); // 45 degree solid camera mount
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//module cubeX(size,Rounding) { // temp module
-//	cuboid(size,rounding=Rounding,p1=[0,0]);
-//}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
