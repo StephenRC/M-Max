@@ -2,7 +2,7 @@
 // ZMotorMount.scad -  can shift the z motor mount up/down
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Created: 8/21/2018
-// Last Update: 2/1/22
+// Last Update: 5/29/22
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // https://creativecommons.org/licenses/by-sa/3.0/
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,33 +17,58 @@
 // 1/11/22	- Belt drive with builtin Z rod holder
 // 2/1/22	- Final adjustment of zod position for belt drive mount, tweaked some code
 // 2/2/22	- Beltdrive motor mount now can use uses two M3 screws and M3 washers to hold bearing in place
+// 5/29/22	- Added thrust bearing mount
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ZMotorMount() each uses a 2GT-200 belt, 608 and M8x16x5 thrust bearing
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <bosl2/std.scad>
-include <inc/nema17.scad>
+use <inc/nema17.scad>
 include <inc/screwsizes.scad>
 include <inc/brassinserts.scad>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
 Use5mmInsert=1;
 Use3mmInsert=1;
-Clearance = 0.7;		// allow threaded rod to slide without problem
+Clearance = 0.7;			// allow threaded rod to slide without problem
 BaseWidth = 90;
 BaseLength = 100;
 Thickness = 5;
 BaseThickness=5;
-Diameter608 = 22+Clearance;		// outside diameter of a 608
-Height608 = 7; 					// thickness of a 608
+Diameter608 = 22+Clearance;	// outside diameter of a 608
+Height608 = 7; 				// thickness of a 608
 LayerThickness=0.3;
-BearingHoleClearance = 19;			// Clearance for a 8mm nut
-BrassInsertLength=6; // for M3 insert
-StepperBossDiameter=23; // 22 plus some clearance
+BearingHoleClearance = 19;	// Clearance for a 8mm nut
+BrassInsertLength=6; 		// for M3 insert
+StepperBossDiameter=23; 	// 22 plus some clearance
 //----------------------------------------------------------------------------
 Show=0;		// show original stepper mount
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ZMotorMount(1,1,0,1,0,0,47);	// 1st arg:Quanity; 2nd arg: X position
+ZMotorMount(1,1,0,1,0,0,47);
 //Collet(2);
 //ZRodClamp();
+//ThrustPlate(3,3); // minimum thickness is 3
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ThrustPlate(Qty=1,Thickness=3) {
+	if(Thickness>=3) for(x=[0:Qty-1]) {
+		translate([x*36,0,0]) {
+			difference() {
+				color("cyan") cyl(h=Thickness,d=Diameter608*1.55,rounding=1.5);			// thrust plate base
+				color("red") cyl(h=10,d=8+Clearance);									// zrod clearance
+				translate([-45,35,-100]) rotate([90,0,0]) BearingHoldDown(screw3);		// screw holes for holding it down
+				translate([45,-35,-74]) rotate([90,0,180]) BearingHoldDown(screw3hd);	// screw hole countersinks
+				translate([0,0,-Thickness/2+0.45]) color("blue")
+					cyl(h=1,d1=12,d2=8+Clearance);										// inner bearing/zrod clearance
+			}
+			difference() {																// thrust washer dust shield
+				translate([0,0,2.5]) color("gold") cyl(h=Thickness+5,d=19,rounding=2);
+				translate([0,0,0]) color("green") cyl(h=Thickness+20,d=16+Clearance);
+			}
+		}
+	} else echo("Too thin");
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -96,6 +121,7 @@ module ZMotorMount(Qty=1,Bearing=0,RodAdjust=0,DoClamp=0,X=0,Y=0,Z=0) {
 		if(Bearing) {
 			ZBeltDrive(0,0,-99.75);
 			translate([43,28,4.7]) Collet(1);
+			translate([-5,120,0]) ThrustPlate(1,3); // minimum thickness is 3
 		}
 	}
 }
@@ -110,7 +136,7 @@ module ZBeltDrive(X=0,Y=0,Z=0,Adjust=0) {
 			translate([X-20,-Z-1.5,30]) color("lightblue") cuboid([80,BaseThickness,60],rounding=2);
 		}
 		MountingHoles(X,Y,0);
-		translate([X-25,-Z+2,35]) rotate([90,0,0]) color("white") NEMA17_parallel_holes(10,8,StepperBossDiameter);
+		translate([X-23,-Z+2,35]) rotate([90,0,0]) color("white") NEMA17_parallel_holes(10,20,StepperBossDiameter);
 		translate([X-70,Z/4+25,BaseThickness/2-BaseThickness/2]) InnerHoleBearingSide();
 		translate([-49,10,0]) color("green") cyl(h=20,d=screw5);
 		translate([-49,90,0]) color("blue") cyl(h=20,d=screw5);
@@ -241,7 +267,7 @@ module BearingMount(X=0,Y=0,Z=0) {
 
 module BearingHoldDown(Screw=screw3t) { // uses two M3 screws and M3 washers
 	translate([45,100,22]) color("blue") rotate([90,0,0]) cyl(h=50,d=Screw);
-	translate([45,100,48]) color("cyan") rotate([90,0,0]) cyl(h=50,d=Screw);
+	translate([45,100,48]) color("red") rotate([90,0,0]) cyl(h=50,d=Screw);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
