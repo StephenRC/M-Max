@@ -30,6 +30,7 @@ $fn=100;
 Use5mmInsert=1;
 Use3mmInsert=1;
 Clearance = 0.7;			// allow threaded rod to slide without problem
+ThrustClearance = 2.1;		// PLA; allow thrust bearing install without problem
 BaseWidth = 90;
 BaseLength = 100;
 Thickness = 5;
@@ -40,14 +41,15 @@ LayerThickness=0.3;
 BearingHoleClearance = 19;	// Clearance for a 8mm nut
 BrassInsertLength=6; 		// for M3 insert
 StepperBossDiameter=23; 	// 22 plus some clearance
+ThrustDiameter=16;
 //----------------------------------------------------------------------------
 Show=0;		// show original stepper mount
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ZMotorMount(1,1,0,1,0,0,47);
+ZMotorMount(2,1,0,1,0,0,47);
 //Collet(2);
 //ZRodClamp();
-//ThrustPlate(3,3); // minimum thickness is 3
+//ThrustPlate(2,3); // minimum thickness is 3
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,15 +58,15 @@ module ThrustPlate(Qty=1,Thickness=3) {
 		translate([x*36,0,0]) {
 			difference() {
 				color("cyan") cyl(h=Thickness,d=Diameter608*1.55,rounding=1.5);			// thrust plate base
-				color("red") cyl(h=10,d=8+Clearance);									// zrod clearance
+				color("red") cyl(h=10,d=9+Clearance);									// zrod clearance
 				translate([-45,35,-100]) rotate([90,0,0]) BearingHoldDown(screw3);		// screw holes for holding it down
 				translate([45,-35,-74]) rotate([90,0,180]) BearingHoldDown(screw3hd);	// screw hole countersinks
 				translate([0,0,-Thickness/2+0.45]) color("blue")
-					cyl(h=1,d1=12,d2=8+Clearance);										// inner bearing/zrod clearance
+					cyl(h=1,d1=12,d2=9+Clearance);										// inner bearing/zrod clearance
 			}
 			difference() {																// thrust washer dust shield
-				translate([0,0,2.5]) color("gold") cyl(h=Thickness+5,d=19,rounding=2);
-				translate([0,0,0]) color("green") cyl(h=Thickness+20,d=16+Clearance);
+				translate([0,0,3]) color("gold") cyl(h=Thickness+6.5,d=ThrustDiameter+3.5,rounding=2);
+				translate([0,0,0]) color("green") cyl(h=Thickness+20,d=ThrustDiameter+ThrustClearance);
 			}
 		}
 	} else echo("Too thin");
@@ -100,7 +102,7 @@ module ColletScrews(Screw=Yes3mmInsert(Use3mmInsert)) {
 
 module ZMotorMount(Qty=1,Bearing=0,RodAdjust=0,DoClamp=0,X=0,Y=0,Z=0) {
 	for(x = [0 : Qty-1]) {
-		translate([x*100,0,0]) {
+		translate([x*140,0,0]) {
 			if(Show) OldMount();
 			union() {
 				if(!Bearing) OriginalBase(X,Y,-Z-52.75,BaseThickness/10-1); // Z=-52.75 for original position
@@ -117,11 +119,11 @@ module ZMotorMount(Qty=1,Bearing=0,RodAdjust=0,DoClamp=0,X=0,Y=0,Z=0) {
 			}
 			translate([X+25,-Z+145,0]) color("blue") cuboid([Thickness,25,10],rounding=2,p1=[0,0]);
 			translate([X+27,-Z+167,0]) color("red") cylinder(h=LayerThickness,d=20);  // corner brim
-		}
-		if(Bearing) {
-			ZBeltDrive(0,0,-99.75);
-			translate([43,28,4.7]) Collet(1);
-			translate([-5,120,0]) ThrustPlate(1,3); // minimum thickness is 3
+			if(Bearing) {
+				ZBeltDrive(0,0,-99.75);
+				translate([43,28,4.7]) Collet(1);
+				translate([-5,120,0]) ThrustPlate(1,3); // minimum thickness is 3
+			}
 		}
 	}
 }

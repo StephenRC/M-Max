@@ -52,10 +52,10 @@ module WCXCarriageEXOSlide(DoTab=1) {
 		union() {
 			translate([0,0,0]) color("cyan") cuboid([30,20,Thickness],rounding=3);
 			translate([0,7,35]) color("blue") cuboid([30,Thickness,70],rounding=3);
-			translate([7.5,-45+Thickness,50]) color("purple") cuboid([15,95,Thickness],rounding=3); // wc support
+			translate([7.5,46+Thickness,50]) color("purple") cuboid([15,95,Thickness],rounding=3); // wc support
 			color("khaki") hull() {
-				translate([8,-5,50]) cuboid([Thickness-1,30,Thickness-1],rounding=2.5);
-				translate([8,6,13]) cuboid([Thickness-1,Thickness-1,Thickness-1],rounding=2.5);
+				translate([8,20,50]) cuboid([Thickness-1,30,Thickness-1],rounding=2.5);
+				translate([8,7,13]) cuboid([Thickness-1,Thickness-1,Thickness-1],rounding=2.5);
 			}
 		}
 		translate([0,20,58]) rotate([90,0,0]) WCEndMount();
@@ -65,8 +65,8 @@ module WCXCarriageEXOSlide(DoTab=1) {
 	if(DoTab) {
 		translate([-5,-8,0]) EndSupport();
 		translate([-5,5,68]) color("red") EndSupport();
-		translate([-5,-85,50]) color("green") EndSupport();
-		translate([12,-1.5,35]) color("purple") cuboid([6,18,LayerThickness]);
+		translate([-5,95,50]) color("green") EndSupport();
+		translate([12,15,35]) color("purple") cuboid([6,18,LayerThickness]);
 	}
 }
 

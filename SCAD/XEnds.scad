@@ -54,7 +54,7 @@
 // ***** Use a brim for printing *****
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <bosl2/std.scad>
-include <inc/nema17.scad>
+use <inc/nema17.scad>
 include <inc/screwsizes.scad>
 include <inc/brassinserts.scad>
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -436,6 +436,7 @@ module ZRodHole(Diameter=ZRodDiameter) { // through hole for the z rod
 module ZNutShell(MisumiMTSSR8,TR8=0) { // part to hold the z nut
 	if(!MisumiMTSSR8) {
 		translate([11.5,0,0]) rotate([0,90,0]) color("salmon") cyl(h=ZNutWidth,d=znutd+ShellThickness+4.9,rounding=2);
+		//translate([37,40,0]) color("blue") rotate([90,0,0]) cyl(h=10,d=Yes3mmInsert(Use3mmInsert));
 	} else
 		translate([11.5,0,0]) rotate([0,90,0]) color("khaki") cyl(h=MTSSR8l+2.5, d=MTSSR8d+ShellThickness+0.5,rounding=2);
 }

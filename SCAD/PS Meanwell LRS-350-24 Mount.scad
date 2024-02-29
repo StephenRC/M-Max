@@ -4,10 +4,11 @@
 // https://creativecommons.org/licenses/by-sa/4.0/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // created 9/5/2021
-// last update 9/12/21
+// last update 6/9/22
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 9/5/21	- Mount for powersupply PSMount(), with braces PSMountV2, both for edge mouting to 2020/2040
 // 9/11/21	- PSMountV3() for flate mounting to 2040/2020
+// 6/9/22	- Added link to power supply, adjusted screw holes
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 include <mmax_h.scad>
 include <inc/brassinserts.scad>
@@ -15,22 +16,21 @@ include <bosl2/std.scad>
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $fn=100;
 //Use3mmInsert=1;
-//LargeInsert=1;
 //Use4mmInsert=1;
 //Use5mmInsert=1;
 Width=10;
 Thickness=6.5;
 CoverThickness=Thickness-2.5;
-ScrewHorzOffset=154.5;
-ScrewVertOffset=54.5;
+ScrewHorzOffset=150;
+ScrewVertOffset=50;
 Length1=ScrewHorzOffset+10;
 Length2=ScrewVertOffset+10;
 LayerThickness=0.4;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//PSMount();
-//PSMountV2();
-PSMountV3(3);
+//PSMount(); // 2020/2040 no support
+//PSMountV2(); // 2020/2040 support
+PSMountV3(3); // mounts to bottom of 2040
 translate([0,70,0])
 	PSCover();
 
@@ -54,7 +54,7 @@ module PSCover() {
 module PSMountV2() {
 	difference() {
 		translate([-5,-5,0]) PSBase();
-		translate([2,0,0]) PSScrewHoles();
+		PSScrewHoles();
 	}
 	difference() {
 		translate([-5,-50,0]) ExtrusionMount();
@@ -92,7 +92,7 @@ module MountSupport(Screw=screw5) {
 module PSMountV3(Shift=0) {
 	difference() {
 		translate([-5,-5,0]) PSBase(0);
-		translate([2,0,0]) PSScrewHoles();
+		PSScrewHoles();
 	}
 	ExtrusionMountEnds(screw5,Shift);
 }
@@ -102,11 +102,11 @@ module PSMountV3(Shift=0) {
 module PSMount() {
 	difference() {
 		translate([-5,-5,0]) PSBase();
-		translate([2,0,0]) PSScrewHoles();
+		PSScrewHoles();
 	}
 	difference() {
 		translate([-5,-50,0]) ExtrusionMount();
-		translate([2,0,0]) PSScrewHoles();
+		PSScrewHoles();
 	}
 }
 
